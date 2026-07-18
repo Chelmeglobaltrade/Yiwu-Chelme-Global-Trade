@@ -10,6 +10,8 @@ const bindings = {
   eLclPct: ["lcl", "managementPercent"],
   eLclMin: ["lcl", "minimumManagementUsd"],
   eMinimumGoods: ["lcl", "minimumRecommendedGoodsUsd"],
+  eLclRecommendedMax: ["publicCalculator", "lclRecommendedMaxCbm"],
+  eCompareMax: ["publicCalculator", "compareLclFclMaxCbm"],
   eFclPct: ["fcl", "managementPercent"],
   eFclMin: ["fcl", "minimumManagementUsd"],
   eChinaLocal: ["fcl", "chinaLocalCostsUsd"],

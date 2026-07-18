@@ -11,26 +11,67 @@ window.CHELME_CONFIG = {
   },
 
   exchange: {
-    rmbPerUsd: 7.20
+    referenceRmbPerUsd: 6.7767,
+    previousReferenceRmbPerUsd: 6.7733,
+    commercialRmbPerUsd: 6.64,
+    updatedAt: "2026-07-17",
+    sourceLabel: "Referencia de mercado USD/CNY",
+    bufferPercent: 2.02,
+    quoteValidityDays: 3,
+    note: "El tipo de cambio comercial incluye margen de protección por variación cambiaria, costos bancarios y tiempo de liquidación."
   },
 
   advisory: {
-    startingPriceUsd: 200
+    startingPriceUsd: 200,
+    includes: [
+      "Revisión inicial del proyecto",
+      "Evaluación de producto, cantidad y presupuesto",
+      "Revisión de enlaces, fotos o lista de productos",
+      "Estimación inicial de costos",
+      "Recomendación entre consolidado LCL y contenedor FCL",
+      "Cotización preliminar y próximos pasos"
+    ],
+    paymentRequiredBeforeReview: true,
+    note: "No se inicia la revisión ni la cotización sin el pago de la asesoría inicial."
+  },
+
+  payment: {
+    amountUsd: 200,
+    referencePrefix: "ASESORIA",
+    bankDetailsPublished: false,
+    methods: ["Transferencia bancaria en USD", "USDT"],
+    instructions: [
+      "Solicita los datos de pago actualizados por WhatsApp.",
+      "Transfiere el valor exacto de la asesoría inicial.",
+      "Escribe tu nombre y la referencia del proyecto.",
+      "Envía el comprobante por WhatsApp.",
+      "La revisión comienza después de confirmar el pago."
+    ],
+    note: "Los datos bancarios no se publican de forma fija para evitar pagos a cuentas desactualizadas."
   },
 
   lcl: {
     ratePerCbmUsd: 270,
+    minimumBillableCbm: 1,
     smallCargoThresholdCbm: 5,
     smallCargoExtraPerCbmUsd: 100,
-    managementPercent: 8,
-    minimumManagementUsd: 200,
+    sourcingPercent: 8,
+    minimumSourcingFeeUsd: 200,
     minimumRecommendedGoodsUsd: 5000,
-    nextDepartureText: "Consultar próxima salida"
+    nextDepartureText: "Consultar próxima salida",
+    explanation: "Se cobra por el CBM facturable. Si la carga ocupa menos de 1 m³, el mínimo facturable es 1 m³."
+  },
+  destinationCosts: {
+    taxesIncludedInPublicEstimate: false,
+    customsBrokerIncluded: false,
+    portChargesIncluded: false,
+    finalDeliveryIncluded: false,
+    message: "Al llegar la carga, el cliente debe pagar los impuestos y gastos de destino que correspondan."
   },
 
   fcl: {
-    managementPercent: 5,
-    minimumManagementUsd: 200,
+    sourcingPercent: 5,
+    minimumSourcingFeeUsd: 200,
     chinaLocalCostsUsd: 1000,
     oceanFreightUsd: {
       "20GP": 0,
@@ -42,6 +83,14 @@ window.CHELME_CONFIG = {
       "40GP": 58,
       "40HQ": 68
     }
+  },
+
+  publicCalculator: {
+    lclRecommendedMaxCbm: 15,
+    compareLclFclMaxCbm: 28,
+    maxFilesPerRequest: 10,
+    maxIndividualItemsBeforeBulk: 20,
+    note: "La cantidad de referencias no define el flete. El cálculo depende principalmente del CBM, peso, tipo de producto, origen y destino."
   },
 
   sourcing: {

@@ -1,38 +1,15 @@
-# Chelme Global Trade — Plataforma V4 con fotografías reales
+# Chelme Global Trade — V7
 
-Esta versión incorpora una selección profesional de las fotografías enviadas.
+Cambios principales:
 
-## Criterio de selección
-
-Las imágenes se separaron en cuatro categorías:
-
-- Cargas y contenedores.
-- Fábricas y control de calidad.
-- Clientes y acompañamiento.
-- China y viajes comerciales.
-
-No se utilizaron todas las fotos. La página muestra las que explican mejor el servicio,
-generan confianza y mantienen un aspecto profesional.
-
-## Mejoras
-
-- Nueva sección “Experiencia en terreno”.
-- Galería con filtros por categoría.
-- Vista ampliada tipo lightbox.
-- Navegación con teclado en computador.
-- Fotografías convertidas a WebP.
-- Metadatos y ubicación eliminados al procesar las imágenes.
-- Carga diferida para mejorar velocidad.
-- Nombres de archivo claros y profesionales.
-- Hero actualizado con una fotografía industrial real.
-
-## Importante antes de publicar
-
-Confirma la autorización de las personas reconocibles que aparecen en las fotografías,
-especialmente clientes, proveedores y acompañantes. No publiques documentos comerciales,
-licencias completas, teléfonos, direcciones, códigos QR o datos bancarios visibles.
-
-## Instalación
-
-Sube todos los archivos de esta carpeta a la raíz del repositorio y reemplaza la versión anterior.
-Después presiona **Commit changes** y espera entre uno y tres minutos.
+- Instrucciones claras para pagar la asesoría inicial.
+- Los datos bancarios se solicitan por WhatsApp para evitar usar cuentas desactualizadas.
+- El consolidado tiene mínimo facturable de 1 m³.
+- Bajo 5 m³ se aplica el cargo operativo configurado.
+- La calculadora muestra volumen real y volumen facturable.
+- La búsqueda de proveedor y gestión de compra es opcional.
+- El porcentaje solo se agrega cuando el cliente marca esa opción.
+- Los valores de productos pueden ingresarse en USD o RMB.
+- La conversión usa el tipo de cambio comercial configurado.
+- Impuestos y gastos de destino aparecen separados.
+- La cantidad de referencias no modifica automáticamente el precio.

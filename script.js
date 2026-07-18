@@ -8,7 +8,9 @@ const state = {
   quoteService: "lcl",
   sourceMode: "link",
   quoteFiles: [],
-  calcMode: "photos"
+  calcMode: "photos",
+  quoteBreakdown: [],
+  lastSimpleResult: null
 };
 
 const services = {
@@ -17,10 +19,15 @@ const services = {
     badge: "Estimación disponible",
     html: `
       <div class="service-field-panel form-grid">
-        <label class="field"><span>Valor aproximado de productos (USD)</span><input id="qGoods" type="number" min="0" placeholder="0"></label>
-        <label class="field"><span>Volumen, si lo conoces (m³)</span><input id="qCbm" type="number" min="0" step="0.01" placeholder="0"></label>
+        <label class="field"><span>Valor aproximado de productos</span><input id="qGoods" type="number" min="0" placeholder="0"></label>
+        <label class="field"><span>Moneda de los productos</span><select id="qCurrency"><option value="USD">USD</option><option value="RMB">RMB / CNY</option></select></label>
+        <label class="field"><span>Volumen real, si lo conoces (m³)</span><input id="qCbm" type="number" min="0" step="0.01" placeholder="0"></label>
         <label class="field"><span>Cantidad aproximada</span><input id="qQuantity" type="number" min="1" placeholder="0"></label>
         <label class="field"><span>Cantidad de proveedores</span><input id="qSuppliers" type="number" min="1" value="1"></label>
+        <label class="service-option" style="grid-column:1/-1">
+          <input id="qIncludeSourcing" type="checkbox">
+          <span><strong>Necesito búsqueda de proveedor y gestión de compra</strong><small>Solo al marcar esta opción se agrega el ${CONFIG.lcl.sourcingPercent}% sobre el valor FOB, con mínimo de ${money(CONFIG.lcl.minimumSourcingFeeUsd)}.</small></span>
+        </label>
       </div>`
   },
   fcl: {
@@ -29,9 +36,14 @@ const services = {
     html: `
       <div class="service-field-panel form-grid">
         <label class="field"><span>Contenedor</span><select id="qContainer"><option>20GP</option><option>40GP</option><option selected>40HQ</option></select></label>
-        <label class="field"><span>Valor aproximado de productos (USD)</span><input id="qGoods" type="number" min="0" placeholder="0"></label>
+        <label class="field"><span>Valor aproximado de productos</span><input id="qGoods" type="number" min="0" placeholder="0"></label>
+        <label class="field"><span>Moneda de los productos</span><select id="qCurrency"><option value="USD">USD</option><option value="RMB">RMB / CNY</option></select></label>
         <label class="field"><span>Volumen estimado (m³)</span><input id="qCbm" type="number" min="0" step="0.01" placeholder="0"></label>
         <label class="field"><span>Puerto o ciudad de origen</span><input id="qOrigin" placeholder="Ningbo, Shanghai, Qingdao..."></label>
+        <label class="service-option" style="grid-column:1/-1">
+          <input id="qIncludeSourcing" type="checkbox">
+          <span><strong>Necesito búsqueda de proveedor y gestión de compra</strong><small>Solo al marcar esta opción se agrega el ${CONFIG.fcl.sourcingPercent}% sobre el valor FOB, con mínimo de ${money(CONFIG.fcl.minimumSourcingFeeUsd)}.</small></span>
+        </label>
       </div>`
   },
   quality: {
@@ -80,8 +92,8 @@ const services = {
       </div>`
   },
   advisory: {
-    title: "Reservar asesoría",
-    badge: `Desde ${money(CONFIG.advisory.startingPriceUsd)}`,
+    title: "Asesoría + revisión + cotización",
+    badge: `Pago inicial ${money(CONFIG.advisory.startingPriceUsd)}`,
     html: `
       <div class="service-field-panel form-grid">
         <label class="field"><span>Presupuesto estimado (USD)</span><input id="qBudget" type="number" min="0" placeholder="0"></label>
@@ -112,6 +124,14 @@ function setupBusinessLinks(){
     if(!a.textContent.trim()) a.textContent=CONFIG.business.email;
   });
   document.querySelectorAll("[data-business-city]").forEach(e=>e.textContent=CONFIG.business.city);
+  const trend=CHELME_PRICING.exchangeTrend(CONFIG);
+  if($("fxCommercialRate"))$("fxCommercialRate").textContent=CONFIG.exchange.commercialRmbPerUsd.toFixed(4);
+  if($("fxReferenceRate"))$("fxReferenceRate").textContent=`${CONFIG.exchange.referenceRmbPerUsd.toFixed(4)} RMB/USD`;
+  if($("fxUpdatedAt"))$("fxUpdatedAt").textContent=CONFIG.exchange.updatedAt;
+  if($("fxTrendText"))$("fxTrendText").textContent=`${trend.usdText} (${trend.percent>=0?"+":""}${trend.percent.toFixed(2)}%)`;
+  if($("paidAdvisoryPrice"))$("paidAdvisoryPrice").textContent=money(CONFIG.advisory.startingPriceUsd);
+  if($("transferAmount"))$("transferAmount").textContent=money(CONFIG.payment.amountUsd);
+  if($("advisoryStartingPrice"))$("advisoryStartingPrice").textContent=`Desde ${money(CONFIG.advisory.startingPriceUsd)}`;
   document.querySelectorAll("[data-instagram-handle]").forEach(e=>e.textContent=CONFIG.business.instagramHandle);
   document.querySelectorAll("[data-tiktok-handle]").forEach(e=>e.textContent=CONFIG.business.tiktokHandle);
 }
@@ -194,6 +214,8 @@ function setSourceMode(mode){
   state.quoteFiles=[];
   document.querySelectorAll("[data-source-mode]").forEach(b=>b.classList.toggle("active",b.dataset.sourceMode===mode));
   const wrap=$("sourceFields");
+  const maxFiles=CONFIG.publicCalculator.maxFilesPerRequest||10;
+
   if(mode==="link"){
     wrap.innerHTML=`<div class="source-panel form-grid">
       <label class="field" style="grid-column:1/-1"><span>Enlace del producto *</span><input id="sourceLink" type="url" required placeholder="Pega un enlace de 1688, Alibaba u otro proveedor"></label>
@@ -205,106 +227,245 @@ function setSourceMode(mode){
       <label class="photo-drop">
         <svg><use href="#i-camera"></use></svg>
         <strong>Subir fotografías del producto</strong>
-        <span>Máximo 5 imágenes · JPG, PNG o HEIC compatible con el navegador</span>
-        <input id="sourcePhotos" type="file" accept="image/*" multiple>
+        <span>Máximo ${maxFiles} imágenes</span>
+        <input id="sourceFiles" type="file" accept="image/*" multiple>
       </label>
       <div class="photo-preview" id="photoPreview"></div>
       <div class="form-grid" style="margin-top:15px">
         <label class="field"><span>¿Qué producto parece ser?</span><input id="sourceProductName" placeholder="Ej.: máquina expendedora de agua"></label>
         <label class="field"><span>Cantidad aproximada</span><input id="sourceQuantity" type="number" min="1" placeholder="0"></label>
+        <label class="field"><span>Número de productos o referencias</span><input id="sourceReferences" type="number" min="1" value="1"></label>
       </div>
     </div>`;
-    $("sourcePhotos").addEventListener("change",handlePhotos);
+    $("sourceFiles").addEventListener("change",handleSourceFiles);
+  }else if(mode==="bulk"){
+    wrap.innerHTML=`<div class="source-panel">
+      <label class="photo-drop">
+        <svg><use href="#i-file"></use></svg>
+        <strong>Subir lista completa</strong>
+        <span>Excel, CSV, PDF, Word o imágenes · máximo ${maxFiles} archivos</span>
+        <input id="sourceFiles" type="file" accept=".xlsx,.xls,.csv,.pdf,.doc,.docx,image/*" multiple>
+      </label>
+      <div class="file-list" id="fileList"></div>
+      <div class="form-grid" style="margin-top:15px">
+        <label class="field"><span>Número aproximado de productos o referencias *</span><input id="sourceReferences" required type="number" min="1" placeholder="Ej.: 35"></label>
+        <label class="field"><span>Cantidad de proveedores</span><input id="sourceSuppliers" type="number" min="1" placeholder="0"></label>
+        <label class="field"><span>Valor total aproximado (USD)</span><input id="sourceBulkGoods" type="number" min="0" placeholder="0"></label>
+        <label class="field"><span>CBM total, si lo conoces</span><input id="sourceBulkCbm" type="number" min="0" step="0.01" placeholder="0"></label>
+        <label class="field" style="grid-column:1/-1"><span>Pega aquí parte de la lista, si no tienes archivo</span><textarea id="sourceBulkList" rows="5" placeholder="Producto 1 - cantidad...&#10;Producto 2 - cantidad..."></textarea></label>
+      </div>
+      <p class="bulk-help">No se cobra por la cantidad de referencias. Los productos adicionales pueden aumentar el trabajo de revisión, pero cualquier cargo se confirma antes de comenzar.</p>
+    </div>`;
+    $("sourceFiles").addEventListener("change",handleSourceFiles);
   }else{
     wrap.innerHTML=`<div class="source-panel form-grid">
       <label class="field" style="grid-column:1/-1"><span>Describe el producto *</span><textarea id="sourceDescription" required rows="4" placeholder="Qué producto es, para qué sirve, material, tamaño, color, calidad o cualquier detalle que recuerdes."></textarea></label>
       <label class="field"><span>Cantidad aproximada</span><input id="sourceQuantity" type="number" min="1" placeholder="0"></label>
+      <label class="field"><span>Número de productos o referencias</span><input id="sourceReferences" type="number" min="1" value="1"></label>
       <label class="field"><span>Presupuesto aproximado (USD)</span><input id="sourceBudget" type="number" min="0" placeholder="0"></label>
     </div>`;
   }
+
   wrap.querySelectorAll("input,textarea").forEach(el=>el.addEventListener("input",updateEstimate));
-  updatePhotoHelp();
+  updateFileHelp();
 }
 
-function handlePhotos(event){
-  const all=[...event.target.files].filter(f=>f.type.startsWith("image/")).slice(0,5);
-  state.quoteFiles=all;
-  renderPhotoPreview();
-  updatePhotoHelp();
+function handleSourceFiles(event){
+  const maxFiles=CONFIG.publicCalculator.maxFilesPerRequest||10;
+  state.quoteFiles=[...event.target.files].slice(0,maxFiles);
+  renderSourceFiles();
+  updateFileHelp();
 }
 
-function renderPhotoPreview(){
-  const preview=$("photoPreview");
-  if(!preview)return;
-  preview.innerHTML="";
-  state.quoteFiles.forEach((file,index)=>{
-    const url=URL.createObjectURL(file);
-    const item=document.createElement("div");
-    item.className="photo-preview-item";
-    item.innerHTML=`<img src="${url}" alt="Foto ${index+1}"><button type="button" aria-label="Eliminar">×</button>`;
-    item.querySelector("button").addEventListener("click",()=>{
-      state.quoteFiles.splice(index,1);
-      renderPhotoPreview();
-      updatePhotoHelp();
+function renderSourceFiles(){
+  const photoPreview=$("photoPreview");
+  const fileList=$("fileList");
+
+  if(photoPreview){
+    photoPreview.innerHTML="";
+    state.quoteFiles.forEach((file,index)=>{
+      if(!file.type.startsWith("image/"))return;
+      const url=URL.createObjectURL(file);
+      const item=document.createElement("div");
+      item.className="photo-preview-item";
+      item.innerHTML=`<img src="${url}" alt="Foto ${index+1}"><button type="button" aria-label="Eliminar">×</button>`;
+      item.querySelector("button").addEventListener("click",()=>removeSourceFile(index));
+      photoPreview.appendChild(item);
     });
-    preview.appendChild(item);
-  });
+  }
+
+  if(fileList){
+    fileList.innerHTML="";
+    state.quoteFiles.forEach((file,index)=>{
+      const item=document.createElement("div");
+      item.className="file-list-item";
+      item.innerHTML=`<span>${escapeText(file.name)} · ${formatFileSize(file.size)}</span><button type="button" aria-label="Eliminar">×</button>`;
+      item.querySelector("button").addEventListener("click",()=>removeSourceFile(index));
+      fileList.appendChild(item);
+    });
+  }
 }
 
-function updatePhotoHelp(){
+function removeSourceFile(index){
+  state.quoteFiles.splice(index,1);
+  renderSourceFiles();
+  updateFileHelp();
+}
+
+function formatFileSize(bytes){
+  if(bytes<1024)return `${bytes} B`;
+  if(bytes<1024*1024)return `${Math.round(bytes/1024)} KB`;
+  return `${(bytes/(1024*1024)).toFixed(1)} MB`;
+}
+
+function escapeText(value){
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function updateFileHelp(){
   const help=$("photoSendHelp");
-  if(state.sourceMode!=="photos"){
+  if(!["photos","bulk"].includes(state.sourceMode)){
     help.textContent="";
     return;
   }
+  const kind=state.sourceMode==="photos"?"foto(s)":"archivo(s)";
   help.textContent=state.quoteFiles.length
-    ? `${state.quoteFiles.length} foto(s) lista(s). En un celular compatible se abrirá el menú para compartirlas. En computador, WhatsApp se abrirá con el mensaje y deberás adjuntar las fotos manualmente.`
-    : "Selecciona las fotos antes de enviar. No necesitas tener un enlace.";
+    ? `${state.quoteFiles.length} ${kind} seleccionado(s). En celular compatible se intentará compartirlos. En computador deberás adjuntarlos manualmente en WhatsApp.`
+    : state.sourceMode==="photos"
+      ? "Selecciona las fotos antes de enviar. No necesitas tener un enlace."
+      : "Puedes subir un archivo o pegar la lista directamente en el formulario.";
+}
+function renderBreakdown(targetId, title, rows, note=""){
+  const box=$(targetId);
+  if(!rows.length){
+    box.innerHTML="";
+    box.classList.add("hidden");
+    return;
+  }
+  box.classList.remove("hidden");
+  box.innerHTML=`
+    <div class="cost-breakdown-header"><span>${title}</span><span>USD</span></div>
+    ${rows.map(row=>`
+      <div class="cost-breakdown-row ${row.pending?"pending":""} ${row.total?"total":""}">
+        <span>${row.label}</span>
+        <strong>${row.value}</strong>
+      </div>`).join("")}
+    ${note?`<div class="cost-breakdown-note">${note}</div>`:""}
+  `;
+}
+
+function originalGoodsText(amount,currency){
+  if(!amount)return "No ingresada";
+  return currency==="RMB"
+    ? `${new Intl.NumberFormat("es-CL",{maximumFractionDigits:2}).format(amount)} RMB`
+    : money(amount);
 }
 
 function updateEstimate(){
   const service=state.quoteService;
   let totalText="Cotización personalizada";
   let note="Enviaremos la información para revisión y confirmación.";
+  const rows=[];
 
   if(service==="lcl"){
-    const goods=val("qGoods");
+    const goodsAmount=val("qGoods");
+    const goodsCurrency=$("qCurrency")?.value||"USD";
     const cbm=val("qCbm");
+    const includeSourcing=Boolean($("qIncludeSourcing")?.checked);
+    const result=CHELME_PRICING.calculateLcl({
+      goodsAmount,
+      goodsCurrency,
+      cbm,
+      includeSourcing
+    },CONFIG);
+
     if(cbm>0){
-      const small=cbm<CONFIG.lcl.smallCargoThresholdCbm;
-      const rate=CONFIG.lcl.ratePerCbmUsd+(small?CONFIG.lcl.smallCargoExtraPerCbmUsd:0);
-      const management=goods>0?Math.max(goods*CONFIG.lcl.managementPercent/100,CONFIG.lcl.minimumManagementUsd):0;
-      const logistics=cbm*rate;
-      totalText=money(goods+management+logistics);
-      note=`Incluye mercancía ingresada, gestión estimada y ${fmt(cbm,2)} m³ a ${money(rate)}/m³. Impuestos no incluidos.`;
+      rows.push({label:`Mercancía ingresada (${goodsCurrency})`,value:originalGoodsText(goodsAmount,goodsCurrency),pending:goodsAmount<=0});
+      if(goodsCurrency==="RMB"&&goodsAmount>0){
+        rows.push({label:`Equivalente usando ${CONFIG.exchange.commercialRmbPerUsd.toFixed(4)} RMB/USD`,value:money(result.goodsUsd)});
+      }
+      rows.push({label:"Volumen real informado",value:`${fmt(result.actualCbm,2)} m³`});
+      rows.push({label:"Volumen facturable",value:`${fmt(result.billableCbm,2)} m³`});
+      if(result.minimumApplied){
+        rows.push({label:"Mínimo de facturación aplicado",value:`${fmt(result.minimumBillableCbm,2)} m³`,pending:true});
+      }
+      rows.push({label:`Flete consolidado (${fmt(result.billableCbm,2)} m³ × ${money(result.baseRate)})`,value:money(result.baseFreight)});
+      if(result.smallCargo){
+        rows.push({label:`Cargo operativo bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ (${fmt(result.billableCbm,2)} × ${money(result.smallCargoExtraRate)})`,value:money(result.smallCargoExtra)});
+      }
+      rows.push({
+        label:`Búsqueda y gestión de compra (${CONFIG.lcl.sourcingPercent}%)`,
+        value:includeSourcing
+          ? (result.sourcing!==null?money(result.sourcing):"Pendiente")
+          : "No seleccionada",
+        pending:includeSourcing&&result.sourcing===null
+      });
+
+      if(goodsAmount>0){
+        totalText=money(result.operationTotalKnown);
+        rows.push({label:"Total conocido de la operación",value:money(result.operationTotalKnown),total:true});
+      }else{
+        totalText=money(result.logistics);
+        rows.push({label:"Logística conocida",value:money(result.logistics),total:true});
+      }
+
+      note=`Pago inicial obligatorio: ${money(CONFIG.advisory.startingPriceUsd)} por asesoría y cotización. Los impuestos y gastos de destino se pagan al llegar.`;
     }else{
       totalText=`Desde ${money(CONFIG.lcl.ratePerCbmUsd)}/m³`;
-      note="El total se calcula cuando tengamos el volumen o las medidas del embalaje.";
+      note=`Mínimo facturable: ${CONFIG.lcl.minimumBillableCbm} m³. Bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ se agrega el cargo operativo.`;
     }
   }else if(service==="fcl"){
     const container=$("qContainer")?.value||"40HQ";
-    const goods=val("qGoods");
-    const freight=CONFIG.fcl.oceanFreightUsd[container]||0;
-    const management=goods>0?Math.max(goods*CONFIG.fcl.managementPercent/100,CONFIG.fcl.minimumManagementUsd):0;
-    if(goods>0||freight>0){
-      totalText=money(goods+management+CONFIG.fcl.chinaLocalCostsUsd+freight);
-      note=`Estimación para ${container}. Requiere confirmar origen, producto, peso y flete vigente.`;
-    }else{
-      totalText="Flete por confirmar";
-      note=`Gestión desde ${CONFIG.fcl.managementPercent}% sobre el valor de mercancía.`;
+    const goodsAmount=val("qGoods");
+    const goodsCurrency=$("qCurrency")?.value||"USD";
+    const includeSourcing=Boolean($("qIncludeSourcing")?.checked);
+    const result=CHELME_PRICING.calculateFcl({
+      goodsAmount,
+      goodsCurrency,
+      container,
+      includeSourcing
+    },CONFIG);
+
+    rows.push({label:`Mercancía ingresada (${goodsCurrency})`,value:originalGoodsText(goodsAmount,goodsCurrency),pending:goodsAmount<=0});
+    if(goodsCurrency==="RMB"&&goodsAmount>0){
+      rows.push({label:`Equivalente usando ${CONFIG.exchange.commercialRmbPerUsd.toFixed(4)} RMB/USD`,value:money(result.goodsUsd)});
     }
+    rows.push({
+      label:`Búsqueda y gestión de compra (${CONFIG.fcl.sourcingPercent}%)`,
+      value:includeSourcing
+        ? (result.sourcing!==null?money(result.sourcing):"Pendiente")
+        : "No seleccionada",
+      pending:includeSourcing&&result.sourcing===null
+    });
+    rows.push({label:"Gastos operativos estimados en China",value:money(result.chinaLocal)});
+    rows.push({label:`Flete marítimo ${container}`,value:result.freightKnown?money(result.oceanFreight):"Por confirmar",pending:!result.freightKnown});
+
+    if(result.freightKnown&&goodsAmount>0){
+      totalText=money(result.totalKnown);
+      rows.push({label:"Total conocido antes de impuestos y destino",value:money(result.totalKnown),total:true});
+    }else{
+      totalText="Cotización FCL pendiente";
+      rows.push({label:"Subtotal conocido sin flete marítimo",value:money(result.knownSubtotal),total:true});
+    }
+    note=`Pago inicial obligatorio: ${money(CONFIG.advisory.startingPriceUsd)}. Impuestos y gastos de destino se confirman aparte.`;
   }else if(service==="sourcing"){
-    totalText=`Depósito desde ${money(CONFIG.sourcing.startingDepositUsd)}`;
-    note="Se revisa el producto, se buscan opciones y se confirma el alcance antes de comenzar.";
+    totalText=`Asesoría inicial ${money(CONFIG.advisory.startingPriceUsd)}`;
+    note=`Después de la asesoría, la búsqueda y gestión de compra se cotizan según el alcance.`;
   }else if(service==="advisory"){
-    totalText=`Desde ${money(CONFIG.advisory.startingPriceUsd)}`;
-    note="Incluye evaluación del proyecto, proceso recomendado y próximos pasos.";
+    totalText=`${money(CONFIG.advisory.startingPriceUsd)}`;
+    note="Incluye revisión, estimación inicial y cotización preliminar. El pago se confirma antes de comenzar.";
   }
 
+  state.quoteBreakdown=rows.map(row=>`${row.label}: ${row.value}`);
   $("quoteEstimate").textContent=totalText;
   $("quoteEstimateNote").textContent=note;
+  renderBreakdown("quoteBreakdown","Desglose transparente",rows,note);
 }
-
 function collectFields(root){
   const lines=[];
   root.querySelectorAll("input,select,textarea").forEach(el=>{
@@ -315,26 +476,47 @@ function collectFields(root){
   return lines;
 }
 
+function firstMissingRequired(root){
+  const fields=[...root.querySelectorAll("[required]")];
+  return fields.find(field=>{
+    if(field.type==="checkbox")return !field.checked;
+    return !String(field.value||"").trim();
+  })||null;
+}
+
 async function submitQuote(event){
   event.preventDefault();
   $("quoteAlert").classList.add("hidden");
 
-  const name=$("quoteName").value.trim();
-  const destination=$("quoteDestination").value.trim();
-  if(!name||!destination){
-    $("quoteAlert").textContent="Completa tu nombre y el destino.";
+  const missing=firstMissingRequired($("quoteForm"));
+  if(missing){
+    const label=missing.closest(".field")?.querySelector("span")?.textContent||"un campo obligatorio";
+    $("quoteAlert").textContent=`Completa: ${label.replace("*","").trim()}.`;
     $("quoteAlert").classList.remove("hidden");
+    missing.focus();
     return;
   }
+
   if(state.sourceMode==="photos"&&state.quoteFiles.length===0){
     $("quoteAlert").textContent="Selecciona al menos una fotografía.";
     $("quoteAlert").classList.remove("hidden");
     return;
   }
 
-  const modeNames={link:"Enlace",photos:"Fotografías",description:"Descripción"};
+  if(state.sourceMode==="bulk"){
+    const pasted=$("sourceBulkList")?.value.trim()||"";
+    if(state.quoteFiles.length===0&&!pasted){
+      $("quoteAlert").textContent="Sube una lista o pega los productos en el campo disponible.";
+      $("quoteAlert").classList.remove("hidden");
+      return;
+    }
+  }
+
+  const name=$("quoteName").value.trim();
+  const destination=$("quoteDestination").value.trim();
+  const modeNames={link:"Enlace",photos:"Fotografías",description:"Descripción",bulk:"Lista con muchos productos"};
   const lines=[
-    "SOLICITUD DE COTIZACIÓN — CHELME GLOBAL TRADE",
+    "SOLICITUD DE ASESORÍA Y COTIZACIÓN — CHELME GLOBAL TRADE",
     "",
     `Servicio: ${services[state.quoteService].title}`,
     `Información disponible: ${modeNames[state.sourceMode]}`,
@@ -346,15 +528,22 @@ async function submitQuote(event){
     ...collectFields($("sourceFields")),
     ...collectFields($("serviceFields")),
     $("quoteNotes").value.trim()?`Comentarios: ${$("quoteNotes").value.trim()}`:"",
-    state.quoteFiles.length?`Fotografías seleccionadas: ${state.quoteFiles.length} (adjuntas en el chat)`:"",
+    state.quoteFiles.length?`Archivos seleccionados: ${state.quoteFiles.length} (adjuntar en el chat)`:"",
     "",
-    `Estimación mostrada: ${$("quoteEstimate").textContent}`,
-    "Entiendo que esta información es referencial y debe ser confirmada."
+    `ASESORÍA INICIAL: ${money(CONFIG.advisory.startingPriceUsd)}`,
+    "Estado: pendiente de pago y revisión",
+    `RESULTADO MOSTRADO: ${$("quoteEstimate").textContent}`,
+    ...state.quoteBreakdown,
+    "",
+    "La cantidad de productos o referencias no define por sí sola el flete.",
+    "IMPORTANTE: la revisión y cotización inicial son pagadas. El trabajo comienza después de confirmar el pago.",
+    "La búsqueda de proveedores, inspección, negociación y gestión logística se cotizan por separado.",
+    "Esta estimación es referencial y debe ser confirmada."
   ].filter(Boolean);
 
   const text=lines.join("\n");
 
-  if(state.sourceMode==="photos" && state.quoteFiles.length && navigator.share && navigator.canShare){
+  if(["photos","bulk"].includes(state.sourceMode) && state.quoteFiles.length && navigator.share && navigator.canShare){
     try{
       const shareData={title:"Cotización Chelme Global Trade",text,files:state.quoteFiles};
       if(navigator.canShare(shareData)){
@@ -367,98 +556,222 @@ async function submitQuote(event){
   }
 
   window.open(`https://wa.me/${CONFIG.business.whatsapp}?text=${encodeURIComponent(text)}`,"_blank","noopener");
-  if(state.sourceMode==="photos"){
-    $("quoteAlert").textContent="WhatsApp está abierto. Ahora adjunta las mismas fotos desde tu galería antes de enviar.";
+  if(["photos","bulk"].includes(state.sourceMode) && state.quoteFiles.length){
+    $("quoteAlert").textContent="WhatsApp está abierto. Adjunta los archivos seleccionados antes de enviar.";
     $("quoteAlert").classList.remove("hidden");
   }
 }
-
 function setCalcMode(mode){
   state.calcMode=mode;
   document.querySelectorAll("[data-calc-mode]").forEach(b=>b.classList.toggle("active",b.dataset.calcMode===mode));
   const wrap=$("simpleCalcFields");
+
   if(mode==="photos"){
     wrap.innerHTML=`<div class="simple-fields form-grid">
-      <label class="field"><span>Cantidad aproximada</span><input id="sQuantity" type="number" min="1" placeholder="0"></label>
+      <label class="field"><span>Número de productos o referencias</span><input id="sReferences" type="number" min="1" value="1"></label>
+      <label class="field"><span>Cantidad total aproximada</span><input id="sQuantity" type="number" min="1" placeholder="0"></label>
       <label class="field"><span>Valor aproximado de la compra (USD)</span><input id="sGoods" type="number" min="0" placeholder="0"></label>
-      <label class="field" style="grid-column:1/-1"><span>Producto</span><input id="sProduct" placeholder="Ej.: herramientas, ropa, máquinas..."></label>
+      <label class="field"><span>Producto principal</span><input id="sProduct" placeholder="Ej.: herramientas, ropa, máquinas..."></label>
+    </div>`;
+  }else if(mode==="bulk"){
+    wrap.innerHTML=`<div class="simple-fields form-grid">
+      <label class="field"><span>Número aproximado de productos o referencias *</span><input id="sReferences" type="number" min="21" value="21"></label>
+      <label class="field"><span>Valor total aproximado</span><input id="sGoods" type="number" min="0" placeholder="0"></label>
+      <label class="field"><span>Moneda</span><select id="sCurrency"><option value="USD">USD</option><option value="RMB">RMB / CNY</option></select></label>
+      <label class="field"><span>CBM total, si lo conoces</span><input id="sCbm" type="number" min="0" step="0.01" placeholder="0"></label>
+      <label class="service-option" style="grid-column:1/-1"><input id="sIncludeSourcing" type="checkbox"><span><strong>Necesito búsqueda de proveedor y gestión de compra</strong><small>Al marcar se agrega el porcentaje correspondiente.</small></span></label>
+      <label class="field"><span>Cantidad de proveedores</span><input id="sSuppliers" type="number" min="1" placeholder="0"></label>
     </div>`;
   }else if(mode==="boxes"){
     wrap.innerHTML=`<div class="simple-fields form-grid">
-      <label class="field"><span>Número de cajas *</span><input id="sBoxes" type="number" min="1" placeholder="0"></label>
-      <label class="field"><span>Valor de productos (USD)</span><input id="sGoods" type="number" min="0" placeholder="0"></label>
-      <label class="field"><span>Largo de caja (cm) *</span><input id="sLength" type="number" min="0" placeholder="0"></label>
-      <label class="field"><span>Ancho de caja (cm) *</span><input id="sWidth" type="number" min="0" placeholder="0"></label>
-      <label class="field"><span>Alto de caja (cm) *</span><input id="sHeight" type="number" min="0" placeholder="0"></label>
+      <label class="field"><span>Número de productos o referencias</span><input id="sReferences" type="number" min="1" value="1"></label>
+      <label class="field"><span>Número total de cajas *</span><input id="sBoxes" type="number" min="1" placeholder="0"></label>
+      <label class="field"><span>Valor de productos</span><input id="sGoods" type="number" min="0" placeholder="0"></label>
+      <label class="field"><span>Moneda</span><select id="sCurrency"><option value="USD">USD</option><option value="RMB">RMB / CNY</option></select></label>
+      <label class="service-option" style="grid-column:1/-1"><input id="sIncludeSourcing" type="checkbox"><span><strong>Necesito búsqueda de proveedor y gestión de compra</strong><small>Al marcar se agrega el porcentaje correspondiente.</small></span></label>
+      <label class="field"><span>Largo de una caja promedio (cm) *</span><input id="sLength" type="number" min="0" placeholder="0"></label>
+      <label class="field"><span>Ancho de una caja promedio (cm) *</span><input id="sWidth" type="number" min="0" placeholder="0"></label>
+      <label class="field"><span>Alto de una caja promedio (cm) *</span><input id="sHeight" type="number" min="0" placeholder="0"></label>
       <label class="field"><span>Peso total aproximado (kg)</span><input id="sWeight" type="number" min="0" placeholder="0"></label>
     </div>`;
   }else{
     wrap.innerHTML=`<div class="simple-fields form-grid">
+      <label class="field"><span>Número de productos o referencias</span><input id="sReferences" type="number" min="1" value="1"></label>
       <label class="field"><span>CBM total *</span><input id="sCbm" type="number" min="0" step="0.01" placeholder="0"></label>
-      <label class="field"><span>Valor de productos (USD)</span><input id="sGoods" type="number" min="0" placeholder="0"></label>
+      <label class="field"><span>Valor de productos</span><input id="sGoods" type="number" min="0" placeholder="0"></label>
+      <label class="field"><span>Moneda</span><select id="sCurrency"><option value="USD">USD</option><option value="RMB">RMB / CNY</option></select></label>
+      <label class="service-option" style="grid-column:1/-1"><input id="sIncludeSourcing" type="checkbox"><span><strong>Necesito búsqueda de proveedor y gestión de compra</strong><small>Al marcar se agrega el porcentaje correspondiente.</small></span></label>
       <label class="field"><span>Peso total aproximado (kg)</span><input id="sWeight" type="number" min="0" placeholder="0"></label>
       <label class="field"><span>Cantidad total de unidades</span><input id="sUnits" type="number" min="0" placeholder="0"></label>
     </div>`;
   }
-  wrap.querySelectorAll("input").forEach(i=>i.addEventListener("input",updateSimpleCalc));
+
+  wrap.querySelectorAll("input,select").forEach(i=>{
+    i.addEventListener("input",updateSimpleCalc);
+    i.addEventListener("change",updateSimpleCalc);
+  });
   updateSimpleCalc();
 }
 
+function resetSimpleDisplay(){
+  $("simpleTotalLabel").textContent="Estimación inicial";
+  $("simpleTotal").textContent="Completa los datos";
+  $("simpleResultNote").textContent="Necesitamos el CBM o las medidas de las cajas.";
+  $("simpleCbm").textContent="Pendiente";
+  $("simpleMethod").textContent="Por revisar";
+  $("simpleManagement").textContent="Por revisar";
+  $("simpleLogistics").textContent="Por revisar";
+  renderBreakdown("simpleBreakdown","Desglose",[]);
+}
+
 function updateSimpleCalc(){
+  const references=val("sReferences")||1;
+  const goodsAmount=val("sGoods");
+  const goodsCurrency=$("sCurrency")?.value||"USD";
+  const includeSourcing=Boolean($("sIncludeSourcing")?.checked);
+
   if(state.calcMode==="photos"){
-    $("simpleTotal").textContent="Necesitamos revisar las fotos";
-    $("simpleResultNote").textContent="Sube las imágenes en la cotización online y agrega la cantidad aproximada.";
+    $("simpleTotalLabel").textContent="Pago inicial";
+    $("simpleTotal").textContent=money(CONFIG.advisory.startingPriceUsd);
+    $("simpleResultNote").textContent=`La asesoría pagada permite revisar ${Math.round(references)} referencia(s) y preparar una cotización preliminar.`;
     $("simpleCbm").textContent="Pendiente";
     $("simpleMethod").textContent="Por revisar";
-    $("simpleManagement").textContent="Por revisar";
-    $("simpleLogistics").textContent="Por revisar";
+    $("simpleManagement").textContent="Según servicio";
+    $("simpleLogistics").textContent="Pendiente";
+    renderBreakdown("simpleBreakdown","Primer paso",[
+      {label:"Asesoría + revisión + cotización",value:money(CONFIG.advisory.startingPriceUsd),total:true},
+      {label:"Búsqueda de proveedor",value:"Se cotiza después",pending:true},
+      {label:"Flete por m³",value:"Pendiente de CBM",pending:true}
+    ],"La cantidad de productos no agrega cargos automáticos.");
+    state.lastSimpleResult={mode:"review",references,goodsAmount,goodsCurrency};
     return;
   }
 
-  const goods=val("sGoods");
   let cbm=val("sCbm");
   if(state.calcMode==="boxes"){
     const boxes=val("sBoxes");
     cbm=(val("sLength")*val("sWidth")*val("sHeight")/1_000_000)*boxes;
   }
 
-  if(cbm<=0){
-    $("simpleTotal").textContent="Completa los datos";
-    $("simpleResultNote").textContent="Necesitamos el CBM o las medidas de las cajas.";
-    $("simpleCbm").textContent="0 m³";
-    $("simpleMethod").textContent="Pendiente";
-    $("simpleManagement").textContent="Pendiente";
+  if(state.calcMode==="bulk"&&cbm<=0){
+    $("simpleTotalLabel").textContent="Pago inicial";
+    $("simpleTotal").textContent=money(CONFIG.advisory.startingPriceUsd);
+    $("simpleResultNote").textContent=`Puedes enviar ${Math.round(references)} o más referencias en una lista.`;
+    $("simpleCbm").textContent="Pendiente";
+    $("simpleMethod").textContent="Por revisar";
+    $("simpleManagement").textContent=includeSourcing?"Seleccionada":"No seleccionada";
     $("simpleLogistics").textContent="Pendiente";
+    renderBreakdown("simpleBreakdown","Información actual",[
+      {label:"Asesoría + revisión + cotización",value:money(CONFIG.advisory.startingPriceUsd),total:true},
+      {label:"Número de referencias",value:String(Math.round(references))},
+      {label:"Búsqueda de proveedor",value:includeSourcing?"Seleccionada":"No seleccionada"},
+      {label:"CBM total",value:"Pendiente",pending:true}
+    ],"Sube Excel, PDF, CSV o pega la lista.");
+    state.lastSimpleResult={mode:"bulk_review",references,goodsAmount,goodsCurrency,cbm:0,includeSourcing};
     return;
   }
 
-  const useLcl=cbm<20;
-  if(useLcl){
-    const small=cbm<CONFIG.lcl.smallCargoThresholdCbm;
-    const rate=CONFIG.lcl.ratePerCbmUsd+(small?CONFIG.lcl.smallCargoExtraPerCbmUsd:0);
-    const logistics=cbm*rate;
-    const management=goods>0?Math.max(goods*CONFIG.lcl.managementPercent/100,CONFIG.lcl.minimumManagementUsd):CONFIG.lcl.minimumManagementUsd;
-    const total=goods+management+logistics;
-    $("simpleTotal").textContent=money(total);
-    $("simpleResultNote").textContent="Estimación preliminar para Consolidado Chelme Global. Impuestos no incluidos.";
-    $("simpleCbm").textContent=`${fmt(cbm,2)} m³`;
-    $("simpleMethod").textContent="Consolidado LCL";
-    $("simpleManagement").textContent=money(management);
-    $("simpleLogistics").textContent=money(logistics);
-  }else{
-    const container=cbm<=28?"20GP":cbm<=58?"40GP":"40HQ";
-    const freight=CONFIG.fcl.oceanFreightUsd[container]||0;
-    const management=goods>0?Math.max(goods*CONFIG.fcl.managementPercent/100,CONFIG.fcl.minimumManagementUsd):CONFIG.fcl.minimumManagementUsd;
-    const total=goods+management+CONFIG.fcl.chinaLocalCostsUsd+freight;
-    $("simpleTotal").textContent=freight>0?money(total):"Flete por confirmar";
-    $("simpleResultNote").textContent=`Por volumen conviene evaluar un ${container}. La decisión final depende también del peso y producto.`;
-    $("simpleCbm").textContent=`${fmt(cbm,2)} m³`;
-    $("simpleMethod").textContent=`Evaluar ${container}`;
-    $("simpleManagement").textContent=money(management);
-    $("simpleLogistics").textContent=freight>0?money(freight+CONFIG.fcl.chinaLocalCostsUsd):"Por confirmar";
+  if(cbm<=0){
+    resetSimpleDisplay();
+    $("simpleTotalLabel").textContent="Pago inicial";
+    $("simpleTotal").textContent=money(CONFIG.advisory.startingPriceUsd);
+    $("simpleResultNote").textContent="Ingresa CBM o medidas para calcular el consolidado.";
+    renderBreakdown("simpleBreakdown","Primer paso",[
+      {label:"Asesoría + revisión + cotización",value:money(CONFIG.advisory.startingPriceUsd),total:true}
+    ],`Mínimo facturable del consolidado: ${CONFIG.lcl.minimumBillableCbm} m³.`);
+    state.lastSimpleResult=null;
+    return;
   }
-}
 
+  const recommendation=CHELME_PRICING.recommendMode(cbm,CONFIG);
+  const lcl=CHELME_PRICING.calculateLcl({
+    goodsAmount,
+    goodsCurrency,
+    cbm,
+    includeSourcing
+  },CONFIG);
+
+  const rows=[
+    {label:"Pago inicial: asesoría + cotización",value:money(CONFIG.advisory.startingPriceUsd)},
+    {label:`Mercancía ingresada (${goodsCurrency})`,value:originalGoodsText(goodsAmount,goodsCurrency),pending:goodsAmount<=0}
+  ];
+  if(goodsCurrency==="RMB"&&goodsAmount>0){
+    rows.push({label:`Equivalente a ${CONFIG.exchange.commercialRmbPerUsd.toFixed(4)} RMB/USD`,value:money(lcl.goodsUsd)});
+  }
+  rows.push({label:"Volumen real",value:`${fmt(lcl.actualCbm,2)} m³`});
+  rows.push({label:"Volumen facturable",value:`${fmt(lcl.billableCbm,2)} m³`});
+  if(lcl.minimumApplied){
+    rows.push({label:"Mínimo aplicado",value:`${fmt(lcl.minimumBillableCbm,2)} m³`,pending:true});
+  }
+  rows.push({label:`Flete base (${fmt(lcl.billableCbm,2)} × ${money(lcl.baseRate)})`,value:money(lcl.baseFreight)});
+  if(lcl.smallCargo){
+    rows.push({label:`Cargo operativo bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³`,value:money(lcl.smallCargoExtra)});
+  }
+  rows.push({
+    label:`Búsqueda y gestión de compra (${CONFIG.lcl.sourcingPercent}%)`,
+    value:includeSourcing
+      ? (lcl.sourcing!==null?money(lcl.sourcing):"Pendiente")
+      : "No seleccionada",
+    pending:includeSourcing&&lcl.sourcing===null
+  });
+
+  $("simpleCbm").textContent=`${fmt(lcl.actualCbm,2)} m³ real / ${fmt(lcl.billableCbm,2)} m³ facturable`;
+  $("simpleManagement").textContent=includeSourcing
+    ? (lcl.sourcing!==null?money(lcl.sourcing):"Pendiente")
+    : "No seleccionada";
+  $("simpleLogistics").textContent=money(lcl.logistics);
+
+  if(recommendation.code==="lcl"){
+    $("simpleTotalLabel").textContent=goodsAmount>0?"Operación conocida":"Logística estimada";
+    $("simpleTotal").textContent=goodsAmount>0?money(lcl.operationTotalKnown):money(lcl.logistics);
+    $("simpleResultNote").textContent=`El pago inicial de ${money(CONFIG.advisory.startingPriceUsd)} se realiza antes de revisar y confirmar esta operación.`;
+    $("simpleMethod").textContent="Consolidado LCL";
+    rows.push({
+      label:goodsAmount>0?"Total conocido de la operación":"Logística conocida",
+      value:goodsAmount>0?money(lcl.operationTotalKnown):money(lcl.logistics),
+      total:true
+    });
+  }else if(recommendation.code==="compare"){
+    $("simpleTotalLabel").textContent="Referencia LCL";
+    $("simpleTotal").textContent=goodsAmount>0?money(lcl.operationTotalKnown):money(lcl.logistics);
+    $("simpleResultNote").textContent="Este volumen debe compararse con un contenedor. No se elige FCL automáticamente.";
+    $("simpleMethod").textContent="Comparar LCL / FCL";
+    rows.push({label:"Referencia LCL conocida",value:goodsAmount>0?money(lcl.operationTotalKnown):money(lcl.logistics),total:true});
+    rows.push({label:"Alternativa FCL",value:"Cotizar flete real",pending:true});
+  }else{
+    const fcl=CHELME_PRICING.calculateFcl({
+      goodsAmount,
+      goodsCurrency,
+      container:recommendation.container,
+      includeSourcing
+    },CONFIG);
+    $("simpleTotalLabel").textContent="Resultado";
+    $("simpleTotal").textContent="Cotización FCL necesaria";
+    $("simpleResultNote").textContent=`Por volumen conviene revisar ${recommendation.container}; falta confirmar el flete marítimo.`;
+    $("simpleMethod").textContent=`Evaluar ${recommendation.container}`;
+    $("simpleManagement").textContent=includeSourcing
+      ? (fcl.sourcing!==null?money(fcl.sourcing):"Pendiente")
+      : "No seleccionada";
+    $("simpleLogistics").textContent="Flete por confirmar";
+  }
+
+  renderBreakdown(
+    "simpleBreakdown",
+    "Cómo se está cobrando",
+    rows,
+    "Los impuestos, agencia de aduanas, puerto y entrega se pagan o confirman al llegar."
+  );
+  state.lastSimpleResult={
+    mode:recommendation.code,
+    references,
+    goodsAmount,
+    goodsCurrency,
+    cbm,
+    includeSourcing,
+    container:recommendation.container,
+    lcl
+  };
+}
 function selectServiceAndScroll(service){
   setService(service);
   $("cotizar").scrollIntoView({behavior:"smooth",block:"start"});
@@ -505,7 +818,29 @@ function init(){
   });
   $("resetSimpleCalc").addEventListener("click",()=>setCalcMode("photos"));
   $("sendSimpleQuote").addEventListener("click",()=>{
-    setService(state.calcMode==="photos"?"sourcing":"lcl");
+    const result=state.lastSimpleResult;
+    if(state.calcMode==="bulk"){
+      setSourceMode("bulk");
+      setService(result?.mode==="fcl_review"?"fcl":"lcl");
+    }else if(state.calcMode==="photos"){
+      setSourceMode("photos");
+      setService("sourcing");
+    }else{
+      setSourceMode("description");
+      setService(result?.mode==="fcl_review"?"fcl":"lcl");
+    }
+
+    setTimeout(()=>{
+      if($("sourceReferences")&&result?.references)$("sourceReferences").value=result.references;
+      if($("sourceBulkGoods")&&result?.goods)$("sourceBulkGoods").value=result.goods;
+      if($("sourceBulkCbm")&&result?.cbm)$("sourceBulkCbm").value=result.cbm;
+      if($("qGoods")&&result?.goodsAmount)$("qGoods").value=result.goodsAmount;
+      if($("qCurrency")&&result?.goodsCurrency)$("qCurrency").value=result.goodsCurrency;
+      if($("qIncludeSourcing"))$("qIncludeSourcing").checked=Boolean(result?.includeSourcing);
+      if($("qCbm")&&result?.cbm)$("qCbm").value=result.cbm;
+      if($("qContainer")&&result?.container)$("qContainer").value=result.container;
+      updateEstimate();
+    },0);
   });
 
   setSourceMode("link");
