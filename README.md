@@ -1,15 +1,33 @@
-# Chelme Global Trade — V7
+# Chelme Global Trade — V8 Modular
 
-Cambios principales:
+Esta versión reorganiza completamente la experiencia.
 
-- Instrucciones claras para pagar la asesoría inicial.
-- Los datos bancarios se solicitan por WhatsApp para evitar usar cuentas desactualizadas.
-- El consolidado tiene mínimo facturable de 1 m³.
-- Bajo 5 m³ se aplica el cargo operativo configurado.
-- La calculadora muestra volumen real y volumen facturable.
-- La búsqueda de proveedor y gestión de compra es opcional.
-- El porcentaje solo se agrega cuando el cliente marca esa opción.
-- Los valores de productos pueden ingresarse en USD o RMB.
-- La conversión usa el tipo de cambio comercial configurado.
-- Impuestos y gastos de destino aparecen separados.
-- La cantidad de referencias no modifica automáticamente el precio.
+## Páginas
+
+- `index.html`: portada limpia y comercial.
+- `cotizar.html`: calculadora y solicitud con vista previa.
+- `reservar-asesoria.html`: reserva y pago de asesoría.
+- `viajes-china.html`: paquetes de acompañamiento comercial.
+- `editor-tarifas.html`: genera un bloque local para actualizar tarifas.
+
+## Cambios importantes
+
+- Ya no se solicitan “datos bancarios” desde la portada.
+- La reserva de asesoría se confirma en una página separada.
+- El mensaje de WhatsApp es corto y tiene número de referencia.
+- La solicitud se previsualiza antes de enviarse.
+- Los viajes a China tienen página y paquetes propios.
+- La fotografía panorámica de Shanghái fue recortada a 16:9.
+- “Marca privada” se retiró del bloque principal.
+- Etiquetado y empaque aparecen como servicios complementarios.
+- Cada acción usa un botón diferente:
+  - dorado: reservar o iniciar un servicio pagado;
+  - petróleo: calcular;
+  - verde: WhatsApp;
+  - blanco: abrir otra página.
+- El recargo menor a 5 m³ es fijo, no por m³.
+- La búsqueda de proveedor solo se suma cuando se selecciona.
+
+## Publicación
+
+Sube todos los archivos del ZIP a la raíz del repositorio y reemplaza la versión anterior.

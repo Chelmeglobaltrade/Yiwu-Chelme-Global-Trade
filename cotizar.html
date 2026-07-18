@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Calcula una estimación transparente de consolidado o contenedor.">
+<meta name="theme-color" content="#123f49">
+<title>Calculadora de importación | Chelme Global Trade</title>
+<link rel="stylesheet" href="styles.css">
+<script src="config.js"></script>
+<script src="pricing-core.js"></script>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+</svg>
+
+<div class="topbar"><div class="container"><span>Operación directa desde Yiwu, China</span><span>Atención en español</span></div></div>
+<header class="header">
+  <div class="container nav">
+    <a class="brand" href="index.html"><img src="logo.png" alt="Chelme Global Trade"></a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">☰</button>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html#servicios">Servicios</a>
+      <a href="cotizar.html">Calcular costos</a>
+      <a href="reservar-asesoria.html">Asesoría</a>
+      <a href="viajes-china.html">Viajes a China</a>
+      <a class="btn btn-whatsapp" href="#" data-whatsapp="Hola, quiero información sobre los servicios de Chelme Global Trade.">WhatsApp</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="page-title"><div class="container"><div class="breadcrumb">Inicio / Calcular costos</div><h1>Calculadora y solicitud de revisión</h1><p>Primero obtén una estimación clara. Después genera una solicitud corta con número de referencia.</p></div></section>
+
+<section class="section section-soft">
+  <div class="container">
+    <div class="lcl-formula"></div>
+    <div class="form-shell">
+      <aside class="side-panel">
+        <h3>Cómo funciona</h3>
+        <p>La calculadora no reemplaza la revisión pagada.</p>
+        <ul>
+          <li>Mínimo facturable: 1 m³.</li>
+          <li>Recargo bajo 5 m³: USD 100 fijos.</li>
+          <li>Búsqueda: solo si la seleccionas.</li>
+          <li>Impuestos: separados al llegar.</li>
+        </ul>
+        <a class="btn btn-reserve" href="reservar-asesoria.html">Reservar asesoría</a>
+      </aside>
+
+      <section class="form-card">
+        <h2>1. Calcula la operación</h2>
+        <p>Elige la modalidad y completa únicamente los datos que conoces.</p>
+
+        <div class="choice-row">
+          <button class="choice active" id="modeLcl" type="button"><strong>Consolidado LCL</strong><small>Cobro por espacio facturable</small></button>
+          <button class="choice" id="modeFcl" type="button"><strong>Contenedor FCL</strong><small>20GP, 40GP o 40HQ</small></button>
+        </div>
+
+        <div class="form-grid" style="margin-top:18px">
+          <label class="field"><span>Valor de productos</span><input id="goodsAmount" type="number" min="0" placeholder="0"></label>
+          <label class="field"><span>Moneda</span><select id="goodsCurrency"><option value="USD">USD</option><option value="RMB">RMB / CNY</option></select></label>
+          <label class="field" id="cbmField"><span>CBM real</span><input id="cbm" type="number" min="0" step="0.01" placeholder="0"></label>
+          <label class="field hidden" id="containerField"><span>Contenedor</span><select id="container"><option>20GP</option><option>40GP</option><option selected>40HQ</option></select></label>
+          <label class="field full">
+            <span>¿Necesitas búsqueda de proveedor y gestión de compra?</span>
+            <select id="includeSourcing"><option value="no">No, ya tengo proveedor</option><option value="yes">Sí, necesito búsqueda y gestión</option></select>
+          </label>
+        </div>
+
+        <div class="breakdown" id="breakdown"></div>
+
+        <hr style="border:0;border-top:1px solid var(--line);margin:28px 0">
+
+        <h2>2. Prepara una solicitud</h2>
+        <p>El mensaje no se enviará inmediatamente. Primero verás un resumen ordenado.</p>
+        <form id="requestForm">
+          <div class="form-grid">
+            <label class="field"><span>Nombre *</span><input id="clientName" required></label>
+            <label class="field"><span>WhatsApp *</span><input id="clientPhone" required></label>
+            <label class="field"><span>Ciudad y país de destino *</span><input id="destination" required></label>
+            <label class="field"><span>Producto o rubro *</span><input id="product" required></label>
+            <label class="field full"><span>Enlace, descripción o información adicional</span><textarea id="details" rows="4"></textarea></label>
+          </div>
+          <div class="actions">
+            <button class="btn btn-estimate" type="submit">Generar resumen</button>
+            <a class="btn btn-reserve" href="reservar-asesoria.html">Reservar asesoría</a>
+          </div>
+          <div class="alert hidden" id="requestAlert"></div>
+        </form>
+
+        <div class="summary-preview hidden" id="summaryPreview">
+          <h3>Resumen antes de enviar</h3>
+          <div class="summary-grid" id="summaryGrid"></div>
+          <div class="actions">
+            <button class="btn btn-whatsapp" id="sendWhatsapp" type="button">Enviar resumen por WhatsApp</button>
+            <button class="btn btn-page" id="copySummary" type="button">Copiar resumen</button>
+            <button class="btn btn-ghost" style="color:var(--petrol);border-color:var(--line)" id="editSummary" type="button">Editar datos</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-grid">
+    <div><img src="logo.png" alt="Chelme Global Trade"><p>Compras, inspección, logística y acompañamiento comercial directamente desde China.</p></div>
+    <div><strong>Servicios</strong><p><a href="cotizar.html">Consolidado y contenedores</a></p><p><a href="reservar-asesoria.html">Asesoría inicial</a></p></div>
+    <div><strong>Contacto</strong><p><a data-email></a></p><p>Yiwu, Zhejiang, China</p></div>
+  </div>
+</footer>
+<script src="site.js"></script>
+<script src="cotizar.js"></script>
+</body></html>

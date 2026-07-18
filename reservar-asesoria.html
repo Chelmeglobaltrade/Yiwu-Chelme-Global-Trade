@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Reserva la asesoría inicial para revisar y cotizar tu proyecto.">
+<meta name="theme-color" content="#123f49">
+<title>Reservar asesoría | Chelme Global Trade</title>
+<link rel="stylesheet" href="styles.css">
+<script src="config.js"></script>
+<script src="pricing-core.js"></script>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+</svg>
+
+<div class="topbar"><div class="container"><span>Operación directa desde Yiwu, China</span><span>Atención en español</span></div></div>
+<header class="header">
+  <div class="container nav">
+    <a class="brand" href="index.html"><img src="logo.png" alt="Chelme Global Trade"></a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">☰</button>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html#servicios">Servicios</a>
+      <a href="cotizar.html">Calcular costos</a>
+      <a href="reservar-asesoria.html">Asesoría</a>
+      <a href="viajes-china.html">Viajes a China</a>
+      <a class="btn btn-whatsapp" href="#" data-whatsapp="Hola, quiero información sobre los servicios de Chelme Global Trade.">WhatsApp</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="page-title"><div class="container"><div class="breadcrumb">Inicio / Asesoría</div><h1>Reserva de asesoría</h1><p>Un solo proceso, un solo precio y una confirmación clara por WhatsApp.</p></div></section>
+
+<section class="section section-soft">
+  <div class="container">
+    <div class="reservation-card">
+      <div class="price-box">
+        <div><span class="eyebrow">Asesoría inicial</span><h2 style="margin:6px 0;color:var(--petrol)">Revisión + estimación + cotización preliminar</h2></div>
+        <strong>USD 200</strong>
+      </div>
+
+      <div class="flow-grid" style="margin:22px 0">
+        <article class="flow-card"><span>1</span><h3>Completa el proyecto</h3><p>Indica producto, destino y si ya tienes proveedor.</p></article>
+        <article class="flow-card"><span>2</span><h3>Confirma la reserva</h3><p>Elige transferencia USD o USDT y continúa por WhatsApp.</p></article>
+        <article class="flow-card"><span>3</span><h3>Comienza la revisión</h3><p>Después de confirmar el pago se prepara la cotización preliminar.</p></article>
+      </div>
+
+      <form id="reservationForm">
+        <div class="form-grid">
+          <label class="field"><span>Nombre completo *</span><input id="reserveName" required></label>
+          <label class="field"><span>WhatsApp *</span><input id="reservePhone" required></label>
+          <label class="field"><span>Ciudad y país *</span><input id="reserveLocation" required></label>
+          <label class="field"><span>Producto o rubro *</span><input id="reserveProduct" required></label>
+          <label class="field"><span>Situación del proyecto</span><select id="reserveSupplier"><option>Ya tengo proveedor</option><option>Necesito búsqueda de proveedor</option><option>Todavía no estoy seguro</option></select></label>
+          <label class="field"><span>Forma de pago preferida</span><select id="reservePayment"><option>Transferencia bancaria en USD</option><option>USDT</option></select></label>
+          <label class="field full"><span>Descripción breve</span><textarea id="reserveDescription" rows="4"></textarea></label>
+        </div>
+
+        <div class="note" style="margin-top:16px">
+          No publicamos cuentas bancarias en la página. Al confirmar la reserva por WhatsApp, el equipo envía las instrucciones de pago vigentes y la referencia correspondiente.
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-reserve" type="submit">Confirmar reserva por WhatsApp</button>
+          <a class="btn btn-page" href="cotizar.html">Calcular antes de reservar</a>
+        </div>
+        <div class="alert hidden" id="reservationAlert"></div>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-grid">
+    <div><img src="logo.png" alt="Chelme Global Trade"><p>Compras, inspección, logística y acompañamiento comercial directamente desde China.</p></div>
+    <div><strong>Servicios</strong><p><a href="cotizar.html">Consolidado y contenedores</a></p><p><a href="reservar-asesoria.html">Asesoría inicial</a></p></div>
+    <div><strong>Contacto</strong><p><a data-email></a></p><p>Yiwu, Zhejiang, China</p></div>
+  </div>
+</footer>
+<script src="site.js"></script>
+<script>
+$("reservationForm").addEventListener("submit",event=>{
+  event.preventDefault();
+  const required=["reserveName","reservePhone","reserveLocation","reserveProduct"];
+  const missing=required.find(id=>!$(id).value.trim());
+  if(missing){
+    $("reservationAlert").textContent="Completa los campos obligatorios.";
+    $("reservationAlert").classList.remove("hidden");
+    $(missing).focus();
+    return;
+  }
+  const ref=reference("ASE");
+  const text=[
+    "RESERVA DE ASESORÍA — CHELME GLOBAL TRADE",
+    `Referencia: ${ref}`,
+    `Nombre: ${$("reserveName").value.trim()}`,
+    `WhatsApp: ${$("reservePhone").value.trim()}`,
+    `Ubicación: ${$("reserveLocation").value.trim()}`,
+    `Producto: ${$("reserveProduct").value.trim()}`,
+    `Proveedor: ${$("reserveSupplier").value}`,
+    `Pago preferido: ${$("reservePayment").value}`,
+    $("reserveDescription").value.trim()?`Descripción: ${$("reserveDescription").value.trim()}`:"",
+    "",
+    `Valor de la asesoría: ${money(CONFIG.advisory.priceUsd)}`,
+    "Quiero confirmar la reserva y recibir las instrucciones de pago vigentes."
+  ].filter(Boolean).join("\n");
+  whatsapp(text);
+});
+</script>
+</body></html>
