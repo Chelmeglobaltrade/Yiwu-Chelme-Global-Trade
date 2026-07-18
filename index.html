@@ -3,28 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Servicios de importación desde China: contenedores FCL, carga consolidada LCL, sourcing, traducción, control de calidad, inspecciones y acompañamiento comercial en China.">
+  <meta name="description" content="Importaciones desde China: consolidado por m³, contenedores FCL, búsqueda de proveedores, control de calidad, traducción y acompañamiento comercial.">
   <meta name="theme-color" content="#123f49">
-  <title>Chelme Global Trade | Importaciones y servicios en China</title>
+  <meta property="og:title" content="Chelme Global Trade | Tu enlace directo con China">
+  <meta property="og:description" content="Coordinamos tus compras, inspecciones y logística directamente desde China.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="logo.png">
+  <title>Chelme Global Trade | Importaciones desde China</title>
   <link rel="stylesheet" href="styles.css">
   <script src="config.js"></script>
 </head>
 <body>
+  <svg class="svg-sprite" aria-hidden="true">
+    <symbol id="i-boxes" viewBox="0 0 24 24"><path d="m4 7.5 8-4.5 8 4.5-8 4.5-8-4.5Z"/><path d="M4 7.5V16l8 5 8-5V7.5M12 12v9"/></symbol>
+    <symbol id="i-container" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="13" rx="2"/><path d="M7 5v13M12 5v13M17 5v13"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5.2-3.4 8.4-8 10-4.6-1.6-8-4.8-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></symbol>
+    <symbol id="i-language" viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2M6 5c.5 4 2.7 6.8 6 8.5M11 5c-.5 4-2.7 6.8-6 8.5M14 20l4-9 4 9M15.5 17h5"/></symbol>
+    <symbol id="i-plane" viewBox="0 0 24 24"><path d="m22 2-8.5 20-3.2-8.3L2 10.5 22 2Z"/><path d="m10.3 13.7 4.7-4.7"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 4h16v12H7l-3 3V4Z"/><path d="M8 8h8M8 12h5"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-7 7L3 12Z"/><circle cx="7.5" cy="8.5" r="1"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></symbol>
+    <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M20.5 11.6a8.5 8.5 0 0 1-12.6 7.5L3 20.5l1.4-4.7a8.5 8.5 0 1 1 16.1-4.2Z"/><path d="M8.2 7.7c.3-.7.6-.7.9-.7h.6l1 2.2c.1.3 0 .5-.2.8l-.8.9c-.2.2-.1.5.1.8.7 1.2 1.7 2.2 3 2.8.3.2.6.1.8-.1l1-1.2c.2-.3.5-.3.8-.2l2.1 1c.3.2.5.3.5.6 0 .4-.2 1.5-1 2.2-.7.7-1.8 1-3.1.6-1.6-.4-3.4-1.3-5.1-2.9-2-1.9-3.2-4.2-3.2-5.8 0-.8.3-1.5.6-2Z"/></symbol>
+    <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.7" r="1"/></symbol>
+    <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M14 4v10.2a4.7 4.7 0 1 1-4-4.6"/><path d="M14 4c1 3 3.1 4.5 6 4.7"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.2 1.2"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.2-1.2"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 7h4l1.5-2h5L16 7h4v12H4V7Z"/><circle cx="12" cy="13" r="4"/></symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24"><path d="m4 20 4.5-1 10-10-3.5-3.5-10 10L4 20Z"/><path d="m13.5 7 3.5 3.5"/></symbol>
+    <symbol id="i-calculator" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h1M12 11h1M16 11h1M8 15h1M12 15h1M16 15h1M8 18h1M12 18h5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  </svg>
+
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <span>Operación directa desde Yiwu, China · Atención en español</span>
+      <div class="topbar-social">
+        <a data-instagram-link target="_blank" rel="noopener" aria-label="Instagram"><svg><use href="#i-instagram"></use></svg></a>
+        <a data-tiktok-link target="_blank" rel="noopener" aria-label="TikTok"><svg><use href="#i-tiktok"></use></svg></a>
+        <a data-email-link aria-label="Correo"><svg><use href="#i-mail"></use></svg></a>
+      </div>
+    </div>
+  </div>
+
   <header class="site-header">
     <div class="container nav-wrap">
-      <a class="brand" href="#inicio" aria-label="Chelme Global Trade">
-        <img src="logo.png" alt="Chelme Global Trade">
-      </a>
-
+      <a class="brand" href="#inicio"><img src="logo.png" alt="Chelme Global Trade"></a>
       <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menú">☰</button>
-
-      <nav class="main-nav" id="mainNav" aria-label="Navegación principal">
+      <nav class="main-nav" id="mainNav">
         <a href="#servicios">Servicios</a>
         <a href="#cotizar">Cotizar online</a>
         <a href="#calculadora">Calculadora</a>
+        <a href="#operaciones">Operaciones</a>
         <a href="#china">Viajar a China</a>
-        <a href="#faq">Preguntas</a>
-        <a class="btn btn-small btn-primary" data-whatsapp-link target="_blank" rel="noopener">WhatsApp</a>
+        <a class="nav-whatsapp" data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener">
+          <svg><use href="#i-whatsapp"></use></svg> WhatsApp
+        </a>
       </nav>
     </div>
   </header>
@@ -33,665 +67,388 @@
     <section class="hero" id="inicio">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <span class="eyebrow">Equipo operativo en Yiwu, China</span>
-          <h1>Tu operación de importación, <span>coordinada desde China</span></h1>
+          <span class="eyebrow">Tu enlace directo con China</span>
+          <h1>Importa con un equipo que trabaja <span>directamente en China</span></h1>
           <p>
-            Te acompañamos desde la búsqueda del proveedor hasta la salida de la carga:
-            compras, negociación, inspección, consolidación, contenedores completos,
-            traducción y apoyo presencial en China.
+            Coordinamos proveedores, compras, control de calidad, carga consolidada,
+            contenedores completos, traducción y acompañamiento comercial.
           </p>
-
           <div class="hero-actions">
-            <a class="btn btn-gold" href="#cotizar">Cotizar un servicio</a>
-            <a class="btn btn-ghost" href="#servicios">Ver todos los servicios</a>
+            <a class="btn btn-gold" href="#cotizar">Cotizar ahora</a>
+            <a class="btn btn-ghost" href="#servicios">Conocer servicios</a>
           </div>
-
-          <div class="trust-row">
-            <span>Atención en español</span>
-            <span>Operación directa en China</span>
-            <span>LCL, FCL e inspecciones</span>
+          <div class="hero-points">
+            <span><svg><use href="#i-check"></use></svg> Atención en español</span>
+            <span><svg><use href="#i-check"></use></svg> Operación en Yiwu</span>
+            <span><svg><use href="#i-check"></use></svg> LCL, FCL e inspecciones</span>
           </div>
         </div>
-
-        <div class="hero-visual">
-          <img src="alan.jpg" alt="Alan Chelme trabajando en China">
-          <div class="hero-card">
-            <strong>Un solo contacto</strong>
-            <span>Proveedores, compras, control y logística</span>
+        <div class="hero-person">
+          <img src="hero-fabrica-industrial.webp" alt="Visita industrial de Chelme Global Trade a una fábrica en China" width="1200" height="1600">
+          <div class="hero-person-card">
+            <strong>Coordinación real en terreno</strong>
+            <span>Proveedores, bodega, inspecciones y carga</span>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="quick-actions">
+    <section class="quick-strip">
       <div class="container quick-grid">
-        <a href="#cotizar" data-quick-service="lcl">
-          <strong>Carga consolidada</strong>
-          <span>Paga según los m³ utilizados</span>
-        </a>
-        <a href="#cotizar" data-quick-service="fcl">
-          <strong>Contenedor completo</strong>
-          <span>Gestión integral FCL</span>
-        </a>
-        <a href="#cotizar" data-quick-service="quality">
-          <strong>Control de calidad</strong>
-          <span>Inspección presencial en China</span>
-        </a>
-        <a href="#cotizar" data-quick-service="trip">
-          <strong>Viaje de negocios</strong>
-          <span>Guía, traducción y acompañamiento</span>
-        </a>
+        <a href="#cotizar" data-service-button="lcl"><svg><use href="#i-boxes"></use></svg><span><strong>Consolidado LCL</strong><small>Paga por el espacio utilizado</small></span></a>
+        <a href="#cotizar" data-service-button="fcl"><svg><use href="#i-container"></use></svg><span><strong>Contenedor FCL</strong><small>20GP, 40GP y 40HQ</small></span></a>
+        <a href="#cotizar" data-service-button="quality"><svg><use href="#i-shield"></use></svg><span><strong>Control de calidad</strong><small>Inspección presencial</small></span></a>
+        <a href="#cotizar" data-service-button="trip"><svg><use href="#i-plane"></use></svg><span><strong>Viaja a China</strong><small>Guía y acompañamiento</small></span></a>
       </div>
     </section>
 
-    <section class="content-section" id="servicios">
+    <section class="section" id="servicios">
       <div class="container">
-        <div class="section-heading">
-          <span class="eyebrow dark">Servicios completos</span>
-          <h2>Todo lo que necesitas para comprar e importar desde China</h2>
-          <p>
-            La calculadora es una herramienta adicional. El foco principal es coordinar
-            correctamente tu operación comercial y logística.
-          </p>
-        </div>
+        <header class="section-heading">
+          <span class="eyebrow dark">Servicios</span>
+          <h2>Soluciones para comprar e importar desde China</h2>
+          <p>Contrata un servicio específico o delega la coordinación completa de tu operación.</p>
+        </header>
 
-        <div class="services-grid">
-          <article class="service-card featured">
-            <span class="service-number">01</span>
+        <div class="main-services">
+          <article class="feature-service feature-service-lcl">
+            <div class="service-icon"><svg><use href="#i-boxes"></use></svg></div>
+            <span class="service-label">Carga compartida</span>
             <h3>Consolidado Chelme Global</h3>
-            <p>
-              Compra a varios proveedores y comparte espacio dentro de una carga consolidada.
-              Coordinamos recepción, revisión, documentación y envío.
-            </p>
+            <p>Reúne productos de distintos proveedores y paga según los metros cúbicos utilizados.</p>
             <ul>
-              <li>Cobro por m³ utilizado</li>
-              <li>Recepción de distintos proveedores</li>
-              <li>Consolidación y coordinación documental</li>
-              <li>Tarifas editables según el flete vigente</li>
+              <li>Recepción de mercancía en China</li>
+              <li>Consolidación de varios proveedores</li>
+              <li>Documentación y coordinación logística</li>
+              <li>Tarifa ajustable cuando baja el flete</li>
             </ul>
-            <button class="link-button" data-service-button="lcl">Cotizar consolidado →</button>
+            <div class="service-buttons">
+              <a class="service-button service-button-primary" href="#cotizar" data-service-button="lcl">Cotizar consolidado <svg><use href="#i-arrow"></use></svg></a>
+              <a class="service-button service-button-secondary" data-whatsapp-message="Hola, quiero cotizar una carga consolidada con Chelme Global." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> Consultar</a>
+            </div>
           </article>
 
-          <article class="service-card featured">
-            <span class="service-number">02</span>
-            <h3>Contenedores completos FCL</h3>
-            <p>
-              Gestión para operaciones 20GP, 40GP y 40HQ, desde la coordinación de proveedores
-              hasta la carga y salida del contenedor.
-            </p>
+          <article class="feature-service feature-service-fcl">
+            <div class="service-icon"><svg><use href="#i-container"></use></svg></div>
+            <span class="service-label">Carga exclusiva</span>
+            <h3>Contenedor completo FCL</h3>
+            <p>Gestionamos proveedores, producción, recepción y carga de contenedores completos.</p>
             <ul>
-              <li>Seguimiento de compras y producción</li>
-              <li>Recepción y control en China</li>
-              <li>Carga de contenedor</li>
+              <li>20GP, 40GP y 40HQ</li>
+              <li>Seguimiento de producción</li>
+              <li>Supervisión de carga</li>
               <li>Documentación de exportación</li>
             </ul>
-            <button class="link-button" data-service-button="fcl">Cotizar contenedor →</button>
+            <div class="service-buttons">
+              <a class="service-button service-button-light" href="#cotizar" data-service-button="fcl">Cotizar contenedor <svg><use href="#i-arrow"></use></svg></a>
+              <a class="service-button service-button-outline" data-whatsapp-message="Hola, quiero cotizar un contenedor completo FCL con Chelme Global." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> Consultar</a>
+            </div>
           </article>
+        </div>
 
+        <div class="service-grid">
           <article class="service-card">
-            <span class="service-number">03</span>
-            <h3>Búsqueda de proveedores</h3>
-            <p>
-              Localizamos fábricas y proveedores según producto, calidad, MOQ, presupuesto
-              y destino.
-            </p>
-            <ul>
-              <li>Búsqueda en 1688, Alibaba y fábricas</li>
-              <li>Comparación de cotizaciones</li>
-              <li>Negociación de condiciones</li>
-              <li>Gestión de muestras</li>
-            </ul>
-            <button class="link-button" data-service-button="sourcing">Solicitar búsqueda →</button>
+            <div class="service-card-icon"><svg><use href="#i-search"></use></svg></div>
+            <span>Sourcing</span><h3>Búsqueda de proveedores</h3>
+            <p>Localizamos fábricas, comparamos precios, MOQ, calidad y condiciones comerciales.</p>
+            <a href="#cotizar" data-service-button="sourcing">Cotizar servicio <svg><use href="#i-arrow"></use></svg></a>
           </article>
-
           <article class="service-card">
-            <span class="service-number">04</span>
-            <h3>Control de calidad e inspección</h3>
-            <p>
-              Revisión presencial antes del pago final o antes del despacho, con evidencia
-              fotográfica y reporte según el alcance contratado.
-            </p>
-            <ul>
-              <li>Inspección preembarque</li>
-              <li>Conteo y verificación visual</li>
-              <li>Medidas, empaque y etiquetas</li>
-              <li>Supervisión de carga</li>
-            </ul>
-            <button class="link-button" data-service-button="quality">Cotizar inspección →</button>
+            <div class="service-card-icon"><svg><use href="#i-shield"></use></svg></div>
+            <span>Inspección</span><h3>Control de calidad</h3>
+            <p>Conteo, revisión visual, medidas, empaque, etiquetas, pruebas y supervisión de carga.</p>
+            <a href="#cotizar" data-service-button="quality">Cotizar inspección <svg><use href="#i-arrow"></use></svg></a>
           </article>
-
           <article class="service-card">
-            <span class="service-number">05</span>
-            <h3>Traducción y negociación</h3>
-            <p>
-              Apoyo remoto o presencial para comunicarte con proveedores, revisar condiciones
-              y evitar errores por idioma.
-            </p>
-            <ul>
-              <li>Traducción comercial</li>
-              <li>Videollamadas con proveedores</li>
-              <li>Negociación en chino</li>
-              <li>Revisión de información técnica</li>
-            </ul>
-            <button class="link-button" data-service-button="translation">Cotizar traducción →</button>
+            <div class="service-card-icon"><svg><use href="#i-language"></use></svg></div>
+            <span>Comunicación</span><h3>Traducción y negociación</h3>
+            <p>Apoyo remoto o presencial con proveedores, fábricas y reuniones comerciales.</p>
+            <a href="#cotizar" data-service-button="translation">Cotizar traducción <svg><use href="#i-arrow"></use></svg></a>
           </article>
-
           <article class="service-card">
-            <span class="service-number">06</span>
-            <h3>Acompañamiento en China</h3>
-            <p>
-              Organizamos visitas a mercados, ferias y fábricas, con guía comercial,
-              traducción y coordinación de la agenda.
-            </p>
-            <ul>
-              <li>Yiwu, Guangzhou, Foshan y otras ciudades</li>
-              <li>Agenda de proveedores y fábricas</li>
-              <li>Acompañamiento a ferias</li>
-              <li>Apoyo logístico durante el viaje</li>
-            </ul>
-            <button class="link-button" data-service-button="trip">Planificar viaje →</button>
+            <div class="service-card-icon"><svg><use href="#i-plane"></use></svg></div>
+            <span>China presencial</span><h3>Viajes y acompañamiento</h3>
+            <p>Agenda, mercados, ferias, fábricas, traducción y apoyo comercial durante tu viaje.</p>
+            <a href="#cotizar" data-service-button="trip">Planificar viaje <svg><use href="#i-arrow"></use></svg></a>
           </article>
-
           <article class="service-card">
-            <span class="service-number">07</span>
-            <h3>Asesoría para importar</h3>
-            <p>
-              Evaluación inicial de producto, presupuesto, cantidades, costos y proceso
-              recomendado antes de invertir.
-            </p>
-            <ul>
-              <li>Diagnóstico del proyecto</li>
-              <li>Costos aproximados</li>
-              <li>Definición de próximos pasos</li>
-              <li>Orientación para LCL o FCL</li>
-            </ul>
-            <button class="link-button" data-service-button="advisory">Reservar asesoría →</button>
+            <div class="service-card-icon"><svg><use href="#i-chat"></use></svg></div>
+            <span>Planificación</span><h3>Asesoría para importar</h3>
+            <p>Evaluamos producto, presupuesto, cantidades, costos y modalidad recomendada.</p>
+            <a href="#cotizar" data-service-button="advisory">Reservar asesoría <svg><use href="#i-arrow"></use></svg></a>
           </article>
-
           <article class="service-card">
-            <span class="service-number">08</span>
-            <h3>Etiquetado, empaque y marcas privadas</h3>
-            <p>
-              Coordinación de etiquetas, códigos, shipping marks, empaques personalizados
-              y requisitos definidos por el cliente.
-            </p>
-            <ul>
-              <li>Shipping marks</li>
-              <li>Códigos de barras</li>
-              <li>Etiquetas de producto</li>
-              <li>Packaging personalizado</li>
-            </ul>
-            <button class="link-button" data-service-button="packaging">Cotizar personalización →</button>
+            <div class="service-card-icon"><svg><use href="#i-tag"></use></svg></div>
+            <span>Personalización</span><h3>Etiquetado y marca privada</h3>
+            <p>Shipping marks, códigos, etiquetas, logo, empaque y coordinación de packaging.</p>
+            <a href="#cotizar" data-service-button="packaging">Cotizar personalización <svg><use href="#i-arrow"></use></svg></a>
           </article>
         </div>
       </div>
     </section>
 
-    <section class="content-section alternate" id="cotizar">
+    <section class="section proof-section" id="experiencia">
       <div class="container">
-        <div class="section-heading">
-          <span class="eyebrow dark">Cotización online</span>
-          <h2>Cuéntanos qué necesitas</h2>
+        <header class="section-heading">
+          <span class="eyebrow dark">Experiencia en terreno</span>
+          <h2>Más que una cotización: presencia real en cada etapa</h2>
           <p>
-            Selecciona un servicio, completa los datos y envía una solicitud ordenada directamente
-            por WhatsApp. Cuando sea posible, mostraremos una estimación inicial.
+            Estas fotografías muestran el tipo de trabajo que realizamos en China y durante
+            el seguimiento de las operaciones: visitas técnicas, coordinación de cargas y
+            acompañamiento comercial.
           </p>
-        </div>
+        </header>
 
-        <div class="quote-layout">
-          <aside class="quote-services" id="quoteServices">
-            <button class="quote-service active" data-quote-service="lcl">
-              <strong>Consolidado LCL</strong>
-              <span>Pago por m³</span>
-            </button>
-            <button class="quote-service" data-quote-service="fcl">
-              <strong>Contenedor FCL</strong>
-              <span>20GP, 40GP o 40HQ</span>
-            </button>
-            <button class="quote-service" data-quote-service="quality">
-              <strong>Control de calidad</strong>
-              <span>Inspección en China</span>
-            </button>
-            <button class="quote-service" data-quote-service="trip">
-              <strong>Viaje a China</strong>
-              <span>Guía y acompañamiento</span>
-            </button>
-            <button class="quote-service" data-quote-service="translation">
-              <strong>Traducción</strong>
-              <span>Remota o presencial</span>
-            </button>
-            <button class="quote-service" data-quote-service="sourcing">
-              <strong>Búsqueda de proveedores</strong>
-              <span>Sourcing y cotización</span>
-            </button>
-            <button class="quote-service" data-quote-service="advisory">
-              <strong>Asesoría</strong>
-              <span>Evaluación del proyecto</span>
-            </button>
-            <button class="quote-service" data-quote-service="packaging">
-              <strong>Etiquetado y empaque</strong>
-              <span>Marca privada</span>
-            </button>
+        <div class="proof-grid">
+          <article class="proof-card proof-card-large">
+            <img src="operacion-contenedor-chile.webp" alt="Contenedor coordinado por Chelme Global Trade en destino" loading="lazy">
+            <div class="proof-overlay">
+              <span>Logística</span>
+              <h3>Seguimiento de cargas y contenedores</h3>
+              <p>Coordinación desde la recepción en China hasta la salida y seguimiento a destino.</p>
+            </div>
+          </article>
+
+          <article class="proof-card">
+            <img src="hero-fabrica-industrial.webp" alt="Visita técnica a fábrica industrial en China" loading="lazy">
+            <div class="proof-overlay">
+              <span>Fábricas</span>
+              <h3>Visitas técnicas y evaluación</h3>
+              <p>Revisión de productos, procesos, materiales y capacidad productiva.</p>
+            </div>
+          </article>
+
+          <article class="proof-card">
+            <img src="clientes-shanghai.webp" alt="Acompañamiento de clientes durante un viaje comercial en China" loading="lazy">
+            <div class="proof-overlay">
+              <span>Acompañamiento</span>
+              <h3>Clientes atendidos en China</h3>
+              <p>Agenda comercial, traducción, traslados y apoyo durante las visitas.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-soft" id="cotizar">
+      <div class="container">
+        <header class="section-heading">
+          <span class="eyebrow dark">Cotización online</span>
+          <h2>No necesitas tener un enlace para cotizar</h2>
+          <p>Puedes enviar un link, subir fotografías o simplemente describir lo que buscas.</p>
+        </header>
+
+        <div class="quote-shell">
+          <aside class="quote-menu">
+            <button class="quote-menu-item active" data-quote-service="lcl"><svg><use href="#i-boxes"></use></svg><span><strong>Consolidado LCL</strong><small>Carga por m³</small></span></button>
+            <button class="quote-menu-item" data-quote-service="fcl"><svg><use href="#i-container"></use></svg><span><strong>Contenedor FCL</strong><small>Carga completa</small></span></button>
+            <button class="quote-menu-item" data-quote-service="quality"><svg><use href="#i-shield"></use></svg><span><strong>Control de calidad</strong><small>Inspección en China</small></span></button>
+            <button class="quote-menu-item" data-quote-service="sourcing"><svg><use href="#i-search"></use></svg><span><strong>Buscar proveedor</strong><small>Sourcing</small></span></button>
+            <button class="quote-menu-item" data-quote-service="trip"><svg><use href="#i-plane"></use></svg><span><strong>Viaje a China</strong><small>Guía y traducción</small></span></button>
+            <button class="quote-menu-item" data-quote-service="translation"><svg><use href="#i-language"></use></svg><span><strong>Traducción</strong><small>Remota o presencial</small></span></button>
+            <button class="quote-menu-item" data-quote-service="advisory"><svg><use href="#i-chat"></use></svg><span><strong>Asesoría</strong><small>Evaluar proyecto</small></span></button>
+            <button class="quote-menu-item" data-quote-service="packaging"><svg><use href="#i-tag"></use></svg><span><strong>Marca privada</strong><small>Empaque y etiquetas</small></span></button>
           </aside>
 
-          <section class="quote-panel">
-            <div class="quote-header">
-              <div>
-                <span class="step-tag">Solicitud</span>
-                <h3 id="quoteTitle">Cotizar Consolidado Chelme Global</h3>
-              </div>
-              <span class="quote-badge" id="quoteBadge">Estimación disponible</span>
+          <section class="quote-card">
+            <div class="quote-title-row">
+              <div><span>Solicitud online</span><h3 id="quoteTitle">Cotizar carga consolidada</h3></div>
+              <strong id="quoteBadge">Estimación disponible</strong>
             </div>
 
             <form id="quoteForm" novalidate>
-              <div class="form-grid">
-                <label class="field">
-                  <span>Nombre *</span>
-                  <input type="text" id="quoteName" required placeholder="Tu nombre">
-                </label>
-                <label class="field">
-                  <span>País o ciudad de destino *</span>
-                  <input type="text" id="quoteDestination" required placeholder="Ej.: Santiago, Chile">
-                </label>
-                <label class="field">
-                  <span>Correo</span>
-                  <input type="email" id="quoteEmail" placeholder="correo@ejemplo.com">
-                </label>
-                <label class="field">
-                  <span>WhatsApp</span>
-                  <input type="text" id="quoteClientWhatsapp" placeholder="+56...">
-                </label>
+              <div class="quote-source-title">
+                <strong>¿Qué información tienes del producto?</strong>
+                <span>Elige solo una opción. También puedes cambiarla después.</span>
               </div>
 
-              <div id="dynamicQuoteFields" class="dynamic-fields"></div>
-
-              <label class="field">
-                <span>Información adicional</span>
-                <textarea id="quoteNotes" rows="4" placeholder="Producto, cantidades, fechas, ciudades, observaciones u otros detalles."></textarea>
-              </label>
-
-              <div class="quote-result" id="quoteResult">
-                <div>
-                  <span>Estimación inicial</span>
-                  <strong id="quoteEstimate">Por calcular</strong>
-                </div>
-                <p id="quoteEstimateNote">
-                  Completa la información para calcular o solicitar revisión.
-                </p>
+              <div class="source-tabs">
+                <button class="source-tab active" type="button" data-source-mode="link"><svg><use href="#i-link"></use></svg><span><strong>Tengo un enlace</strong><small>1688, Alibaba u otro</small></span></button>
+                <button class="source-tab" type="button" data-source-mode="photos"><svg><use href="#i-camera"></use></svg><span><strong>Solo tengo fotos</strong><small>Sube hasta 5 imágenes</small></span></button>
+                <button class="source-tab" type="button" data-source-mode="description"><svg><use href="#i-pencil"></use></svg><span><strong>Solo puedo describirlo</strong><small>Nosotros lo buscamos</small></span></button>
               </div>
 
-              <div id="quoteAlert" class="alert hidden" role="alert"></div>
+              <div id="sourceFields"></div>
 
-              <div class="form-actions">
-                <button class="btn btn-gold" type="submit">Enviar solicitud por WhatsApp</button>
+              <div class="form-grid client-grid">
+                <label class="field"><span>Nombre *</span><input type="text" id="quoteName" required placeholder="Tu nombre"></label>
+                <label class="field"><span>Ciudad o país de destino *</span><input type="text" id="quoteDestination" required placeholder="Ej.: Santiago, Chile"></label>
+                <label class="field"><span>WhatsApp</span><input type="text" id="quoteClientWhatsapp" placeholder="+56..."></label>
+                <label class="field"><span>Correo</span><input type="email" id="quoteEmail" placeholder="correo@ejemplo.com"></label>
+              </div>
+
+              <div id="serviceFields"></div>
+
+              <label class="field"><span>Comentarios adicionales</span><textarea id="quoteNotes" rows="4" placeholder="Colores, modelos, calidad esperada, fecha, presupuesto u otra información."></textarea></label>
+
+              <div class="estimate-box">
+                <div><span>Resultado inicial</span><strong id="quoteEstimate">Por calcular</strong></div>
+                <p id="quoteEstimateNote">Completa los datos disponibles.</p>
+              </div>
+
+              <div class="form-alert hidden" id="quoteAlert"></div>
+
+              <div class="quote-actions">
+                <button class="btn btn-gold" type="submit"><svg><use href="#i-whatsapp"></use></svg> Enviar cotización</button>
                 <button class="btn btn-light" type="button" id="clearQuote">Limpiar</button>
               </div>
+              <p class="form-help" id="photoSendHelp"></p>
             </form>
           </section>
         </div>
       </div>
     </section>
 
-    <section class="content-section" id="calculadora">
+    <section class="section" id="calculadora">
       <div class="container">
-        <div class="calculator-banner">
-          <div>
-            <span class="eyebrow dark">Herramienta opcional</span>
-            <h2>Calculadora detallada de importación</h2>
-            <p>
-              Agrega varios productos, controla MOQ, calcula cajas, peso, CBM, gestión,
-              consolidado o contenedor completo.
-            </p>
-          </div>
-          <button class="btn btn-primary" id="openCalculator" type="button">Abrir calculadora avanzada</button>
-        </div>
+        <header class="section-heading">
+          <span class="eyebrow dark">Calculadora rápida</span>
+          <h2>Calcula tu carga sin saber de importaciones</h2>
+          <p>Elige lo que sabes. La calculadora te pedirá únicamente los datos necesarios.</p>
+        </header>
 
-        <div class="calculator-app hidden" id="calculatorApp">
-          <div class="calculator-layout">
-            <section class="panel product-panel">
-              <div class="panel-head">
-                <div>
-                  <span class="step-tag">Paso 1</span>
-                  <h3>Agregar producto</h3>
-                </div>
-                <button type="button" class="text-button" id="clearProductForm">Limpiar formulario</button>
-              </div>
-
-              <form id="productForm" novalidate>
-                <div class="form-grid">
-                  <label class="field span-2">
-                    <span>Enlace de 1688, Alibaba o proveedor</span>
-                    <input type="url" id="productUrl" placeholder="https://detail.1688.com/offer/...">
-                  </label>
-
-                  <label class="field span-2">
-                    <span>Nombre del producto *</span>
-                    <input type="text" id="productName" required placeholder="Ej.: lámpara solar">
-                  </label>
-
-                  <label class="field">
-                    <span>Proveedor</span>
-                    <input type="text" id="supplierName" placeholder="Nombre opcional">
-                  </label>
-
-                  <label class="field">
-                    <span>Tipo de producto</span>
-                    <select id="restrictionType">
-                      <option value="normal">Producto normal</option>
-                      <option value="battery">Baterías o herramienta inalámbrica</option>
-                      <option value="chemical">Líquido, químico o cosmético</option>
-                      <option value="food">Alimento o producto regulado</option>
-                      <option value="brand">Marca registrada</option>
-                      <option value="replica">Réplica o falsificación</option>
-                      <option value="review">Otro sujeto a revisión</option>
-                    </select>
-                  </label>
-
-                  <label class="field">
-                    <span>Precio unitario *</span>
-                    <input type="number" id="unitPrice" min="0" step="0.01" required placeholder="0">
-                  </label>
-
-                  <label class="field">
-                    <span>Moneda</span>
-                    <select id="priceCurrency">
-                      <option value="RMB">RMB</option>
-                      <option value="USD">USD</option>
-                    </select>
-                  </label>
-
-                  <label class="field">
-                    <span>Cantidad solicitada *</span>
-                    <input type="number" id="quantity" min="1" step="1" required placeholder="0">
-                  </label>
-
-                  <label class="field">
-                    <span>MOQ del proveedor</span>
-                    <input type="number" id="moq" min="0" step="1" placeholder="0">
-                  </label>
-
-                  <label class="field">
-                    <span>Unidades por caja</span>
-                    <input type="number" id="unitsPerCarton" min="0" step="1" placeholder="0">
-                  </label>
-
-                  <label class="field">
-                    <span>Número de cajas</span>
-                    <input type="number" id="cartons" min="0" step="1" placeholder="Se calcula si queda vacío">
-                  </label>
-
-                  <fieldset class="dimensions span-2">
-                    <legend>Medidas de una caja en centímetros</legend>
-                    <label class="field compact">
-                      <span>Largo</span>
-                      <input type="number" id="lengthCm" min="0" step="0.01" placeholder="0">
-                    </label>
-                    <label class="field compact">
-                      <span>Ancho</span>
-                      <input type="number" id="widthCm" min="0" step="0.01" placeholder="0">
-                    </label>
-                    <label class="field compact">
-                      <span>Alto</span>
-                      <input type="number" id="heightCm" min="0" step="0.01" placeholder="0">
-                    </label>
-                  </fieldset>
-
-                  <label class="field">
-                    <span>Peso por caja (kg)</span>
-                    <input type="number" id="weightPerCarton" min="0" step="0.01" placeholder="0">
-                  </label>
-
-                  <label class="field">
-                    <span>Transporte interno en China (RMB)</span>
-                    <input type="number" id="domesticShippingRmb" min="0" step="0.01" placeholder="0">
-                  </label>
-
-                  <label class="field span-2">
-                    <span>Variantes y observaciones</span>
-                    <textarea id="productNotes" rows="3" placeholder="Color, modelo, empaque, voltaje..."></textarea>
-                  </label>
-                </div>
-
-                <label class="checkbox-row">
-                  <input type="checkbox" id="requestMoqNegotiation">
-                  <span>Enviar igualmente si no cumplo el MOQ para solicitar negociación</span>
-                </label>
-
-                <div id="productAlert" class="alert hidden" role="alert"></div>
-
-                <div class="form-actions">
-                  <button class="btn btn-primary" type="submit" id="addProductButton">Agregar a mi importación</button>
-                  <button class="btn btn-light" type="button" id="loadExample">Cargar ejemplo</button>
-                </div>
-              </form>
-            </section>
-
-            <aside class="panel cart-panel">
-              <div class="panel-head">
-                <div>
-                  <span class="step-tag">Paso 2</span>
-                  <h3>Mi importación</h3>
-                </div>
-                <span class="counter" id="productCounter">0 productos</span>
-              </div>
-
-              <div id="emptyCart" class="empty-state">
-                <div class="empty-icon">＋</div>
-                <h4>Todavía no agregas productos</h4>
-                <p>Completa el formulario para comenzar.</p>
-              </div>
-
-              <div id="productList" class="product-list"></div>
-
-              <div class="cart-totals">
-                <div><span>Valor mercancía</span><strong id="cartGoodsValue">US$ 0</strong></div>
-                <div><span>Transporte interno</span><strong id="cartDomesticShipping">US$ 0</strong></div>
-                <div><span>Volumen</span><strong id="cartCbm">0 m³</strong></div>
-                <div><span>Peso</span><strong id="cartWeight">0 kg</strong></div>
-              </div>
-            </aside>
+        <div class="simple-calculator">
+          <div class="calc-question">
+            <span class="calc-step">1</span>
+            <div><strong>¿Qué información tienes?</strong><small>No necesitas saber todo.</small></div>
           </div>
 
-          <section class="panel shipping-panel">
-            <div class="panel-head">
-              <div>
-                <span class="step-tag">Paso 3</span>
-                <h3>Comparar modalidad y costos</h3>
-              </div>
-            </div>
+          <div class="calc-modes">
+            <button class="calc-mode active" type="button" data-calc-mode="photos"><svg><use href="#i-camera"></use></svg><span><strong>Solo fotos</strong><small>Solicitar revisión</small></span></button>
+            <button class="calc-mode" type="button" data-calc-mode="boxes"><svg><use href="#i-boxes"></use></svg><span><strong>Cajas y medidas</strong><small>Calculamos el CBM</small></span></button>
+            <button class="calc-mode" type="button" data-calc-mode="cbm"><svg><use href="#i-calculator"></use></svg><span><strong>Ya sé el CBM</strong><small>Cálculo inmediato</small></span></button>
+          </div>
 
-            <div class="shipping-choice" role="radiogroup">
-              <label class="shipping-card active" id="lclCard">
-                <input type="radio" name="shippingMethod" value="LCL" checked>
-                <span class="shipping-title">Consolidado Chelme Global</span>
-                <span>Se calcula según los m³ utilizados.</span>
-              </label>
-              <label class="shipping-card" id="fclCard">
-                <input type="radio" name="shippingMethod" value="FCL">
-                <span class="shipping-title">Contenedor completo FCL</span>
-                <span>20GP, 40GP o 40HQ.</span>
-              </label>
-            </div>
+          <div id="simpleCalcFields"></div>
 
-            <div class="form-grid calculation-controls">
-              <label class="field" id="containerTypeWrap">
-                <span>Contenedor</span>
-                <select id="containerType">
-                  <option value="20GP">20GP</option>
-                  <option value="40GP">40GP</option>
-                  <option value="40HQ" selected>40HQ</option>
-                </select>
-              </label>
-              <label class="field">
-                <span>Otros costos logísticos (USD)</span>
-                <input type="number" id="otherLogistics" min="0" step="1" value="0">
-              </label>
-              <label class="field">
-                <span>Impuestos estimados (USD)</span>
-                <input type="number" id="estimatedTaxes" min="0" step="1" value="0">
-              </label>
+          <div class="simple-result">
+            <div class="simple-result-main">
+              <span>Estimación inicial</span>
+              <strong id="simpleTotal">Necesitamos revisar las fotos</strong>
+              <small id="simpleResultNote">Sube fotos en la cotización online y dinos la cantidad que necesitas.</small>
             </div>
-
-            <div class="calculation-grid">
-              <div class="summary-card">
-                <span>Mercancía</span>
-                <strong id="summaryGoods">US$ 0</strong>
-                <small id="minimumOrderStatus">Agrega productos.</small>
-              </div>
-              <div class="summary-card">
-                <span>Gestión Chelme</span>
-                <strong id="summaryCommission">US$ 0</strong>
-                <small id="commissionDetail">Según modalidad.</small>
-              </div>
-              <div class="summary-card">
-                <span>Logística</span>
-                <strong id="summaryLogistics">US$ 0</strong>
-                <small id="logisticsDetail">Estimación inicial.</small>
-              </div>
-              <div class="summary-card highlight">
-                <span>Total estimado</span>
-                <strong id="summaryTotal">US$ 0</strong>
-                <small id="unitCostSummary">Costo unitario: US$ 0</small>
-              </div>
+            <div class="simple-result-grid">
+              <div><span>Volumen</span><strong id="simpleCbm">Pendiente</strong></div>
+              <div><span>Modalidad</span><strong id="simpleMethod">Por revisar</strong></div>
+              <div><span>Gestión</span><strong id="simpleManagement">Por revisar</strong></div>
+              <div><span>Logística</span><strong id="simpleLogistics">Por revisar</strong></div>
             </div>
+          </div>
 
-            <div class="container-progress-wrap hidden" id="containerProgressWrap">
-              <div class="progress-head">
-                <div>
-                  <strong id="containerProgressTitle">Ocupación 40HQ</strong>
-                  <span id="containerProgressText">0 de 68 m³</span>
-                </div>
-                <strong id="containerProgressPct">0%</strong>
-              </div>
-              <div class="progress-track">
-                <div class="progress-bar" id="containerProgressBar"></div>
-              </div>
-            </div>
+          <div class="simple-actions">
+            <a class="btn btn-primary" href="#cotizar" id="sendSimpleQuote">Enviar para revisión</a>
+            <button class="btn btn-light" type="button" id="resetSimpleCalc">Empezar de nuevo</button>
+          </div>
 
-            <div id="projectWarnings" class="warning-list"></div>
-
-            <div class="calculator-actions">
-              <button class="btn btn-gold" id="sendCalculatorWhatsapp" type="button">Enviar cálculo por WhatsApp</button>
-              <button class="btn btn-light" id="resetProject" type="button">Borrar cálculo</button>
-            </div>
-          </section>
+          <p class="calculator-disclaimer">
+            Todos los resultados son referenciales. Precio, MOQ, peso, embalaje, CBM, disponibilidad,
+            restricciones e impuestos deben confirmarse antes de comprar.
+          </p>
         </div>
       </div>
     </section>
 
-    <section class="content-section china-section" id="china">
+    <section class="section section-dark" id="china">
       <div class="container china-grid">
         <div>
           <span class="eyebrow">Viajes comerciales</span>
           <h2>Ven a China con una agenda preparada</h2>
-          <p>
-            Te ayudamos a organizar visitas a mercados, ferias, proveedores y fábricas.
-            Puedes contratar solamente traducción o un acompañamiento completo.
-          </p>
-          <div class="china-list">
-            <div><strong>Planificación</strong><span>Definición de ciudades, proveedores y rutas.</span></div>
-            <div><strong>Traducción</strong><span>Comunicación con fábricas y negociación comercial.</span></div>
-            <div><strong>Acompañamiento</strong><span>Mercados, ferias, reuniones y visitas presenciales.</span></div>
-            <div><strong>Seguimiento</strong><span>Cotizaciones y próximos pasos después de las visitas.</span></div>
+          <p>Organizamos visitas a mercados, ferias, fábricas y proveedores con traducción y acompañamiento.</p>
+          <div class="china-points">
+            <span>Planificación de ciudades y rutas</span>
+            <span>Agenda con proveedores y fábricas</span>
+            <span>Traducción y negociación</span>
+            <span>Seguimiento después de las visitas</span>
           </div>
-          <button class="btn btn-gold" data-service-button="trip">Cotizar mi viaje</button>
+          <a class="btn btn-gold" href="#cotizar" data-service-button="trip">Cotizar mi viaje</a>
         </div>
-
-        <img src="yiwu.jpg" alt="Yiwu International Trade Market">
+        <img src="china-shanghai.jpg" alt="Acompañamiento comercial en China">
       </div>
     </section>
 
-    <section class="content-section alternate" id="ideas">
+    <section class="section" id="operaciones">
       <div class="container">
-        <div class="section-heading">
-          <span class="eyebrow dark">Servicios para activar después</span>
-          <h2>Nuevas ideas para ampliar el negocio</h2>
-          <p>Estas opciones pueden venderse individualmente o como adicionales dentro de una importación.</p>
+        <header class="section-heading">
+          <span class="eyebrow dark">Operaciones reales</span>
+          <h2>Así trabajamos en China</h2>
+          <p>
+            Cargas, fábricas, reuniones y acompañamiento comercial. Seleccionamos fotografías
+            que explican el servicio y generan confianza, evitando llenar la página con imágenes repetidas.
+          </p>
+        </header>
+
+        <div class="gallery-filters" id="galleryFilters" aria-label="Filtrar fotografías">
+          <button class="gallery-filter active" type="button" data-gallery-filter="all">Todas</button>
+          <button class="gallery-filter" type="button" data-gallery-filter="cargas">Cargas</button>
+          <button class="gallery-filter" type="button" data-gallery-filter="fabricas">Fábricas</button>
+          <button class="gallery-filter" type="button" data-gallery-filter="clientes">Clientes</button>
+          <button class="gallery-filter" type="button" data-gallery-filter="china">China</button>
         </div>
 
-        <div class="ideas-grid">
-          <article>
-            <h3>Verificación de proveedor</h3>
-            <p>Revisión básica de licencia, dirección, actividad, fotografías y capacidad aparente antes de pagar.</p>
-          </article>
-          <article>
-            <h3>Inspección por videollamada</h3>
-            <p>Revisión remota en tiempo real para clientes que necesitan validar productos o muestras.</p>
-          </article>
-          <article>
-            <h3>Supervisión de carga</h3>
-            <p>Control durante la carga del contenedor, conteo de cajas, fotografías y verificación del sello.</p>
-          </article>
-          <article>
-            <h3>Gestión de muestras</h3>
-            <p>Compra, recepción, comparación y envío internacional de muestras de distintos proveedores.</p>
-          </article>
-          <article>
-            <h3>Auditoría de fábrica</h3>
-            <p>Visita más profunda para evaluar instalaciones, procesos, maquinaria y capacidad productiva.</p>
-          </article>
-          <article>
-            <h3>Revisión rápida de enlace 1688</h3>
-            <p>Servicio de entrada económico para revisar MOQ, precio, reputación y viabilidad logística.</p>
-          </article>
-          <article>
-            <h3>Plan mensual de compras</h3>
-            <p>Soporte recurrente para empresas que compran en China todos los meses y necesitan seguimiento continuo.</p>
-          </article>
-          <article>
-            <h3>Desarrollo de marca privada</h3>
-            <p>Coordinación de producto, logo, empaque, etiquetas y documentación de producción.</p>
-          </article>
+        <div class="gallery-grid" id="galleryGrid"></div>
+        <p class="gallery-privacy-note">
+          Las fotografías con clientes o proveedores deben publicarse únicamente cuando exista autorización para su uso.
+        </p>
+      </div>
+    </section>
+
+    <section class="social-section">
+      <div class="container social-card">
+        <div>
+          <span class="eyebrow">Contenido desde China</span>
+          <h2>Sigue nuestras operaciones y visitas</h2>
+          <p>Proveedores, mercados, fábricas, ferias, inspecciones y cargas reales.</p>
+        </div>
+        <div class="social-buttons">
+          <a class="social-button instagram" data-instagram-link target="_blank" rel="noopener"><svg><use href="#i-instagram"></use></svg><span><strong>Instagram</strong><small data-instagram-handle></small></span></a>
+          <a class="social-button tiktok" data-tiktok-link target="_blank" rel="noopener"><svg><use href="#i-tiktok"></use></svg><span><strong>TikTok</strong><small data-tiktok-handle></small></span></a>
+          <a class="social-button whatsapp" data-whatsapp-message="Hola, vi la página de Chelme Global Trade y quiero información." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg><span><strong>WhatsApp</strong><small>Respuesta directa</small></span></a>
         </div>
       </div>
     </section>
 
-    <section class="content-section" id="faq">
-      <div class="container narrow">
-        <div class="section-heading">
+    <section class="section section-soft" id="faq">
+      <div class="container faq-wrap">
+        <header class="section-heading">
           <span class="eyebrow dark">Preguntas frecuentes</span>
-          <h2>Información antes de cotizar</h2>
-        </div>
-
-        <details class="faq-item">
-          <summary>¿Puedo cotizar aunque todavía no tenga proveedor?</summary>
-          <p>Sí. Puedes solicitar búsqueda de proveedores y entregar información del producto, cantidad, presupuesto y destino.</p>
-        </details>
-        <details class="faq-item">
-          <summary>¿El precio del consolidado cambia?</summary>
-          <p>Sí. El flete puede subir o bajar. La web utiliza un archivo central de tarifas para actualizar el precio por m³ sin modificar todo el código.</p>
-        </details>
-        <details class="faq-item">
-          <summary>¿Qué incluye un control de calidad?</summary>
-          <p>Depende del alcance. Puede incluir conteo, revisión visual, medidas, etiquetas, empaque, pruebas funcionales simples, fotografías y reporte.</p>
-        </details>
-        <details class="faq-item">
-          <summary>¿Pueden acompañarme a fábricas o ferias?</summary>
-          <p>Sí. Se cotiza según ciudades, fechas, cantidad de días, agenda, transporte local y nivel de acompañamiento.</p>
-        </details>
-        <details class="faq-item">
-          <summary>¿Trabajan con productos de marca o réplicas?</summary>
-          <p>No trabajamos con falsificaciones ni réplicas. Los productos con marca requieren autorización y revisión previa.</p>
-        </details>
+          <h2>Antes de cotizar</h2>
+        </header>
+        <details><summary>¿Puedo cotizar solamente con fotografías?</summary><p>Sí. Sube hasta cinco fotos, indica la cantidad aproximada, destino y cualquier detalle visible. El equipo buscará opciones y confirmará MOQ, precio y embalaje.</p></details>
+        <details><summary>¿Las fotografías se envían automáticamente por WhatsApp?</summary><p>En celulares compatibles se abrirá el menú para compartirlas. En otros equipos se abrirá WhatsApp con el mensaje preparado y deberás adjuntar las fotos desde tu galería.</p></details>
+        <details><summary>¿El precio del consolidado puede cambiar?</summary><p>Sí. Todos los valores están centralizados en config.js, por lo que puedes bajar o subir la tarifa sin rediseñar la página.</p></details>
+        <details><summary>¿Qué incluye un control de calidad?</summary><p>El alcance puede incluir conteo, revisión visual, medidas, empaque, etiquetas, pruebas simples, fotografías y supervisión de carga.</p></details>
+        <details><summary>¿Trabajan con réplicas?</summary><p>No. No trabajamos con falsificaciones ni marcas registradas sin autorización.</p></details>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
+  <div class="gallery-lightbox hidden" id="galleryLightbox" role="dialog" aria-modal="true" aria-label="Fotografía ampliada">
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Cerrar">×</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" type="button" aria-label="Fotografía anterior">‹</button>
+    <figure>
+      <img id="lightboxImage" src="" alt="">
+      <figcaption>
+        <span id="lightboxCategory"></span>
+        <h3 id="lightboxTitle"></h3>
+        <p id="lightboxText"></p>
+      </figcaption>
+    </figure>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" type="button" aria-label="Fotografía siguiente">›</button>
+  </div>
+
+  <footer>
     <div class="container footer-grid">
       <img src="logo.png" alt="Chelme Global Trade">
-      <div>
-        <strong>Importaciones y servicios comerciales desde China</strong>
-        <p><span data-business-city></span> · WhatsApp <span data-business-whatsapp></span></p>
-      </div>
-      <div class="footer-links">
-        <a data-instagram-link target="_blank" rel="noopener">Instagram</a>
-        <a data-tiktok-link target="_blank" rel="noopener">TikTok</a>
+      <div><strong>Importaciones y servicios comerciales desde China</strong><p><span data-business-city></span> · <a data-email-link></a></p></div>
+      <div class="footer-social">
+        <a data-instagram-link target="_blank" rel="noopener"><svg><use href="#i-instagram"></use></svg></a>
+        <a data-tiktok-link target="_blank" rel="noopener"><svg><use href="#i-tiktok"></use></svg></a>
+        <a data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg></a>
       </div>
     </div>
   </footer>
 
-  <a class="whatsapp-float" data-whatsapp-link target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">WA</a>
+  <a class="floating-whatsapp" data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener" aria-label="WhatsApp"><svg><use href="#i-whatsapp"></use></svg></a>
 
   <script src="script.js"></script>
 </body>
