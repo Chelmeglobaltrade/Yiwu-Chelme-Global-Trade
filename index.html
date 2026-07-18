@@ -4,135 +4,670 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Chelme Global Trade | Importaciones desde China</title>
+  <title>Chelme Global Trade | Tu enlace directo con China</title>
 
   <meta
     name="description"
-    content="Servicios de importación desde China, búsqueda de proveedores, inspección, logística internacional, asesorías comerciales y cursos online."
+    content="Servicios profesionales de importación desde China, búsqueda de proveedores, compras, inspección, consolidación, logística, asesorías y cursos."
   >
 
   <style>
+    :root {
+      --primary: #1f5964;
+      --primary-dark: #123b43;
+      --gold: #d6a922;
+      --gold-dark: #bd8f10;
+      --white: #ffffff;
+      --light: #f5f7f8;
+      --text: #25383e;
+      --muted: #6b7b80;
+      --border: #e3e8ea;
+      --whatsapp: #25d366;
+      --shadow: 0 14px 40px rgba(18, 59, 67, 0.12);
+      --radius: 20px;
+      --max-width: 1180px;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      scroll-behavior: smooth;
     }
 
     body {
-      font-family: Arial, sans-serif;
-      color: #1f2937;
-      background: #f8fafc;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--white);
       line-height: 1.6;
     }
 
-    header {
-      background: #071a2e;
-      color: white;
-      padding: 20px 8%;
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(92%, var(--max-width));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+
+    .navbar {
+      min-height: 86px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 25px;
     }
 
-    header h2 {
-      font-size: 22px;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin-left: 20px;
-    }
-
-    .hero {
-      min-height: 75vh;
-      padding: 90px 8%;
+    .brand {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      background: linear-gradient(135deg, #071a2e, #0f766e);
-      color: white;
+      align-items: center;
+      gap: 14px;
     }
 
-    .hero h1 {
-      font-size: 48px;
-      max-width: 750px;
-      line-height: 1.15;
-      margin-bottom: 20px;
+    .brand img {
+      width: 76px;
+      height: 60px;
+      object-fit: contain;
     }
 
-    .hero p {
-      font-size: 19px;
-      max-width: 680px;
-      margin-bottom: 30px;
+    .brand-name strong {
+      display: block;
+      color: var(--primary-dark);
+      font-size: 1.3rem;
+      letter-spacing: 1px;
+    }
+
+    .brand-name span {
+      display: block;
+      color: var(--gold-dark);
+      font-size: 0.8rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    .menu {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+
+    .menu a {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    .menu a:hover {
+      color: var(--gold-dark);
     }
 
     .button {
       display: inline-block;
-      width: fit-content;
+      border: none;
+      border-radius: 999px;
       padding: 14px 24px;
-      background: #22c55e;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-3px);
+    }
+
+    .button-primary {
+      color: white !important;
+      background: var(--primary);
+      box-shadow: var(--shadow);
+    }
+
+    .button-gold {
       color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
+      background: var(--gold);
+      box-shadow: var(--shadow);
+    }
+
+    .button-outline {
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      background: transparent;
+    }
+
+    .hero {
+      color: white;
+      min-height: 760px;
+      display: flex;
+      align-items: center;
+      padding: 80px 0;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(12, 45, 52, 0.94) 0%,
+          rgba(18, 59, 67, 0.86) 48%,
+          rgba(18, 59, 67, 0.48) 100%
+        ),
+        url("yiwu.jpg") center / cover no-repeat;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: center;
+      gap: 50px;
+    }
+
+    .hero-label {
+      display: inline-block;
+      padding: 8px 15px;
+      margin-bottom: 20px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+
+    .hero h1 {
+      max-width: 760px;
+      margin-bottom: 20px;
+      font-size: clamp(2.4rem, 5vw, 4.3rem);
+      line-height: 1.08;
+    }
+
+    .hero h1 span {
+      color: #f2c746;
+    }
+
+    .hero-description {
+      max-width: 720px;
+      margin-bottom: 30px;
+      color: rgba(255, 255, 255, 0.91);
+      font-size: 1.12rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    .hero-benefits {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(200px, 1fr));
+      gap: 12px;
+      list-style: none;
+    }
+
+    .hero-benefits li {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      font-size: 0.95rem;
+    }
+
+    .profile-card {
+      padding: 16px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: var(--shadow);
+    }
+
+    .profile-card img {
+      width: 100%;
+      height: 550px;
+      object-fit: cover;
+      border-radius: 22px;
     }
 
     section {
-      padding: 70px 8%;
+      padding: 88px 0;
     }
 
-    section h2 {
-      font-size: 34px;
-      margin-bottom: 30px;
+    .section-title {
+      max-width: 760px;
+      margin: 0 auto 45px;
       text-align: center;
+    }
+
+    .section-title span {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--gold-dark);
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .section-title h2 {
+      margin-bottom: 12px;
+      color: var(--primary-dark);
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.2;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      font-size: 1.03rem;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      align-items: center;
+      gap: 50px;
+    }
+
+    .about-image {
+      position: relative;
+    }
+
+    .about-image img {
+      width: 100%;
+      height: 520px;
+      object-fit: cover;
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+    }
+
+    .location-badge {
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      max-width: 240px;
+      padding: 16px 18px;
+      color: white;
+      border-radius: 16px;
+      background: rgba(18, 59, 67, 0.94);
+      box-shadow: var(--shadow);
+    }
+
+    .location-badge strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .about-content h2 {
+      margin-bottom: 20px;
+      color: var(--primary-dark);
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.2;
+    }
+
+    .about-content p {
+      margin-bottom: 16px;
+      color: var(--muted);
+      font-size: 1.03rem;
+    }
+
+    .check-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    .check-item {
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--light);
+      color: var(--primary-dark);
+      font-weight: 700;
     }
 
     .services {
+      background: var(--light);
+    }
+
+    .service-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .service-card {
+      height: 100%;
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--white);
+      box-shadow: var(--shadow);
+      transition: transform 0.25s ease;
+    }
+
+    .service-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .service-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 20px;
+      border-radius: 14px;
+      color: white;
+      background: var(--primary);
+      font-weight: bold;
+    }
+
+    .service-card h3 {
+      margin-bottom: 12px;
+      color: var(--primary-dark);
+      font-size: 1.2rem;
+    }
+
+    .service-card p {
+      color: var(--muted);
+      font-size: 0.97rem;
+    }
+
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
       gap: 20px;
     }
 
-    .card {
-      background: white;
-      padding: 28px;
-      border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-    }
-
-    .card h3 {
-      margin-bottom: 12px;
-    }
-
-    .courses {
-      background: #eaf4f4;
+    .process-step {
+      padding: 26px 22px;
       text-align: center;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .process-step strong {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 16px;
+      color: white;
+      border-radius: 50%;
+      background: var(--gold);
+      font-size: 1.2rem;
+    }
+
+    .process-step h3 {
+      margin-bottom: 8px;
+      color: var(--primary-dark);
+    }
+
+    .process-step p {
+      color: var(--muted);
+      font-size: 0.94rem;
     }
 
     .consulting {
-      text-align: center;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(18, 59, 67, 0.98),
+          rgba(31, 89, 100, 0.94)
+        );
+      color: white;
+    }
+
+    .consulting .section-title h2,
+    .consulting .section-title p {
+      color: white;
+    }
+
+    .consulting .section-title p {
+      opacity: 0.84;
+    }
+
+    .offer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 25px;
+    }
+
+    .offer-card {
+      padding: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .offer-card h3 {
+      margin-bottom: 12px;
+      font-size: 1.5rem;
+    }
+
+    .offer-card p {
+      margin-bottom: 20px;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .offer-card ul {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 24px;
+      list-style: none;
+    }
+
+    .offer-card li {
+      padding: 11px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+
+    .contact-card {
+      padding: 32px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .contact-card h2 {
+      margin-bottom: 12px;
+      color: var(--primary-dark);
+      font-size: 2rem;
+    }
+
+    .contact-card > p {
+      margin-bottom: 22px;
+      color: var(--muted);
+    }
+
+    .contact-links {
+      display: grid;
+      gap: 13px;
+    }
+
+    .contact-links a,
+    .contact-links div {
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--light);
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+
+    .contact-links a:hover {
+      border-color: var(--gold);
+    }
+
+    .contact-message {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: white;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    }
+
+    .contact-message h2 {
+      color: white;
+    }
+
+    .contact-message p {
+      color: rgba(255, 255, 255, 0.84);
+    }
+
+    .contact-message .button {
+      width: fit-content;
+      margin-top: 5px;
     }
 
     footer {
-      background: #071a2e;
-      color: white;
+      padding: 28px 0;
       text-align: center;
-      padding: 25px;
+      color: rgba(255, 255, 255, 0.84);
+      background: #0e3037;
     }
 
-    @media (max-width: 700px) {
-      header {
-        flex-direction: column;
-        gap: 10px;
+    .social-footer {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .social-footer a:hover {
+      color: #f2c746;
+    }
+
+    .whatsapp-float {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 62px;
+      height: 62px;
+      color: white;
+      border-radius: 50%;
+      background: var(--whatsapp);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+      font-size: 29px;
+      font-weight: bold;
+    }
+
+    .whatsapp-float:hover {
+      transform: scale(1.08);
+    }
+
+    @media (max-width: 1000px) {
+      .hero-grid,
+      .about-grid,
+      .contact-grid {
+        grid-template-columns: 1fr;
       }
 
-      nav a {
-        margin: 0 7px;
+      .service-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .process-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .profile-card {
+        max-width: 650px;
+        margin: auto;
+      }
+
+      .profile-card img {
+        height: auto;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .navbar {
+        flex-direction: column;
+        padding: 15px 0;
+      }
+
+      .menu {
+        justify-content: center;
+        gap: 13px;
+      }
+
+      .hero {
+        min-height: auto;
+        padding: 65px 0;
+      }
+
+      .hero-benefits,
+      .service-grid,
+      .process-grid,
+      .offer-grid {
+        grid-template-columns: 1fr;
       }
 
       .hero h1 {
-        font-size: 36px;
+        font-size: 2.6rem;
+      }
+
+      .about-image img {
+        height: auto;
+      }
+
+      .location-badge {
+        position: static;
+        max-width: none;
+        margin-top: 12px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .brand {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .menu .button-primary {
+        width: 100%;
+        text-align: center;
+      }
+
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+
+      .hero-actions .button {
+        width: 100%;
+        text-align: center;
+      }
+
+      section {
+        padding: 68px 0;
       }
     }
   </style>
@@ -140,92 +675,492 @@
 
 <body>
 
-  <header>
-    <h2>Chelme Global Trade</h2>
+  <header class="topbar">
+    <div class="container navbar">
 
-    <nav>
-      <a href="#servicios">Servicios</a>
-      <a href="#asesorias">Asesorías</a>
-      <a href="#cursos">Cursos</a>
-    </nav>
+      <a href="#inicio" class="brand">
+        <img src="logo.png" alt="Logo Chelme Global Trade">
+
+        <div class="brand-name">
+          <strong>CHELME</strong>
+          <span>GLOBAL TRADE</span>
+        </div>
+      </a>
+
+      <nav class="menu">
+        <a href="#inicio">Inicio</a>
+        <a href="#nosotros">Quién soy</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#proceso">Proceso</a>
+        <a href="#asesorias">Asesorías</a>
+        <a href="#contacto">Contacto</a>
+
+        <a
+          class="button button-primary"
+          href="https://wa.me/8615257960742?text=Hola%20Alan,%20quiero%20información%20sobre%20sus%20servicios%20de%20importación%20desde%20China."
+          target="_blank"
+          rel="noopener"
+        >
+          WhatsApp
+        </a>
+      </nav>
+
+    </div>
   </header>
 
   <main>
-    <section class="hero">
-      <h1>Importa desde China con acompañamiento profesional</h1>
 
-      <p>
-        Te ayudamos con la búsqueda de proveedores, negociación, compras,
-        inspección, consolidación y logística internacional desde China.
-      </p>
+    <section class="hero" id="inicio">
+      <div class="container hero-grid">
 
-      <a class="button" href="#asesorias">
-        Solicitar asesoría
-      </a>
-    </section>
+        <div>
+          <div class="hero-label">Tu enlace directo con China</div>
 
-    <section id="servicios">
-      <h2>Nuestros servicios</h2>
+          <h1>
+            Importa desde China con
+            <span>acompañamiento profesional</span>
+          </h1>
 
-      <div class="services">
-        <article class="card">
-          <h3>Búsqueda de proveedores</h3>
-          <p>
-            Localizamos fábricas y proveedores adecuados para tu producto y presupuesto.
+          <p class="hero-description">
+            Te apoyamos desde China con búsqueda de proveedores, cotización,
+            negociación, compras, inspección, consolidación de carga y logística
+            internacional para que desarrolles tu proyecto con mayor seguridad.
           </p>
-        </article>
 
-        <article class="card">
-          <h3>Compras y negociación</h3>
-          <p>
-            Coordinamos cotizaciones, condiciones comerciales, pagos y producción.
-          </p>
-        </article>
+          <div class="hero-actions">
+            <a
+              class="button button-gold"
+              href="https://wa.me/8615257960742?text=Hola%20Alan,%20quiero%20evaluar%20un%20proyecto%20de%20importación%20desde%20China."
+              target="_blank"
+              rel="noopener"
+            >
+              Evaluar mi proyecto
+            </a>
 
-        <article class="card">
-          <h3>Inspección de mercancía</h3>
-          <p>
-            Revisamos productos, cantidades, embalaje y condiciones antes del envío.
-          </p>
-        </article>
+            <a class="button button-outline" href="#servicios">
+              Conocer los servicios
+            </a>
+          </div>
 
-        <article class="card">
-          <h3>Logística internacional</h3>
-          <p>
-            Coordinamos cargas consolidadas, contenedores completos y envíos internacionales.
-          </p>
-        </article>
+          <ul class="hero-benefits">
+            <li>Base operativa en Yiwu, China</li>
+            <li>Contacto directo con proveedores</li>
+            <li>Gestión de compras e inspección</li>
+            <li>Logística para Chile y Latinoamérica</li>
+          </ul>
+        </div>
+
+        <div class="profile-card">
+          <img src="alan.jpg" alt="Alan Chelme, representante de Chelme Global Trade">
+        </div>
+
       </div>
     </section>
 
-    <section id="asesorias" class="consulting">
-      <h2>Asesorías comerciales</h2>
+    <section id="nosotros">
+      <div class="container about-grid">
 
-      <p>
-        Agenda una asesoría personalizada para evaluar tu proyecto de importación,
-        conocer costos aproximados y definir el proceso adecuado.
-      </p>
+        <div class="about-image">
+          <img src="yiwu.jpg" alt="Mercado Internacional de Yiwu en China">
 
-      <br>
+          <div class="location-badge">
+            <strong>Yiwu, Zhejiang, China</strong>
+            Conectados directamente con uno de los principales centros comerciales del mundo.
+          </div>
+        </div>
 
-      <a class="button" href="#">
-        Reservar y pagar asesoría
-      </a>
+        <div class="about-content">
+          <span style="color: var(--gold-dark); font-weight: bold;">
+            EXPERIENCIA DIRECTA EN CHINA
+          </span>
+
+          <h2>Quién soy y cómo puedo ayudarte</h2>
+
+          <p>
+            Soy Alan Chelme y trabajo desde China apoyando a emprendedores,
+            importadores y empresas que necesitan comprar productos y coordinar
+            sus operaciones comerciales con proveedores chinos.
+          </p>
+
+          <p>
+            Mi trabajo consiste en facilitar la comunicación, buscar proveedores,
+            negociar condiciones, coordinar compras, revisar mercancías y organizar
+            la logística desde origen.
+          </p>
+
+          <p>
+            No se trata solamente de conseguir un precio. El objetivo es construir
+            un proceso de compra ordenado, con información clara y acompañamiento
+            en cada etapa.
+          </p>
+
+          <div class="check-list">
+            <div class="check-item">✓ Atención directa y personalizada</div>
+            <div class="check-item">✓ Coordinación desde China</div>
+            <div class="check-item">✓ Apoyo para nuevos y antiguos importadores</div>
+            <div class="check-item">✓ Comunicación en español con tus proveedores</div>
+          </div>
+        </div>
+
+      </div>
     </section>
 
-    <section id="cursos" class="courses">
-      <h2>Cursos online</h2>
+    <section class="services" id="servicios">
+      <div class="container">
 
-      <p>
-        Próximamente encontrarás cursos prácticos sobre compras en China,
-        búsqueda de proveedores, negociación, importación y logística.
-      </p>
+        <div class="section-title">
+          <span>Servicios</span>
+
+          <h2>Soluciones para comprar e importar desde China</h2>
+
+          <p>
+            Podemos acompañarte desde la búsqueda del producto hasta la coordinación
+            del envío de tu mercancía.
+          </p>
+        </div>
+
+        <div class="service-grid">
+
+          <article class="service-card">
+            <div class="service-number">01</div>
+
+            <h3>Búsqueda de proveedores</h3>
+
+            <p>
+              Localizamos proveedores y fábricas según tu producto, cantidad,
+              calidad requerida y presupuesto disponible.
+            </p>
+          </article>
+
+          <article class="service-card">
+            <div class="service-number">02</div>
+
+            <h3>Cotización y negociación</h3>
+
+            <p>
+              Consultamos precios, cantidades mínimas, personalización, tiempos
+              de producción y condiciones comerciales.
+            </p>
+          </article>
+
+          <article class="service-card">
+            <div class="service-number">03</div>
+
+            <h3>Gestión de compras</h3>
+
+            <p>
+              Coordinamos pedidos, comunicación con proveedores, documentación,
+              pagos y seguimiento de producción.
+            </p>
+          </article>
+
+          <article class="service-card">
+            <div class="service-number">04</div>
+
+            <h3>Inspección de mercancía</h3>
+
+            <p>
+              Revisamos productos, cantidades, medidas, presentación, embalaje
+              y condiciones generales antes del despacho.
+            </p>
+          </article>
+
+          <article class="service-card">
+            <div class="service-number">05</div>
+
+            <h3>Consolidación de carga</h3>
+
+            <p>
+              Recibimos y coordinamos mercancías de diferentes proveedores para
+              organizarlas en una carga consolidada.
+            </p>
+          </article>
+
+          <article class="service-card">
+            <div class="service-number">06</div>
+
+            <h3>Logística internacional</h3>
+
+            <p>
+              Coordinamos transporte marítimo, contenedores completos, carga
+              consolidada y otros métodos de envío desde China.
+            </p>
+          </article>
+
+          <article class="service-card">
+            <div class="service-number">07</div>
+
+            <h3>Acompañamiento comercial</h3>
+
+            <p>
+              Apoyamos visitas a mercados, ferias y fábricas para clientes que
+              viajan a China a desarrollar sus compras.
+            </p>
+          </article>
+
+          <article class="service-card">
+            <div class="service-number">08</div>
+
+            <h3>Traducción y coordinación</h3>
+
+            <p>
+              Facilitamos la comunicación comercial entre clientes y proveedores
+              durante cotizaciones, compras y negociaciones.
+            </p>
+          </article>
+
+          <article class="service-card">
+            <div class="service-number">09</div>
+
+            <h3>Asesoría para importadores</h3>
+
+            <p>
+              Analizamos tu idea, presupuesto, producto y proceso para ayudarte
+              a tomar mejores decisiones antes de invertir.
+            </p>
+          </article>
+
+        </div>
+      </div>
     </section>
+
+    <section id="proceso">
+      <div class="container">
+
+        <div class="section-title">
+          <span>Cómo trabajamos</span>
+
+          <h2>Un proceso claro desde el inicio</h2>
+
+          <p>
+            Cada proyecto puede variar, pero normalmente trabajamos siguiendo
+            estas etapas principales.
+          </p>
+        </div>
+
+        <div class="process-grid">
+
+          <article class="process-step">
+            <strong>1</strong>
+            <h3>Evaluación</h3>
+            <p>
+              Revisamos el producto, presupuesto, cantidades y destino de la importación.
+            </p>
+          </article>
+
+          <article class="process-step">
+            <strong>2</strong>
+            <h3>Búsqueda y cotización</h3>
+            <p>
+              Contactamos proveedores y comparamos las condiciones disponibles.
+            </p>
+          </article>
+
+          <article class="process-step">
+            <strong>3</strong>
+            <h3>Compra y control</h3>
+            <p>
+              Coordinamos la orden, producción, recepción e inspección de la mercancía.
+            </p>
+          </article>
+
+          <article class="process-step">
+            <strong>4</strong>
+            <h3>Logística</h3>
+            <p>
+              Organizamos la consolidación, documentación y salida de la carga desde China.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="consulting" id="asesorias">
+      <div class="container">
+
+        <div class="section-title">
+          <span>Formación y acompañamiento</span>
+
+          <h2>Asesorías comerciales y cursos online</h2>
+
+          <p>
+            Obtén orientación personalizada o aprende a desarrollar tus propias
+            operaciones de importación.
+          </p>
+        </div>
+
+        <div class="offer-grid">
+
+          <article class="offer-card">
+            <h3>Asesoría personalizada</h3>
+
+            <p>
+              Para personas o empresas que necesitan analizar una idea,
+              resolver dudas y definir cómo comenzar su proyecto.
+            </p>
+
+            <ul>
+              <li>✓ Revisión de producto y presupuesto</li>
+              <li>✓ Explicación del proceso de importación</li>
+              <li>✓ Orientación sobre cantidades y costos</li>
+              <li>✓ Definición de los siguientes pasos</li>
+            </ul>
+
+            <a
+              class="button button-gold"
+              href="https://wa.me/8615257960742?text=Hola%20Alan,%20quiero%20reservar%20una%20asesoría%20personalizada."
+              target="_blank"
+              rel="noopener"
+            >
+              Solicitar asesoría
+            </a>
+          </article>
+
+          <article class="offer-card">
+            <h3>Cursos online</h3>
+
+            <p>
+              Próximamente podrás acceder a contenido práctico para aprender
+              sobre compras, proveedores, importación y logística desde China.
+            </p>
+
+            <ul>
+              <li>✓ Cómo buscar proveedores en China</li>
+              <li>✓ Cómo solicitar una cotización</li>
+              <li>✓ Cómo organizar una compra</li>
+              <li>✓ Cómo evitar errores comunes</li>
+            </ul>
+
+            <a
+              class="button button-gold"
+              href="https://www.instagram.com/alanen.china/"
+              target="_blank"
+              rel="noopener"
+            >
+              Ver novedades
+            </a>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="contacto">
+      <div class="container contact-grid">
+
+        <div class="contact-card">
+          <h2>Información de contacto</h2>
+
+          <p>
+            Escríbeme para conversar sobre tu producto, presupuesto o proyecto de importación.
+          </p>
+
+          <div class="contact-links">
+
+            <a
+              href="https://wa.me/8615257960742"
+              target="_blank"
+              rel="noopener"
+            >
+              WhatsApp: +86 152 5796 0742
+            </a>
+
+            <a href="mailto:alanchelme11@gmail.com">
+              Correo: alanchelme11@gmail.com
+            </a>
+
+            <a
+              href="https://www.instagram.com/alanen.china/"
+              target="_blank"
+              rel="noopener"
+            >
+              Instagram: @alanen.china
+            </a>
+
+            <a
+              href="https://www.tiktok.com/@alanenchina"
+              target="_blank"
+              rel="noopener"
+            >
+              TikTok: @alanenchina
+            </a>
+
+            <div>
+              Ubicación: Yiwu, Zhejiang, China
+            </div>
+
+          </div>
+        </div>
+
+        <div class="contact-card contact-message">
+          <h2>Cuéntame qué producto quieres importar</h2>
+
+          <p>
+            Para orientarte mejor, indícame el producto, cantidad aproximada,
+            país de destino y presupuesto disponible.
+          </p>
+
+          <a
+            class="button button-gold"
+            href="https://wa.me/8615257960742?text=Hola%20Alan,%20quiero%20importar%20un%20producto%20desde%20China.%20El%20producto%20es:%20"
+            target="_blank"
+            rel="noopener"
+          >
+            Escribir por WhatsApp
+          </a>
+        </div>
+
+      </div>
+    </section>
+
   </main>
 
   <footer>
-    <p>© 2026 Chelme Global Trade. Todos los derechos reservados.</p>
+    <div class="container">
+
+      <div class="social-footer">
+        <a
+          href="https://www.instagram.com/alanen.china/"
+          target="_blank"
+          rel="noopener"
+        >
+          Instagram
+        </a>
+
+        <a
+          href="https://www.tiktok.com/@alanenchina"
+          target="_blank"
+          rel="noopener"
+        >
+          TikTok
+        </a>
+
+        <a
+          href="https://wa.me/8615257960742"
+          target="_blank"
+          rel="noopener"
+        >
+          WhatsApp
+        </a>
+      </div>
+
+      <p>
+        © 2026 Chelme Global Trade · Tu enlace directo con China
+      </p>
+
+    </div>
   </footer>
+
+  <a
+    class="whatsapp-float"
+    href="https://wa.me/8615257960742?text=Hola%20Alan,%20quiero%20información%20sobre%20sus%20servicios."
+    target="_blank"
+    rel="noopener"
+    aria-label="Contactar por WhatsApp"
+  >
+    ☎
+  </a>
 
 </body>
 </html>
