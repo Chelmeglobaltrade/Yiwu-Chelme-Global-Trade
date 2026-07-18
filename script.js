@@ -1,219 +1,510 @@
-const STORAGE_KEY = "chelmeImportProjectV1";
-
-const state = {
-  products: [],
-  editingId: null,
-  imageData: "",
-  method: "LCL"
-};
+const CONFIG = window.CHELME_CONFIG;
+const STORAGE_KEY = "chelmeCalculatorV2";
 
 const $ = (id) => document.getElementById(id);
-const num = (id) => Number.parseFloat($(id).value) || 0;
 const money = (value) =>
-  new Intl.NumberFormat("es-CL", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(value || 0);
+  new Intl.NumberFormat("es-CL", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2
+  }).format(Number(value) || 0);
+
 const number = (value, decimals = 2) =>
-  new Intl.NumberFormat("es-CL", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(value || 0);
+  new Intl.NumberFormat("es-CL", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  }).format(Number(value) || 0);
 
-function saveState() {
-  const payload = {
-    products: state.products,
-    method: state.method,
-    client: {
-      name: $("clientName").value,
-      country: $("clientCountry").value,
-      email: $("clientEmail").value,
-      whatsapp: $("clientWhatsapp").value
-    },
-    settings: getSettings()
-  };
+const toNum = (value) => Number.parseFloat(value) || 0;
+const fieldNum = (id) => toNum($(id)?.value);
 
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-  } catch (error) {
-    alert("El navegador no pudo guardar el proyecto. Elimina imágenes grandes o descarga el archivo del proyecto.");
+const state = {
+  quoteService: "lcl",
+  products: [],
+  method: "LCL",
+  editingId: null
+};
+
+const serviceDefinitions = {
+  lcl: {
+    title: "Cotizar Consolidado Chelme Global",
+    badge: "Estimación disponible",
+    fields: `
+      <div class="dynamic-grid">
+        <label class="field">
+          <span>Valor aproximado de mercancía (USD)</span>
+          <input type="number" id="qGoodsUsd" min="0" step="1" placeholder="0">
+        </label>
+        <label class="field">
+          <span>Volumen estimado (m³) *</span>
+          <input type="number" id="qCbm" min="0" step="0.01" required placeholder="0">
+        </label>
+        <label class="field">
+          <span>Cantidad de proveedores</span>
+          <input type="number" id="qSuppliers" min="1" step="1" value="1">
+        </label>
+        <label class="field">
+          <span>Tipo de mercancía</span>
+          <input type="text" id="qProductType" placeholder="Ej.: herramientas, hogar, textiles">
+        </label>
+      </div>`
+  },
+  fcl: {
+    title: "Cotizar contenedor completo FCL",
+    badge: "Estimación disponible",
+    fields: `
+      <div class="dynamic-grid">
+        <label class="field">
+          <span>Tipo de contenedor</span>
+          <select id="qContainer">
+            <option value="20GP">20GP</option>
+            <option value="40GP">40GP</option>
+            <option value="40HQ" selected>40HQ</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Valor aproximado de mercancía (USD)</span>
+          <input type="number" id="qGoodsUsd" min="0" step="1" placeholder="0">
+        </label>
+        <label class="field">
+          <span>Volumen estimado (m³)</span>
+          <input type="number" id="qCbm" min="0" step="0.01" placeholder="0">
+        </label>
+        <label class="field">
+          <span>Puerto o ciudad de origen</span>
+          <input type="text" id="qOrigin" placeholder="Ej.: Ningbo, Shanghai, Qingdao">
+        </label>
+        <label class="field span-2">
+          <span>Producto principal</span>
+          <input type="text" id="qProductType" placeholder="Describe la mercancía">
+        </label>
+      </div>`
+  },
+  quality: {
+    title: "Cotizar control de calidad en China",
+    badge: "Revisión personalizada",
+    fields: `
+      <div class="dynamic-grid">
+        <label class="field">
+          <span>Ciudad de la inspección *</span>
+          <input type="text" id="qInspectionCity" required placeholder="Ej.: Yiwu, Guangzhou, Foshan">
+        </label>
+        <label class="field">
+          <span>Tipo de inspección</span>
+          <select id="qInspectionType">
+            <option value="Preembarque">Inspección preembarque</option>
+            <option value="Durante producción">Durante producción</option>
+            <option value="Carga de contenedor">Supervisión de carga</option>
+            <option value="Videollamada">Inspección por videollamada</option>
+            <option value="Auditoría">Auditoría de fábrica</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Producto *</span>
+          <input type="text" id="qProductType" required placeholder="Producto a revisar">
+        </label>
+        <label class="field">
+          <span>Cantidad de referencias</span>
+          <input type="number" id="qReferences" min="1" step="1" value="1">
+        </label>
+        <label class="field">
+          <span>Cantidad de cajas o unidades</span>
+          <input type="number" id="qInspectionQuantity" min="0" step="1" placeholder="0">
+        </label>
+        <label class="field">
+          <span>Fecha requerida</span>
+          <input type="date" id="qInspectionDate">
+        </label>
+        <label class="field span-2">
+          <span>Qué necesitas revisar</span>
+          <textarea id="qInspectionScope" rows="3" placeholder="Conteo, funcionamiento, medidas, empaque, etiquetas, color, accesorios..."></textarea>
+        </label>
+      </div>`
+  },
+  trip: {
+    title: "Cotizar viaje de negocios a China",
+    badge: "Revisión personalizada",
+    fields: `
+      <div class="dynamic-grid">
+        <label class="field">
+          <span>Fecha aproximada del viaje</span>
+          <input type="date" id="qTripDate">
+        </label>
+        <label class="field">
+          <span>Cantidad de días *</span>
+          <input type="number" id="qTripDays" min="1" step="1" required value="1">
+        </label>
+        <label class="field span-2">
+          <span>Ciudades</span>
+          <input type="text" id="qCities" placeholder="Ej.: Yiwu, Guangzhou, Foshan, Shanghai">
+        </label>
+        <label class="field">
+          <span>Tipo de acompañamiento</span>
+          <select id="qTripService">
+            <option value="Guía y traducción">Guía y traducción</option>
+            <option value="Agenda de fábricas">Agenda de fábricas</option>
+            <option value="Feria comercial">Acompañamiento a feria</option>
+            <option value="Servicio completo">Servicio completo</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Cantidad de viajeros</span>
+          <input type="number" id="qTravelers" min="1" step="1" value="1">
+        </label>
+        <label class="field span-2">
+          <span>Productos o industrias</span>
+          <input type="text" id="qIndustries" placeholder="Qué productos quieres buscar o qué fábricas quieres visitar">
+        </label>
+      </div>`
+  },
+  translation: {
+    title: "Cotizar traducción y negociación",
+    badge: "Revisión personalizada",
+    fields: `
+      <div class="dynamic-grid">
+        <label class="field">
+          <span>Modalidad</span>
+          <select id="qTranslationMode">
+            <option value="Remota">Remota</option>
+            <option value="Presencial">Presencial en China</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Duración estimada</span>
+          <input type="number" id="qDuration" min="1" step="1" value="1">
+        </label>
+        <label class="field">
+          <span>Unidad</span>
+          <select id="qDurationUnit">
+            <option value="horas">Horas</option>
+            <option value="días">Días</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Ciudad, si es presencial</span>
+          <input type="text" id="qTranslationCity" placeholder="Ciudad">
+        </label>
+        <label class="field span-2">
+          <span>Tema o industria</span>
+          <input type="text" id="qTranslationTopic" placeholder="Ej.: maquinaria, textiles, contrato, negociación">
+        </label>
+      </div>`
+  },
+  sourcing: {
+    title: "Solicitar búsqueda de proveedores",
+    badge: "Depósito inicial",
+    fields: `
+      <div class="dynamic-grid">
+        <label class="field span-2">
+          <span>Producto que buscas *</span>
+          <input type="text" id="qProductType" required placeholder="Descripción clara del producto">
+        </label>
+        <label class="field">
+          <span>Cantidad aproximada</span>
+          <input type="number" id="qQuantity" min="1" step="1" placeholder="0">
+        </label>
+        <label class="field">
+          <span>Presupuesto estimado (USD)</span>
+          <input type="number" id="qBudget" min="0" step="1" placeholder="0">
+        </label>
+        <label class="field">
+          <span>¿Necesitas personalización?</span>
+          <select id="qCustomization">
+            <option value="No">No</option>
+            <option value="Logo">Logo</option>
+            <option value="Empaque">Empaque</option>
+            <option value="Producto y empaque">Producto y empaque</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>¿Ya tienes referencias o imágenes?</span>
+          <select id="qReferencesAvailable">
+            <option value="Sí">Sí</option>
+            <option value="No">No</option>
+          </select>
+        </label>
+      </div>`
+  },
+  advisory: {
+    title: "Reservar asesoría personalizada",
+    badge: "Desde " + money(CONFIG.advisory.startingPriceUsd),
+    fields: `
+      <div class="dynamic-grid">
+        <label class="field span-2">
+          <span>Qué necesitas resolver *</span>
+          <input type="text" id="qAdvisoryTopic" required placeholder="Describe brevemente tu proyecto o duda">
+        </label>
+        <label class="field">
+          <span>¿Has importado antes?</span>
+          <select id="qExperience">
+            <option value="No">No</option>
+            <option value="Sí, una vez">Sí, una vez</option>
+            <option value="Sí, varias veces">Sí, varias veces</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Presupuesto estimado (USD)</span>
+          <input type="number" id="qBudget" min="0" step="1" placeholder="0">
+        </label>
+      </div>`
+  },
+  packaging: {
+    title: "Cotizar etiquetado, empaque o marca privada",
+    badge: "Revisión personalizada",
+    fields: `
+      <div class="dynamic-grid">
+        <label class="field span-2">
+          <span>Producto *</span>
+          <input type="text" id="qProductType" required placeholder="Producto a personalizar">
+        </label>
+        <label class="field">
+          <span>Cantidad aproximada</span>
+          <input type="number" id="qQuantity" min="1" step="1" placeholder="0">
+        </label>
+        <label class="field">
+          <span>Servicio requerido</span>
+          <select id="qPackagingType">
+            <option value="Etiquetas">Etiquetas</option>
+            <option value="Shipping marks">Shipping marks</option>
+            <option value="Código de barras">Código de barras</option>
+            <option value="Empaque personalizado">Empaque personalizado</option>
+            <option value="Marca privada completa">Marca privada completa</option>
+          </select>
+        </label>
+        <label class="field span-2">
+          <span>Detalles de diseño o materiales</span>
+          <textarea id="qPackagingDetails" rows="3" placeholder="Medidas, material, colores, logo, idioma, códigos..."></textarea>
+        </label>
+      </div>`
   }
-}
+};
 
-function loadState() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return;
-
-  try {
-    const payload = JSON.parse(raw);
-    state.products = Array.isArray(payload.products) ? payload.products : [];
-    state.method = payload.method === "FCL" ? "FCL" : "LCL";
-
-    if (payload.client) {
-      $("clientName").value = payload.client.name || "";
-      $("clientCountry").value = payload.client.country || "";
-      $("clientEmail").value = payload.client.email || "";
-      $("clientWhatsapp").value = payload.client.whatsapp || "";
-    }
-
-    if (payload.settings) applySettings(payload.settings);
-  } catch (error) {
-    console.warn("No fue posible recuperar el proyecto guardado.", error);
-  }
-}
-
-function getSettings() {
-  return {
-    exchangeRate: num("exchangeRate"),
-    minimumProjectUsd: num("minimumProjectUsd"),
-    lclRate: num("lclRate"),
-    smallCargoThreshold: num("smallCargoThreshold"),
-    smallCargoSurcharge: num("smallCargoSurcharge"),
-    lclCommissionPct: num("lclCommissionPct"),
-    lclMinimumCommission: num("lclMinimumCommission"),
-    containerType: $("containerType").value,
-    oceanFreight: num("oceanFreight"),
-    chinaLocalCosts: num("chinaLocalCosts"),
-    fclCommissionPct: num("fclCommissionPct"),
-    fclMinimumCommission: num("fclMinimumCommission"),
-    otherLogistics: num("otherLogistics"),
-    estimatedTaxes: num("estimatedTaxes")
-  };
-}
-
-function applySettings(settings) {
-  Object.entries(settings).forEach(([key, value]) => {
-    const el = $(key);
-    if (el && value !== undefined && value !== null) el.value = value;
+function initBusinessData() {
+  const wa = CONFIG.business.whatsapp;
+  document.querySelectorAll("[data-whatsapp-link]").forEach((link) => {
+    link.href = `https://wa.me/${wa}`;
   });
+  document.querySelectorAll("[data-business-city]").forEach((el) => el.textContent = CONFIG.business.city);
+  document.querySelectorAll("[data-business-whatsapp]").forEach((el) => el.textContent = `+${wa}`);
+  document.querySelectorAll("[data-instagram-link]").forEach((link) => link.href = CONFIG.business.instagram);
+  document.querySelectorAll("[data-tiktok-link]").forEach((link) => link.href = CONFIG.business.tiktok);
 }
 
-function getRestrictionStatus(type) {
+function setQuoteService(service) {
+  state.quoteService = service;
+  document.querySelectorAll("[data-quote-service]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.quoteService === service);
+  });
+
+  const definition = serviceDefinitions[service];
+  $("quoteTitle").textContent = definition.title;
+  $("quoteBadge").textContent = definition.badge;
+  $("dynamicQuoteFields").innerHTML = definition.fields;
+  $("quoteEstimate").textContent = "Por calcular";
+  $("quoteEstimateNote").textContent = "Completa la información para calcular o solicitar revisión.";
+  $("quoteAlert").classList.add("hidden");
+
+  $("dynamicQuoteFields").querySelectorAll("input, select, textarea").forEach((input) => {
+    input.addEventListener("input", updateQuoteEstimate);
+    input.addEventListener("change", updateQuoteEstimate);
+  });
+
+  updateQuoteEstimate();
+}
+
+function updateQuoteEstimate() {
+  const service = state.quoteService;
+  let estimateText = "Cotización personalizada";
+  let note = "Enviaremos la información para revisión antes de confirmar el precio.";
+
+  if (service === "lcl") {
+    const goods = fieldNum("qGoodsUsd");
+    const cbm = fieldNum("qCbm");
+    const rate = CONFIG.lcl.ratePerCbmUsd;
+    const small = cbm > 0 && cbm < CONFIG.lcl.smallCargoThresholdCbm;
+    const effectiveRate = rate + (small ? CONFIG.lcl.smallCargoExtraPerCbmUsd : 0);
+    const management = goods > 0
+      ? Math.max(goods * CONFIG.lcl.managementPercent / 100, CONFIG.lcl.minimumManagementUsd)
+      : 0;
+    const logistics = cbm * effectiveRate;
+    const total = goods + management + logistics;
+
+    if (cbm > 0) {
+      estimateText = money(total);
+      note = `${money(logistics)} de consolidado (${money(effectiveRate)}/m³) + ${money(management)} de gestión + mercancía ingresada. Impuestos no incluidos.`;
+    } else {
+      estimateText = `Desde ${money(rate)}/m³`;
+      note = CONFIG.lcl.nextDepartureText;
+    }
+  }
+
+  if (service === "fcl") {
+    const container = $("qContainer")?.value || "40HQ";
+    const goods = fieldNum("qGoodsUsd");
+    const cbm = fieldNum("qCbm");
+    const freight = CONFIG.fcl.oceanFreightUsd[container] || 0;
+    const management = goods > 0
+      ? Math.max(goods * CONFIG.fcl.managementPercent / 100, CONFIG.fcl.minimumManagementUsd)
+      : 0;
+    const total = goods + management + CONFIG.fcl.chinaLocalCostsUsd + freight;
+    const capacity = CONFIG.fcl.capacityCbm[container] || 0;
+    const occupancy = capacity && cbm ? cbm / capacity * 100 : 0;
+
+    if (freight > 0 || goods > 0) {
+      estimateText = money(total);
+      note = `Incluye mercancía ingresada, gestión ${CONFIG.fcl.managementPercent}%, gastos China y flete configurado. Ocupación referencial: ${number(occupancy, 0)}%.`;
+    } else {
+      estimateText = "Flete por confirmar";
+      note = `Gestión desde ${CONFIG.fcl.managementPercent}% sobre mercancía.`;
+    }
+  }
+
+  if (service === "quality") {
+    const days = 1;
+    const configured = CONFIG.qualityControl.baseVisitUsd + CONFIG.qualityControl.dayRateUsd * days;
+    if (configured > 0) {
+      estimateText = `Desde ${money(configured)}`;
+      note = CONFIG.qualityControl.note;
+    } else {
+      estimateText = "Cotización según alcance";
+      note = CONFIG.qualityControl.note;
+    }
+  }
+
+  if (service === "trip") {
+    const days = fieldNum("qTripDays") || 1;
+    const configured =
+      CONFIG.chinaTrip.planningFeeUsd +
+      (CONFIG.chinaTrip.guidePerDayUsd + CONFIG.chinaTrip.interpreterPerDayUsd + CONFIG.chinaTrip.localTransportPerDayUsd) * days;
+
+    if (configured > 0) {
+      estimateText = `Desde ${money(configured)}`;
+      note = `Estimación para ${days} día(s). No incluye vuelos, hoteles ni gastos personales.`;
+    } else {
+      estimateText = "Cotización según agenda";
+      note = CONFIG.chinaTrip.note;
+    }
+  }
+
+  if (service === "translation") {
+    const duration = fieldNum("qDuration") || 1;
+    const unit = $("qDurationUnit")?.value || "horas";
+    const mode = $("qTranslationMode")?.value || "Remota";
+    let rate = 0;
+
+    if (mode === "Remota" && unit === "horas") rate = CONFIG.translation.remotePerHourUsd;
+    if (mode === "Presencial" || unit === "días") rate = CONFIG.translation.onsitePerDayUsd;
+
+    if (rate > 0) {
+      estimateText = `Desde ${money(rate * duration)}`;
+      note = CONFIG.translation.note;
+    } else {
+      estimateText = "Cotización según duración";
+      note = CONFIG.translation.note;
+    }
+  }
+
+  if (service === "sourcing") {
+    estimateText = `Depósito desde ${money(CONFIG.sourcing.startingDepositUsd)}`;
+    note = CONFIG.sourcing.note;
+  }
+
+  if (service === "advisory") {
+    estimateText = `Desde ${money(CONFIG.advisory.startingPriceUsd)}`;
+    note = "Evaluación del proyecto, proceso recomendado, costos aproximados y próximos pasos.";
+  }
+
+  if (service === "packaging") {
+    estimateText = "Cotización según cantidad";
+    note = "El precio depende de material, medidas, impresión, cantidad mínima y proveedor.";
+  }
+
+  $("quoteEstimate").textContent = estimateText;
+  $("quoteEstimateNote").textContent = note;
+}
+
+function collectDynamicFields() {
+  const data = [];
+  $("dynamicQuoteFields").querySelectorAll("input, select, textarea").forEach((field) => {
+    const label = field.closest(".field")?.querySelector("span")?.textContent || field.id;
+    const value = field.value?.trim();
+    if (value) data.push(`${label}: ${value}`);
+  });
+  return data;
+}
+
+function showQuoteAlert(message) {
+  $("quoteAlert").textContent = message;
+  $("quoteAlert").classList.remove("hidden");
+}
+
+function sendQuote(event) {
+  event.preventDefault();
+
+  const name = $("quoteName").value.trim();
+  const destination = $("quoteDestination").value.trim();
+
+  if (!name || !destination) {
+    showQuoteAlert("Completa nombre y destino antes de enviar.");
+    return;
+  }
+
+  const dynamic = collectDynamicFields();
+  const serviceName = serviceDefinitions[state.quoteService].title.replace("Cotizar ", "").replace("Solicitar ", "");
+  const lines = [
+    "SOLICITUD DE COTIZACIÓN — CHELME GLOBAL TRADE",
+    "",
+    `Servicio: ${serviceName}`,
+    `Nombre: ${name}`,
+    `Destino: ${destination}`,
+    `Correo: ${$("quoteEmail").value.trim() || "No informado"}`,
+    `WhatsApp: ${$("quoteClientWhatsapp").value.trim() || "No informado"}`,
+    "",
+    ...dynamic,
+    $("quoteNotes").value.trim() ? `Información adicional: ${$("quoteNotes").value.trim()}` : "",
+    "",
+    `Estimación mostrada: ${$("quoteEstimate").textContent}`,
+    "Entiendo que esta información es referencial y debe ser revisada antes de confirmar precios."
+  ].filter(Boolean);
+
+  const text = encodeURIComponent(lines.join("\n"));
+  window.open(`https://wa.me/${CONFIG.business.whatsapp}?text=${text}`, "_blank", "noopener");
+}
+
+function selectAndScrollService(service) {
+  setQuoteService(service);
+  $("cotizar").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function calculatorRates() {
+  const container = $("containerType")?.value || "40HQ";
+  return {
+    exchange: CONFIG.exchange.rmbPerUsd,
+    minimumGoods: CONFIG.lcl.minimumRecommendedGoodsUsd,
+    lclRate: CONFIG.lcl.ratePerCbmUsd,
+    smallThreshold: CONFIG.lcl.smallCargoThresholdCbm,
+    smallExtra: CONFIG.lcl.smallCargoExtraPerCbmUsd,
+    lclPct: CONFIG.lcl.managementPercent,
+    lclMin: CONFIG.lcl.minimumManagementUsd,
+    fclPct: CONFIG.fcl.managementPercent,
+    fclMin: CONFIG.fcl.minimumManagementUsd,
+    chinaLocal: CONFIG.fcl.chinaLocalCostsUsd,
+    oceanFreight: CONFIG.fcl.oceanFreightUsd[container] || 0,
+    capacity: CONFIG.fcl.capacityCbm[container] || 0
+  };
+}
+
+function getRestriction(type) {
   const map = {
-    normal: { label: "Apto para revisión normal", className: "status-ok", blocked: false, fclOnly: false },
-    battery: { label: "Sujeto a revisión · normalmente FCL", className: "status-fcl", blocked: false, fclOnly: true },
-    chemical: { label: "Revisión especial y documentación", className: "status-review", blocked: false, fclOnly: false },
-    food: { label: "Producto regulado · revisión especial", className: "status-review", blocked: false, fclOnly: false },
-    brand: { label: "No aceptado sin autorización de marca", className: "status-blocked", blocked: true, fclOnly: false },
-    replica: { label: "Producto no aceptado", className: "status-blocked", blocked: true, fclOnly: false },
-    review: { label: "Pendiente de revisión manual", className: "status-review", blocked: false, fclOnly: false }
+    normal: { label: "Revisión normal", className: "status-ok", blocked: false, fclOnly: false },
+    battery: { label: "Normalmente FCL", className: "status-fcl", blocked: false, fclOnly: true },
+    chemical: { label: "Revisión especial", className: "status-review", blocked: false, fclOnly: false },
+    food: { label: "Producto regulado", className: "status-review", blocked: false, fclOnly: false },
+    brand: { label: "Requiere autorización", className: "status-blocked", blocked: true, fclOnly: false },
+    replica: { label: "No aceptado", className: "status-blocked", blocked: true, fclOnly: false },
+    review: { label: "Revisión manual", className: "status-review", blocked: false, fclOnly: false }
   };
   return map[type] || map.review;
-}
-
-function showProductAlert(message, type = "error") {
-  const alertBox = $("productAlert");
-  alertBox.textContent = message;
-  alertBox.classList.remove("hidden");
-  if (type === "success") {
-    alertBox.style.background = "#effaf3";
-    alertBox.style.borderColor = "#cce6d6";
-    alertBox.style.color = "#14804a";
-  } else {
-    alertBox.style.background = "#fff2f2";
-    alertBox.style.borderColor = "#f1cfcf";
-    alertBox.style.color = "#b83232";
-  }
-}
-
-function hideProductAlert() {
-  $("productAlert").classList.add("hidden");
-}
-
-async function compressImage(file) {
-  if (!file) return "";
-  if (!file.type.startsWith("image/")) throw new Error("El archivo seleccionado no es una imagen.");
-
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const img = new Image();
-
-      img.onload = () => {
-        const maxSide = 800;
-        const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
-        const canvas = document.createElement("canvas");
-        canvas.width = Math.round(img.width * scale);
-        canvas.height = Math.round(img.height * scale);
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", 0.7));
-      };
-
-      img.onerror = () => reject(new Error("No se pudo leer la imagen."));
-      img.src = reader.result;
-    };
-
-    reader.onerror = () => reject(new Error("No se pudo leer el archivo."));
-    reader.readAsDataURL(file);
-  });
-}
-
-function getCalculatedCartons(quantity, unitsPerCarton, explicitCartons) {
-  if (explicitCartons > 0) return Math.ceil(explicitCartons);
-  if (unitsPerCarton > 0) return Math.ceil(quantity / unitsPerCarton);
-  return 0;
-}
-
-function collectProduct() {
-  const exchangeRate = Math.max(num("exchangeRate"), 0.01);
-  const name = $("productName").value.trim();
-  const unitPrice = num("unitPrice");
-  const currency = $("priceCurrency").value;
-  const quantity = Math.floor(num("quantity"));
-  const moq = Math.floor(num("moq"));
-  const unitsPerCarton = Math.floor(num("unitsPerCarton"));
-  const cartons = getCalculatedCartons(quantity, unitsPerCarton, num("cartons"));
-  const lengthCm = num("lengthCm");
-  const widthCm = num("widthCm");
-  const heightCm = num("heightCm");
-  const weightPerCarton = num("weightPerCarton");
-  const domesticShippingRmb = num("domesticShippingRmb");
-  const restrictionType = $("restrictionType").value;
-  const restriction = getRestrictionStatus(restrictionType);
-  const negotiateMoq = $("requestMoqNegotiation").checked;
-
-  if (!name) throw new Error("Escribe el nombre del producto.");
-  if (unitPrice <= 0) throw new Error("Ingresa un precio unitario mayor que cero.");
-  if (quantity <= 0) throw new Error("Ingresa una cantidad válida.");
-  if (restriction.blocked) throw new Error(restriction.label + ". Consulta antes de continuar.");
-  if (moq > 0 && quantity < moq && !negotiateMoq) {
-    throw new Error(`La cantidad solicitada (${quantity}) no cumple el MOQ (${moq}). Aumenta la cantidad o marca la opción para solicitar negociación.`);
-  }
-
-  const unitPriceUsd = currency === "RMB" ? unitPrice / exchangeRate : unitPrice;
-  const goodsValueUsd = unitPriceUsd * quantity;
-  const cbmPerCarton = lengthCm && widthCm && heightCm ? (lengthCm * widthCm * heightCm) / 1_000_000 : 0;
-  const totalCbm = cbmPerCarton * cartons;
-  const totalWeight = weightPerCarton * cartons;
-  const domesticShippingUsd = domesticShippingRmb / exchangeRate;
-
-  return {
-    id: state.editingId || crypto.randomUUID(),
-    url: $("productUrl").value.trim(),
-    name,
-    supplier: $("supplierName").value.trim(),
-    restrictionType,
-    restrictionLabel: restriction.label,
-    restrictionClass: restriction.className,
-    fclOnly: restriction.fclOnly,
-    unitPrice,
-    currency,
-    unitPriceUsd,
-    quantity,
-    moq,
-    negotiateMoq,
-    unitsPerCarton,
-    cartons,
-    lengthCm,
-    widthCm,
-    heightCm,
-    cbmPerCarton,
-    totalCbm,
-    weightPerCarton,
-    totalWeight,
-    domesticShippingRmb,
-    domesticShippingUsd,
-    goodsValueUsd,
-    notes: $("productNotes").value.trim(),
-    imageData: state.imageData,
-    createdAt: new Date().toISOString()
-  };
 }
 
 function resetProductForm() {
@@ -221,364 +512,282 @@ function resetProductForm() {
   $("priceCurrency").value = "RMB";
   $("restrictionType").value = "normal";
   state.editingId = null;
-  state.imageData = "";
   $("addProductButton").textContent = "Agregar a mi importación";
-  hideProductAlert();
+  $("productAlert").classList.add("hidden");
 }
 
-function fillProductForm(product) {
-  $("productUrl").value = product.url || "";
-  $("productName").value = product.name || "";
-  $("supplierName").value = product.supplier || "";
-  $("restrictionType").value = product.restrictionType || "normal";
-  $("unitPrice").value = product.unitPrice || "";
-  $("priceCurrency").value = product.currency || "RMB";
-  $("quantity").value = product.quantity || "";
-  $("moq").value = product.moq || "";
-  $("unitsPerCarton").value = product.unitsPerCarton || "";
-  $("cartons").value = product.cartons || "";
-  $("lengthCm").value = product.lengthCm || "";
-  $("widthCm").value = product.widthCm || "";
-  $("heightCm").value = product.heightCm || "";
-  $("weightPerCarton").value = product.weightPerCarton || "";
-  $("domesticShippingRmb").value = product.domesticShippingRmb || "";
-  $("productNotes").value = product.notes || "";
-  $("requestMoqNegotiation").checked = Boolean(product.negotiateMoq);
-  state.editingId = product.id;
-  state.imageData = product.imageData || "";
-  $("addProductButton").textContent = "Guardar cambios";
-  window.scrollTo({ top: $("productForm").getBoundingClientRect().top + window.scrollY - 110, behavior: "smooth" });
+function collectProduct() {
+  const rates = calculatorRates();
+  const name = $("productName").value.trim();
+  const unitPrice = fieldNum("unitPrice");
+  const currency = $("priceCurrency").value;
+  const quantity = Math.floor(fieldNum("quantity"));
+  const moq = Math.floor(fieldNum("moq"));
+  const unitsPerCarton = Math.floor(fieldNum("unitsPerCarton"));
+  const explicitCartons = Math.floor(fieldNum("cartons"));
+  const cartons = explicitCartons > 0 ? explicitCartons : unitsPerCarton > 0 ? Math.ceil(quantity / unitsPerCarton) : 0;
+  const restriction = getRestriction($("restrictionType").value);
+
+  if (!name) throw new Error("Escribe el nombre del producto.");
+  if (unitPrice <= 0) throw new Error("Ingresa un precio válido.");
+  if (quantity <= 0) throw new Error("Ingresa una cantidad válida.");
+  if (restriction.blocked) throw new Error(restriction.label + ". Consulta antes de continuar.");
+  if (moq > 0 && quantity < moq && !$("requestMoqNegotiation").checked) {
+    throw new Error(`La cantidad ${quantity} no cumple el MOQ ${moq}.`);
+  }
+
+  const length = fieldNum("lengthCm");
+  const width = fieldNum("widthCm");
+  const height = fieldNum("heightCm");
+  const cbmPerCarton = length && width && height ? length * width * height / 1_000_000 : 0;
+  const unitPriceUsd = currency === "RMB" ? unitPrice / rates.exchange : unitPrice;
+
+  return {
+    id: state.editingId || (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
+    url: $("productUrl").value.trim(),
+    name,
+    supplier: $("supplierName").value.trim(),
+    restrictionType: $("restrictionType").value,
+    restrictionLabel: restriction.label,
+    restrictionClass: restriction.className,
+    fclOnly: restriction.fclOnly,
+    unitPrice,
+    currency,
+    quantity,
+    moq,
+    unitsPerCarton,
+    cartons,
+    goodsUsd: unitPriceUsd * quantity,
+    totalCbm: cbmPerCarton * cartons,
+    totalWeight: fieldNum("weightPerCarton") * cartons,
+    domesticUsd: fieldNum("domesticShippingRmb") / rates.exchange,
+    notes: $("productNotes").value.trim()
+  };
 }
 
 function renderProducts() {
   const list = $("productList");
   list.innerHTML = "";
-
   $("productCounter").textContent = `${state.products.length} ${state.products.length === 1 ? "producto" : "productos"}`;
   $("emptyCart").classList.toggle("hidden", state.products.length > 0);
 
-  for (const product of state.products) {
+  state.products.forEach((product) => {
     const item = document.createElement("article");
     item.className = "product-item";
-
-    const thumb = product.imageData
-      ? `<div class="product-thumb"><img src="${product.imageData}" alt=""></div>`
-      : `<div class="product-thumb">${product.name.slice(0, 2).toUpperCase()}</div>`;
-
-    const moqText = product.moq > 0
-      ? `${product.quantity >= product.moq ? "MOQ cumplido" : "MOQ a negociar"}`
-      : "MOQ no informado";
-
     item.innerHTML = `
-      ${thumb}
-      <div class="product-main">
-        <h4>${escapeHtml(product.name)}</h4>
-        <div class="product-meta">
-          <span>${product.quantity} unidades</span>
-          <span>${product.cartons || "?"} cajas</span>
-          <span>${number(product.totalCbm, 3)} m³</span>
-          <span>${money(product.goodsValueUsd)}</span>
-          <span>${moqText}</span>
-        </div>
-        <span class="status-badge ${product.restrictionClass}">${escapeHtml(product.restrictionLabel)}</span>
-        <div class="product-actions">
-          <button type="button" data-edit="${product.id}">Editar</button>
-          <button type="button" class="delete" data-delete="${product.id}">Eliminar</button>
-          ${product.url ? `<a href="${escapeAttribute(product.url)}" target="_blank" rel="noopener">Abrir enlace</a>` : ""}
-        </div>
+      <h4>${escapeHtml(product.name)}</h4>
+      <div class="product-meta">
+        <span>${product.quantity} unidades</span>
+        <span>${product.cartons || "?"} cajas</span>
+        <span>${number(product.totalCbm, 3)} m³</span>
+        <span>${money(product.goodsUsd)}</span>
+      </div>
+      <span class="status-badge ${product.restrictionClass}">${escapeHtml(product.restrictionLabel)}</span>
+      <div class="product-actions">
+        <button type="button" data-edit="${product.id}">Editar</button>
+        <button type="button" class="delete" data-delete="${product.id}">Eliminar</button>
+        ${product.url ? `<a href="${escapeHtml(product.url)}" target="_blank" rel="noopener">Abrir enlace</a>` : ""}
       </div>
     `;
-
     list.appendChild(item);
-  }
-
-  list.querySelectorAll("[data-edit]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const product = state.products.find((item) => item.id === button.dataset.edit);
-      if (product) fillProductForm(product);
-    });
   });
 
   list.querySelectorAll("[data-delete]").forEach((button) => {
     button.addEventListener("click", () => {
-      state.products = state.products.filter((item) => item.id !== button.dataset.delete);
-      saveState();
-      updateAll();
+      state.products = state.products.filter((product) => product.id !== button.dataset.delete);
+      saveCalculator();
+      renderCalculator();
+    });
+  });
+
+  list.querySelectorAll("[data-edit]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const p = state.products.find((product) => product.id === button.dataset.edit);
+      if (!p) return;
+      $("productUrl").value = p.url || "";
+      $("productName").value = p.name || "";
+      $("supplierName").value = p.supplier || "";
+      $("restrictionType").value = p.restrictionType || "normal";
+      $("unitPrice").value = p.unitPrice || "";
+      $("priceCurrency").value = p.currency || "RMB";
+      $("quantity").value = p.quantity || "";
+      $("moq").value = p.moq || "";
+      $("unitsPerCarton").value = p.unitsPerCarton || "";
+      $("cartons").value = p.cartons || "";
+      $("productNotes").value = p.notes || "";
+      state.editingId = p.id;
+      $("addProductButton").textContent = "Guardar cambios";
+      $("productForm").scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
 }
 
-function getTotals() {
-  return state.products.reduce(
-    (acc, product) => {
-      acc.goods += product.goodsValueUsd;
-      acc.domestic += product.domesticShippingUsd;
-      acc.cbm += product.totalCbm;
-      acc.weight += product.totalWeight;
-      acc.units += product.quantity;
-      return acc;
-    },
-    { goods: 0, domestic: 0, cbm: 0, weight: 0, units: 0 }
-  );
+function calculatorTotals() {
+  return state.products.reduce((acc, p) => {
+    acc.goods += p.goodsUsd;
+    acc.domestic += p.domesticUsd;
+    acc.cbm += p.totalCbm;
+    acc.weight += p.totalWeight;
+    acc.units += p.quantity;
+    return acc;
+  }, { goods: 0, domestic: 0, cbm: 0, weight: 0, units: 0 });
 }
 
-function getSupplierCount() {
-  const names = state.products
-    .map((product) => product.supplier.trim().toLowerCase() || extractDomain(product.url) || product.id)
-    .filter(Boolean);
-  return new Set(names).size;
-}
-
-function calculateProject() {
-  const totals = getTotals();
-  const settings = getSettings();
-  const method = state.method;
+function calculateCalculator() {
+  const totals = calculatorTotals();
+  const rates = calculatorRates();
+  const other = fieldNum("otherLogistics");
+  const taxes = fieldNum("estimatedTaxes");
   const warnings = [];
-
-  let commission = 0;
+  let management = 0;
   let logistics = 0;
-  let commissionDetail = "";
+  let managementDetail = "";
   let logisticsDetail = "";
   let occupancy = 0;
-  let containerCapacity = 0;
 
-  if (method === "LCL") {
-    const commissionCalculated = totals.goods * (settings.lclCommissionPct / 100);
-    commission = totals.goods > 0 ? Math.max(commissionCalculated, settings.lclMinimumCommission) : 0;
-    const smallCargo = totals.cbm > 0 && totals.cbm < settings.smallCargoThreshold;
-    const effectiveRate = settings.lclRate + (smallCargo ? settings.smallCargoSurcharge : 0);
-    logistics = totals.cbm * effectiveRate + settings.otherLogistics;
-    commissionDetail = `${settings.lclCommissionPct}% sobre mercancía${commission === settings.lclMinimumCommission && commissionCalculated < settings.lclMinimumCommission ? " · aplica mínimo" : ""}.`;
-    logisticsDetail = `${money(effectiveRate)} por m³${smallCargo ? " · incluye cargo por carga menor" : ""}.`;
-
-    if (smallCargo) {
-      warnings.push(`La carga tiene ${number(totals.cbm, 2)} m³ y está bajo el límite de ${number(settings.smallCargoThreshold, 1)} m³. Se aplicó el cargo operativo adicional.`);
-    }
-
-    if (state.products.some((product) => product.fclOnly)) {
-      warnings.push("Hay productos marcados como normalmente FCL. El consolidado debe ser revisado antes de aceptarse.");
-    }
+  if (state.method === "LCL") {
+    management = totals.goods > 0 ? Math.max(totals.goods * rates.lclPct / 100, rates.lclMin) : 0;
+    const small = totals.cbm > 0 && totals.cbm < rates.smallThreshold;
+    const effectiveRate = rates.lclRate + (small ? rates.smallExtra : 0);
+    logistics = totals.cbm * effectiveRate + other;
+    managementDetail = `${rates.lclPct}% sobre mercancía.`;
+    logisticsDetail = `${money(effectiveRate)} por m³.`;
+    if (small) warnings.push("Se aplicó el cargo configurado para cargas menores.");
+    if (state.products.some((p) => p.fclOnly)) warnings.push("Hay productos que normalmente requieren FCL.");
   } else {
-    const commissionCalculated = totals.goods * (settings.fclCommissionPct / 100);
-    commission = totals.goods > 0 ? Math.max(commissionCalculated, settings.fclMinimumCommission) : 0;
-    logistics = settings.oceanFreight + settings.chinaLocalCosts + settings.otherLogistics;
-    commissionDetail = `${settings.fclCommissionPct}% sobre mercancía${commission === settings.fclMinimumCommission && commissionCalculated < settings.fclMinimumCommission ? " · aplica mínimo" : ""}.`;
-    logisticsDetail = `Flete ${money(settings.oceanFreight)} + China ${money(settings.chinaLocalCosts)} + adicionales ${money(settings.otherLogistics)}.`;
-
-    const option = $("containerType").selectedOptions[0];
-    containerCapacity = Number(option.dataset.capacity) || 0;
-    occupancy = containerCapacity > 0 ? (totals.cbm / containerCapacity) * 100 : 0;
-
-    if (occupancy > 100) {
-      warnings.push(`El volumen estimado supera la capacidad referencial del ${settings.containerType}. Debes reducir carga o evaluar otro contenedor.`);
-    } else if (occupancy > 0 && occupancy < 65) {
-      warnings.push(`El contenedor está ocupado aproximadamente al ${number(occupancy, 0)}%. Todavía queda espacio referencial por completar.`);
-    }
+    management = totals.goods > 0 ? Math.max(totals.goods * rates.fclPct / 100, rates.fclMin) : 0;
+    logistics = rates.oceanFreight + rates.chinaLocal + other;
+    occupancy = rates.capacity > 0 ? totals.cbm / rates.capacity * 100 : 0;
+    managementDetail = `${rates.fclPct}% sobre mercancía.`;
+    logisticsDetail = `Flete configurado + gastos China.`;
+    if (occupancy > 100) warnings.push("El volumen supera la capacidad referencial del contenedor.");
   }
 
-  const minimumProjectUsd = settings.minimumProjectUsd;
-  if (totals.goods > 0 && minimumProjectUsd > 0 && totals.goods < minimumProjectUsd) {
-    warnings.push(`El valor de mercancía está bajo el mínimo recomendado de ${money(minimumProjectUsd)}. Puedes seguir agregando productos o solicitar evaluación.`);
-  }
+  if (totals.goods > 0 && totals.goods < rates.minimumGoods) warnings.push("El valor de mercancía está bajo el mínimo recomendado.");
+  if (state.products.some((p) => p.totalCbm <= 0)) warnings.push("Faltan medidas de caja en uno o más productos.");
 
-  const missingPacking = state.products.filter((product) => product.totalCbm <= 0).length;
-  if (missingPacking > 0) {
-    warnings.push(`${missingPacking} producto(s) no tienen CBM calculado. La logística puede estar subestimada.`);
-  }
-
-  const belowMoq = state.products.filter((product) => product.moq > 0 && product.quantity < product.moq).length;
-  if (belowMoq > 0) {
-    warnings.push(`${belowMoq} producto(s) están bajo el MOQ y requieren negociación con el proveedor.`);
-  }
-
-  const totalBeforeTaxes = totals.goods + totals.domestic + commission + logistics;
-  const total = totalBeforeTaxes + settings.estimatedTaxes;
-  const unitCost = totals.units > 0 ? total / totals.units : 0;
+  const total = totals.goods + totals.domestic + management + logistics + taxes;
 
   return {
     ...totals,
-    method,
-    commission,
+    rates,
+    management,
     logistics,
-    taxes: settings.estimatedTaxes,
-    totalBeforeTaxes,
+    taxes,
     total,
-    unitCost,
-    warnings,
-    commissionDetail,
-    logisticsDetail,
+    unitCost: totals.units > 0 ? total / totals.units : 0,
     occupancy,
-    containerCapacity,
-    supplierCount: getSupplierCount(),
-    settings
+    warnings,
+    managementDetail,
+    logisticsDetail
   };
 }
 
-function renderSummary() {
-  const project = calculateProject();
+function renderCalculator() {
+  renderProducts();
+  const result = calculateCalculator();
 
-  $("cartGoodsValue").textContent = money(project.goods);
-  $("cartDomesticShipping").textContent = money(project.domestic);
-  $("cartCbm").textContent = `${number(project.cbm, 3)} m³`;
-  $("cartWeight").textContent = `${number(project.weight, 1)} kg`;
+  $("cartGoodsValue").textContent = money(result.goods);
+  $("cartDomesticShipping").textContent = money(result.domestic);
+  $("cartCbm").textContent = `${number(result.cbm, 3)} m³`;
+  $("cartWeight").textContent = `${number(result.weight, 1)} kg`;
 
-  $("summaryGoods").textContent = money(project.goods);
-  $("summaryCommission").textContent = money(project.commission);
-  $("summaryLogistics").textContent = money(project.logistics + project.domestic);
-  $("summaryTotal").textContent = money(project.total);
-  $("unitCostSummary").textContent = `Costo unitario estimado: ${money(project.unitCost)}`;
-  $("commissionDetail").textContent = project.commissionDetail;
-  $("logisticsDetail").textContent = project.logisticsDetail;
+  $("summaryGoods").textContent = money(result.goods);
+  $("summaryCommission").textContent = money(result.management);
+  $("summaryLogistics").textContent = money(result.logistics + result.domestic);
+  $("summaryTotal").textContent = money(result.total);
+  $("unitCostSummary").textContent = `Costo unitario: ${money(result.unitCost)}`;
+  $("commissionDetail").textContent = result.managementDetail;
+  $("logisticsDetail").textContent = result.logisticsDetail;
+  $("minimumOrderStatus").textContent =
+    result.goods > 0 && result.goods >= result.rates.minimumGoods
+      ? "Mínimo recomendado cumplido."
+      : `Mínimo recomendado: ${money(result.rates.minimumGoods)}.`;
 
-  const minimum = project.settings.minimumProjectUsd;
-  if (project.goods <= 0) {
-    $("minimumOrderStatus").textContent = "Agrega productos para evaluar el mínimo.";
-  } else if (minimum <= 0 || project.goods >= minimum) {
-    $("minimumOrderStatus").textContent = "Valor mínimo recomendado cumplido.";
-  } else {
-    $("minimumOrderStatus").textContent = `Faltan ${money(minimum - project.goods)} para el mínimo recomendado.`;
+  $("containerTypeWrap").classList.toggle("hidden", state.method !== "FCL");
+  $("containerProgressWrap").classList.toggle("hidden", state.method !== "FCL");
+
+  if (state.method === "FCL") {
+    const pct = Math.max(0, Math.min(result.occupancy, 100));
+    $("containerProgressTitle").textContent = `Ocupación ${$("containerType").value}`;
+    $("containerProgressText").textContent = `${number(result.cbm, 2)} de ${number(result.rates.capacity, 0)} m³`;
+    $("containerProgressPct").textContent = `${number(result.occupancy, 0)}%`;
+    $("containerProgressBar").style.width = `${pct}%`;
   }
 
-  const progressWrap = $("containerProgressWrap");
-  progressWrap.classList.toggle("hidden", project.method !== "FCL");
-
-  if (project.method === "FCL") {
-    const containerType = $("containerType").value;
-    const shownPct = Math.max(0, Math.min(project.occupancy, 100));
-    $("containerProgressTitle").textContent = `Ocupación ${containerType}`;
-    $("containerProgressText").textContent = `${number(project.cbm, 2)} de ${number(project.containerCapacity, 0)} m³ referenciales`;
-    $("containerProgressPct").textContent = `${number(project.occupancy, 0)}%`;
-    $("containerProgressBar").style.width = `${shownPct}%`;
-    $("containerProgressBar").style.background = project.occupancy > 100 ? "#b83232" : "";
-  }
-
-  const warningList = $("projectWarnings");
-  warningList.innerHTML = "";
-
+  const warningBox = $("projectWarnings");
+  warningBox.innerHTML = "";
   if (state.products.length === 0) {
-    warningList.innerHTML = `<div class="warning-item">Agrega al menos un producto para obtener una estimación.</div>`;
-  } else if (project.warnings.length === 0) {
-    warningList.innerHTML = `<div class="warning-item success">La información inicial está completa. De todas formas, debe ser confirmada por el equipo en China.</div>`;
+    warningBox.innerHTML = `<div class="warning-item">Agrega productos para obtener una estimación.</div>`;
+  } else if (result.warnings.length === 0) {
+    warningBox.innerHTML = `<div class="warning-item success">Estimación inicial completa. Debe ser revisada antes de comprar.</div>`;
   } else {
-    project.warnings.forEach((warning) => {
+    result.warnings.forEach((warning) => {
       const item = document.createElement("div");
       item.className = "warning-item";
       item.textContent = warning;
-      warningList.appendChild(item);
+      warningBox.appendChild(item);
     });
+  }
+
+  saveCalculator();
+}
+
+function saveCalculator() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    products: state.products,
+    method: state.method
+  }));
+}
+
+function loadCalculator() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    state.products = Array.isArray(saved.products) ? saved.products : [];
+    state.method = saved.method === "FCL" ? "FCL" : "LCL";
+  } catch {
+    state.products = [];
   }
 }
 
-function switchShippingMethod(method) {
-  state.method = method;
-  $("lclCard").classList.toggle("active", method === "LCL");
-  $("fclCard").classList.toggle("active", method === "FCL");
-  $("lclSettings").classList.toggle("hidden", method !== "LCL");
-  $("fclSettings").classList.toggle("hidden", method !== "FCL");
-  document.querySelector(`input[name="shippingMethod"][value="${method}"]`).checked = true;
-  saveState();
-  renderSummary();
-}
-
-function buildSummaryText() {
-  const project = calculateProject();
-  const clientName = $("clientName").value.trim() || "No informado";
-  const clientCountry = $("clientCountry").value.trim() || "No informado";
-  const clientEmail = $("clientEmail").value.trim() || "No informado";
-  const clientWhatsapp = $("clientWhatsapp").value.trim() || "No informado";
-
-  const productsText = state.products.map((product, index) => {
-    return [
-      `${index + 1}. ${product.name}`,
-      `Cantidad: ${product.quantity} | MOQ: ${product.moq || "no informado"} | Cajas: ${product.cartons || "pendiente"}`,
-      `Mercancía: ${money(product.goodsValueUsd)} | CBM: ${number(product.totalCbm, 3)} | Peso: ${number(product.totalWeight, 1)} kg`,
-      product.url ? `Enlace: ${product.url}` : "",
-      product.notes ? `Observaciones: ${product.notes}` : "",
-      `Estado: ${product.restrictionLabel}`
-    ].filter(Boolean).join("\n");
-  }).join("\n\n");
-
-  return [
-    "SOLICITUD DE REVISIÓN — CHELME GLOBAL TRADE",
-    "",
-    `Cliente: ${clientName}`,
-    `Destino: ${clientCountry}`,
-    `Correo: ${clientEmail}`,
-    `WhatsApp: ${clientWhatsapp}`,
-    "",
-    `Modalidad: ${project.method === "LCL" ? "Consolidado Chelme Global" : `FCL ${project.settings.containerType}`}`,
-    `Productos: ${state.products.length}`,
-    `Proveedores estimados: ${project.supplierCount}`,
-    `Unidades: ${project.units}`,
-    `Volumen estimado: ${number(project.cbm, 3)} m³`,
-    `Peso estimado: ${number(project.weight, 1)} kg`,
-    "",
-    `Mercancía: ${money(project.goods)}`,
-    `Transporte interno China: ${money(project.domestic)}`,
-    `Gestión Chelme: ${money(project.commission)}`,
-    `Logística: ${money(project.logistics)}`,
-    `Impuestos ingresados: ${money(project.taxes)}`,
-    `TOTAL ESTIMADO: ${money(project.total)}`,
-    `Costo unitario estimado: ${money(project.unitCost)}`,
-    "",
-    "PRODUCTOS",
-    productsText || "Sin productos.",
-    "",
-    "Aviso: esta simulación es referencial y debe ser confirmada antes de pagar o comprar."
-  ].join("\n");
-}
-
-function downloadProject() {
+function sendCalculatorWhatsapp() {
   if (state.products.length === 0) {
-    alert("Agrega productos antes de descargar el proyecto.");
+    alert("Agrega al menos un producto.");
     return;
   }
 
-  const project = {
-    exportedAt: new Date().toISOString(),
-    client: {
-      name: $("clientName").value.trim(),
-      country: $("clientCountry").value.trim(),
-      email: $("clientEmail").value.trim(),
-      whatsapp: $("clientWhatsapp").value.trim()
-    },
-    products: state.products,
-    calculation: calculateProject()
-  };
+  const result = calculateCalculator();
+  const lines = [
+    "SIMULACIÓN DE IMPORTACIÓN — CHELME GLOBAL TRADE",
+    "",
+    `Modalidad: ${state.method === "LCL" ? "Consolidado Chelme Global" : `FCL ${$("containerType").value}`}`,
+    `Productos: ${state.products.length}`,
+    `Unidades: ${result.units}`,
+    `Volumen: ${number(result.cbm, 3)} m³`,
+    `Peso: ${number(result.weight, 1)} kg`,
+    "",
+    `Mercancía: ${money(result.goods)}`,
+    `Transporte interno: ${money(result.domestic)}`,
+    `Gestión Chelme: ${money(result.management)}`,
+    `Logística: ${money(result.logistics)}`,
+    `Impuestos ingresados: ${money(result.taxes)}`,
+    `TOTAL ESTIMADO: ${money(result.total)}`,
+    "",
+    "PRODUCTOS",
+    ...state.products.map((p, i) => `${i + 1}. ${p.name} — ${p.quantity} unidades — ${number(p.totalCbm, 3)} m³ — ${money(p.goodsUsd)}`),
+    "",
+    "Esta simulación es referencial y requiere revisión."
+  ];
 
-  const blob = new Blob([JSON.stringify(project, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = `proyecto-chelme-${new Date().toISOString().slice(0, 10)}.json`;
-  anchor.click();
-  URL.revokeObjectURL(url);
+  window.open(`https://wa.me/${CONFIG.business.whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank", "noopener");
 }
 
-function resetProject() {
-  if (!confirm("¿Seguro que quieres borrar todos los productos y datos del proyecto?")) return;
-  state.products = [];
-  state.editingId = null;
-  state.imageData = "";
-  localStorage.removeItem(STORAGE_KEY);
-  resetProductForm();
-  ["clientName", "clientCountry", "clientEmail", "clientWhatsapp"].forEach((id) => $(id).value = "");
-  updateAll();
-}
-
-function updateAll() {
-  renderProducts();
-  renderSummary();
-  saveState();
-}
-
-function extractDomain(url) {
-  if (!url) return "";
-  try {
-    return new URL(url).hostname.replace("www.", "");
-  } catch {
-    return "";
-  }
+function switchMethod(method) {
+  state.method = method;
+  $("lclCard").classList.toggle("active", method === "LCL");
+  $("fclCard").classList.toggle("active", method === "FCL");
+  document.querySelector(`input[name="shippingMethod"][value="${method}"]`).checked = true;
+  renderCalculator();
 }
 
 function escapeHtml(value) {
@@ -590,96 +799,87 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function escapeAttribute(value) {
-  return escapeHtml(value);
+function initEvents() {
+  $("menuToggle").addEventListener("click", () => $("mainNav").classList.toggle("open"));
+  $("mainNav").querySelectorAll("a").forEach((link) => link.addEventListener("click", () => $("mainNav").classList.remove("open")));
+
+  document.querySelectorAll("[data-quote-service]").forEach((button) => {
+    button.addEventListener("click", () => setQuoteService(button.dataset.quoteService));
+  });
+
+  document.querySelectorAll("[data-service-button], [data-quick-service]").forEach((button) => {
+    const service = button.dataset.serviceButton || button.dataset.quickService;
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      selectAndScrollService(service);
+    });
+  });
+
+  $("quoteForm").addEventListener("submit", sendQuote);
+  $("clearQuote").addEventListener("click", () => {
+    $("quoteForm").reset();
+    setQuoteService(state.quoteService);
+  });
+
+  $("openCalculator").addEventListener("click", () => {
+    $("calculatorApp").classList.toggle("hidden");
+    $("openCalculator").textContent = $("calculatorApp").classList.contains("hidden")
+      ? "Abrir calculadora avanzada"
+      : "Cerrar calculadora";
+  });
+
+  $("productForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    try {
+      const product = collectProduct();
+      const existing = state.products.findIndex((p) => p.id === product.id);
+      if (existing >= 0) state.products[existing] = product;
+      else state.products.push(product);
+      resetProductForm();
+      renderCalculator();
+    } catch (error) {
+      $("productAlert").textContent = error.message;
+      $("productAlert").classList.remove("hidden");
+    }
+  });
+
+  $("clearProductForm").addEventListener("click", resetProductForm);
+  $("loadExample").addEventListener("click", () => {
+    $("productName").value = "Lámpara solar exterior";
+    $("supplierName").value = "Proveedor de ejemplo";
+    $("unitPrice").value = "42";
+    $("priceCurrency").value = "RMB";
+    $("quantity").value = "500";
+    $("moq").value = "300";
+    $("unitsPerCarton").value = "10";
+    $("lengthCm").value = "58";
+    $("widthCm").value = "42";
+    $("heightCm").value = "36";
+    $("weightPerCarton").value = "14.5";
+    $("domesticShippingRmb").value = "680";
+  });
+
+  document.querySelectorAll('input[name="shippingMethod"]').forEach((radio) => {
+    radio.addEventListener("change", () => switchMethod(radio.value));
+  });
+
+  ["containerType", "otherLogistics", "estimatedTaxes"].forEach((id) => {
+    $(id).addEventListener("input", renderCalculator);
+    $(id).addEventListener("change", renderCalculator);
+  });
+
+  $("sendCalculatorWhatsapp").addEventListener("click", sendCalculatorWhatsapp);
+  $("resetProject").addEventListener("click", () => {
+    if (!confirm("¿Borrar todos los productos del cálculo?")) return;
+    state.products = [];
+    localStorage.removeItem(STORAGE_KEY);
+    resetProductForm();
+    renderCalculator();
+  });
 }
 
-$("productImage").addEventListener("change", async (event) => {
-  const file = event.target.files[0];
-  if (!file) {
-    state.imageData = "";
-    return;
-  }
-
-  try {
-    state.imageData = await compressImage(file);
-    showProductAlert("Imagen cargada correctamente.", "success");
-  } catch (error) {
-    showProductAlert(error.message);
-  }
-});
-
-$("productForm").addEventListener("submit", (event) => {
-  event.preventDefault();
-  hideProductAlert();
-
-  try {
-    const product = collectProduct();
-    const existingIndex = state.products.findIndex((item) => item.id === product.id);
-
-    if (existingIndex >= 0) {
-      state.products[existingIndex] = product;
-      showProductAlert("Producto actualizado correctamente.", "success");
-    } else {
-      state.products.push(product);
-      showProductAlert("Producto agregado a tu importación.", "success");
-    }
-
-    updateAll();
-    setTimeout(resetProductForm, 500);
-  } catch (error) {
-    showProductAlert(error.message);
-  }
-});
-
-$("clearProductForm").addEventListener("click", resetProductForm);
-
-$("loadExample").addEventListener("click", () => {
-  $("productName").value = "Lámpara solar para exterior";
-  $("supplierName").value = "Proveedor de ejemplo";
-  $("unitPrice").value = "42";
-  $("priceCurrency").value = "RMB";
-  $("quantity").value = "500";
-  $("moq").value = "300";
-  $("unitsPerCarton").value = "10";
-  $("cartons").value = "";
-  $("lengthCm").value = "58";
-  $("widthCm").value = "42";
-  $("heightCm").value = "36";
-  $("weightPerCarton").value = "14.5";
-  $("domesticShippingRmb").value = "680";
-  $("productNotes").value = "Color negro, luz blanca, panel solar incluido.";
-  $("restrictionType").value = "normal";
-  showProductAlert("Ejemplo cargado. Puedes modificarlo y agregarlo.", "success");
-});
-
-document.querySelectorAll('input[name="shippingMethod"]').forEach((radio) => {
-  radio.addEventListener("change", () => switchShippingMethod(radio.value));
-});
-
-document.querySelectorAll(".settings-box input, .settings-box select").forEach((input) => {
-  input.addEventListener("input", updateAll);
-  input.addEventListener("change", updateAll);
-});
-
-["clientName", "clientCountry", "clientEmail", "clientWhatsapp"].forEach((id) => {
-  $(id).addEventListener("input", saveState);
-});
-
-$("sendWhatsapp").addEventListener("click", () => {
-  if (state.products.length === 0) {
-    alert("Agrega al menos un producto antes de enviar la solicitud.");
-    return;
-  }
-
-  const text = encodeURIComponent(buildSummaryText());
-  window.open(`https://wa.me/8615257960742?text=${text}`, "_blank", "noopener");
-});
-
-$("downloadProject").addEventListener("click", downloadProject);
-$("printProject").addEventListener("click", () => window.print());
-$("resetProject").addEventListener("click", resetProject);
-
-loadState();
-switchShippingMethod(state.method);
-updateAll();
+initBusinessData();
+loadCalculator();
+initEvents();
+setQuoteService("lcl");
+switchMethod(state.method);

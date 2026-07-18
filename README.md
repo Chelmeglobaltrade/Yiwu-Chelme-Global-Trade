@@ -1,58 +1,64 @@
-# Chelme Global Trade — Plataforma V1
+# Chelme Global Trade — Plataforma V2
 
-Esta es una primera versión gratuita y estática para probar el concepto:
+Esta versión transforma la calculadora en una opción dentro de una página comercial completa.
 
-- Agregar productos de 1688, Alibaba u otros proveedores.
-- Controlar MOQ por producto.
-- Calcular cajas, peso y CBM.
-- Armar “Mi importación”.
-- Elegir Consolidado Chelme Global o contenedor FCL.
-- Calcular comisión, logística y total estimado.
-- Mostrar ocupación referencial de 20GP, 40GP y 40HQ.
-- Enviar el resumen completo por WhatsApp.
-- Descargar el proyecto en formato JSON.
-- Guardar temporalmente el proyecto en el navegador.
+## Servicios incluidos
+
+- Consolidado Chelme Global por m³.
+- Contenedores FCL 20GP, 40GP y 40HQ.
+- Búsqueda de proveedores.
+- Control de calidad e inspección en China.
+- Supervisión de carga.
+- Traducción y negociación.
+- Viajes de negocios y acompañamiento en China.
+- Asesorías.
+- Etiquetado, empaque y marca privada.
+- Calculadora avanzada de importación.
+- Solicitudes de cotización por WhatsApp.
 
 ## Archivos
 
 - `index.html`
 - `styles.css`
 - `script.js`
+- `config.js`
+- `editor-tarifas.html`
+- `editor-tarifas.js`
 - `logo.png`
 - `alan.jpg`
 - `yiwu.jpg`
 
-## Cómo instalar en GitHub
+## Cómo actualizar tarifas fácilmente
 
-1. Abre el repositorio `Yiwu-Chelme-Global-Trade`.
-2. Guarda una copia del `index.html` actual por seguridad.
-3. Sube todos los archivos de esta carpeta a la raíz del repositorio.
-4. Cuando GitHub pregunte si deseas reemplazar `index.html`, confirma el reemplazo.
+1. Abre esta dirección después de publicar:
+   `https://TUUSUARIO.github.io/TUREPOSITORIO/editor-tarifas.html`
+2. Cambia los valores.
+3. Presiona **Descargar nuevo config.js**.
+4. En GitHub, reemplaza únicamente el archivo `config.js`.
 5. Haz `Commit changes`.
-6. Espera 1–3 minutos y actualiza GitHub Pages.
+6. La página se actualizará automáticamente.
 
-## Tarifas iniciales configuradas
+Así puedes bajar el precio del consolidado cuando baje el flete sin modificar `index.html`, `styles.css` ni `script.js`.
 
-Estas cifras son editables dentro de la calculadora:
+## Instalación
 
-- Consolidado: USD 270/m³.
-- Carga menor a 5 m³: cargo adicional de USD 100/m³.
-- Gestión LCL: 8%.
-- Gestión FCL: 5%.
-- Compra mínima recomendada: USD 5.000.
-- Flete 40HQ de referencia: USD 6.500.
-- Gastos locales China de referencia: USD 1.000.
+1. Descomprime el ZIP.
+2. Sube todos los archivos a la raíz del repositorio.
+3. Reemplaza los archivos anteriores cuando GitHub lo solicite.
+4. Haz `Commit changes`.
+5. Espera 1–3 minutos y recarga la web.
 
-Antes de publicar de forma definitiva, revisa cada valor y ajústalo a tu operación vigente.
+## Nota importante
 
-## Limitaciones de esta versión
+Los valores de control de calidad, viajes y traducción están inicialmente en `0`, por lo que la página muestra “cotización personalizada”. Cuando definas tus tarifas, agrégalas mediante `editor-tarifas.html`.
 
-- No hay cuentas de usuario.
-- No hay base de datos.
-- No hay panel administrativo protegido.
-- Las imágenes de productos se guardan en el navegador y pueden ocupar espacio.
-- No hay conexión automática con 1688.
-- No procesa pagos.
-- Todos los cálculos son referenciales.
+## Ideas futuras
 
-La siguiente etapa puede agregar Supabase, panel administrativo, cotizaciones guardadas y estados de pedido.
+- Verificación de proveedores.
+- Inspección por videollamada.
+- Supervisión de carga de contenedores.
+- Gestión de muestras.
+- Auditoría de fábrica.
+- Revisión rápida de enlaces de 1688.
+- Plan mensual de compras.
+- Desarrollo de marca privada.

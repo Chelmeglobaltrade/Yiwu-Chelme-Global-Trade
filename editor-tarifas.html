@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor interno de tarifas | Chelme Global Trade</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js"></script>
+</head>
+<body>
+  <main class="content-section">
+    <div class="container narrow">
+      <div class="section-heading">
+        <span class="eyebrow dark">Herramienta interna</span>
+        <h2>Editor de tarifas</h2>
+        <p>
+          Modifica los valores y descarga un nuevo archivo <strong>config.js</strong>.
+          Después reemplaza únicamente ese archivo en GitHub.
+        </p>
+      </div>
+
+      <section class="panel">
+        <form id="rateEditor">
+          <div class="form-grid">
+            <label class="field">
+              <span>Tipo de cambio RMB/USD</span>
+              <input type="number" id="eExchange" step="0.01">
+            </label>
+            <label class="field">
+              <span>Asesoría desde (USD)</span>
+              <input type="number" id="eAdvisory" step="1">
+            </label>
+
+            <label class="field">
+              <span>Consolidado por m³ (USD)</span>
+              <input type="number" id="eLclRate" step="1">
+            </label>
+            <label class="field">
+              <span>Límite de carga pequeña (m³)</span>
+              <input type="number" id="eLclThreshold" step="0.1">
+            </label>
+            <label class="field">
+              <span>Cargo extra carga pequeña por m³ (USD)</span>
+              <input type="number" id="eLclExtra" step="1">
+            </label>
+            <label class="field">
+              <span>Gestión LCL (%)</span>
+              <input type="number" id="eLclPct" step="0.1">
+            </label>
+            <label class="field">
+              <span>Comisión mínima LCL (USD)</span>
+              <input type="number" id="eLclMin" step="1">
+            </label>
+            <label class="field">
+              <span>Compra mínima recomendada (USD)</span>
+              <input type="number" id="eMinimumGoods" step="1">
+            </label>
+
+            <label class="field">
+              <span>Gestión FCL (%)</span>
+              <input type="number" id="eFclPct" step="0.1">
+            </label>
+            <label class="field">
+              <span>Comisión mínima FCL (USD)</span>
+              <input type="number" id="eFclMin" step="1">
+            </label>
+            <label class="field">
+              <span>Gastos locales China FCL (USD)</span>
+              <input type="number" id="eChinaLocal" step="1">
+            </label>
+            <label class="field">
+              <span>Flete 20GP (USD)</span>
+              <input type="number" id="eFreight20" step="1">
+            </label>
+            <label class="field">
+              <span>Flete 40GP (USD)</span>
+              <input type="number" id="eFreight40" step="1">
+            </label>
+            <label class="field">
+              <span>Flete 40HQ (USD)</span>
+              <input type="number" id="eFreight40HQ" step="1">
+            </label>
+
+            <label class="field">
+              <span>Control de calidad — visita base (USD)</span>
+              <input type="number" id="eQcBase" step="1">
+            </label>
+            <label class="field">
+              <span>Control de calidad — por día (USD)</span>
+              <input type="number" id="eQcDay" step="1">
+            </label>
+
+            <label class="field">
+              <span>Planificación de viaje (USD)</span>
+              <input type="number" id="eTripPlanning" step="1">
+            </label>
+            <label class="field">
+              <span>Guía por día (USD)</span>
+              <input type="number" id="eTripGuide" step="1">
+            </label>
+            <label class="field">
+              <span>Intérprete por día (USD)</span>
+              <input type="number" id="eTripInterpreter" step="1">
+            </label>
+            <label class="field">
+              <span>Transporte local por día (USD)</span>
+              <input type="number" id="eTripTransport" step="1">
+            </label>
+
+            <label class="field">
+              <span>Traducción remota por hora (USD)</span>
+              <input type="number" id="eTranslationHour" step="1">
+            </label>
+            <label class="field">
+              <span>Traducción presencial por día (USD)</span>
+              <input type="number" id="eTranslationDay" step="1">
+            </label>
+
+            <label class="field">
+              <span>Depósito búsqueda de proveedores (USD)</span>
+              <input type="number" id="eSourcing" step="1">
+            </label>
+            <label class="field">
+              <span>Texto próxima salida consolidado</span>
+              <input type="text" id="eDeparture">
+            </label>
+          </div>
+
+          <div class="form-actions" style="margin-top:24px">
+            <button class="btn btn-gold" type="submit">Descargar nuevo config.js</button>
+            <a class="btn btn-light" href="index.html">Volver a la página</a>
+          </div>
+        </form>
+      </section>
+
+      <p class="legal-note">
+        Este editor no cambia la web automáticamente. Descarga el archivo y reemplaza
+        <strong>config.js</strong> en GitHub. Es el único archivo que necesitas modificar
+        cuando cambien los fletes o tarifas.
+      </p>
+    </div>
+  </main>
+  <script src="editor-tarifas.js"></script>
+</body>
+</html>
