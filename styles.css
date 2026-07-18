@@ -317,3 +317,12 @@ footer{padding:35px 0;background:var(--petrol-3);color:rgba(255,255,255,.78)}
 @media(max-width:520px){
   .gallery-grid{grid-template-columns:1fr}
 }
+
+
+/* V4.1: restauración de la portada original */
+.hero-person>img{
+  width:100%;
+  aspect-ratio:4/5;
+  object-fit:cover;
+  object-position:center top;
+}
