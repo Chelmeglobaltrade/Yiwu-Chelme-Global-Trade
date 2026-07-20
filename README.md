@@ -1,33 +1,12 @@
-# Chelme Global Trade — V8 Modular
+# Chelme Global Trade — V8.1 restaurada
 
-Esta versión reorganiza completamente la experiencia.
+Esta versión conserva la página completa de la V7 y solo aplica cambios puntuales:
 
-## Páginas
-
-- `index.html`: portada limpia y comercial.
-- `cotizar.html`: calculadora y solicitud con vista previa.
-- `reservar-asesoria.html`: reserva y pago de asesoría.
-- `viajes-china.html`: paquetes de acompañamiento comercial.
-- `editor-tarifas.html`: genera un bloque local para actualizar tarifas.
-
-## Cambios importantes
-
-- Ya no se solicitan “datos bancarios” desde la portada.
-- La reserva de asesoría se confirma en una página separada.
-- El mensaje de WhatsApp es corto y tiene número de referencia.
-- La solicitud se previsualiza antes de enviarse.
-- Los viajes a China tienen página y paquetes propios.
-- La fotografía panorámica de Shanghái fue recortada a 16:9.
-- “Marca privada” se retiró del bloque principal.
-- Etiquetado y empaque aparecen como servicios complementarios.
-- Cada acción usa un botón diferente:
-  - dorado: reservar o iniciar un servicio pagado;
-  - petróleo: calcular;
-  - verde: WhatsApp;
-  - blanco: abrir otra página.
-- El recargo menor a 5 m³ es fijo, no por m³.
-- La búsqueda de proveedor solo se suma cuando se selecciona.
-
-## Publicación
-
-Sube todos los archivos del ZIP a la raíz del repositorio y reemplaza la versión anterior.
+- Se mantienen portada, servicios, calculadora, formulario, galería, tipo de cambio, FAQ y todas las explicaciones.
+- Se elimina el bloque grande para pedir datos bancarios.
+- La asesoría pasa a `asesoria.html`.
+- Los viajes pasan a `viajes-china.html`, pero la portada mantiene su resumen.
+- Se reemplaza “Marca privada” por “Recepción, etiquetado y documentación”.
+- La imagen de Shanghái se recorta a 16:9.
+- La cotización muestra una vista previa antes de abrir WhatsApp.
+- Cada solicitud recibe una referencia.

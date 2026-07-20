@@ -10,7 +10,10 @@ const state = {
   quoteFiles: [],
   calcMode: "photos",
   quoteBreakdown: [],
-  lastSimpleResult: null
+  lastSimpleResult: null,
+  preparedQuoteText: "",
+  preparedQuoteFiles: [],
+  preparedQuoteReference: ""
 };
 
 const services = {
@@ -484,82 +487,47 @@ function firstMissingRequired(root){
   })||null;
 }
 
+function createQuoteReference(){
+  const now=new Date();
+  const date=[now.getFullYear(),String(now.getMonth()+1).padStart(2,"0"),String(now.getDate()).padStart(2,"0")].join("");
+  const token=Math.random().toString(36).slice(2,6).toUpperCase();
+  return `CGT-${date}-${token}`;
+}
+function getSelectedSourcingStatus(){
+  const box=$("qIncludeSourcing");
+  if(!box)return "No aplica";
+  return box.checked?"Sí, necesita búsqueda y gestión":"No, ya tiene proveedor";
+}
+function renderQuotePreview(items){
+  $("quoteReference").textContent=state.preparedQuoteReference;
+  $("quotePreviewGrid").innerHTML=items.map(([label,value])=>`<div class="quote-preview-item"><span>${escapeText(label)}</span><strong>${escapeText(value)}</strong></div>`).join("");
+  $("quotePreview").classList.remove("hidden");
+  $("quotePreview").scrollIntoView({behavior:"smooth",block:"center"});
+}
+async function sendPreparedQuote(){
+  const text=state.preparedQuoteText,files=state.preparedQuoteFiles;
+  if(files.length&&navigator.share&&navigator.canShare){
+    try{const data={title:"Solicitud Chelme Global Trade",text,files};if(navigator.canShare(data)){await navigator.share(data);return;}}catch(error){if(error.name==="AbortError")return;}
+  }
+  window.open(`https://wa.me/${CONFIG.business.whatsapp}?text=${encodeURIComponent(text)}`,"_blank","noopener");
+  if(files.length){$("quoteAlert").textContent="WhatsApp está abierto. Adjunta los archivos seleccionados antes de enviar.";$("quoteAlert").classList.remove("hidden");}
+}
+
 async function submitQuote(event){
   event.preventDefault();
   $("quoteAlert").classList.add("hidden");
-
   const missing=firstMissingRequired($("quoteForm"));
-  if(missing){
-    const label=missing.closest(".field")?.querySelector("span")?.textContent||"un campo obligatorio";
-    $("quoteAlert").textContent=`Completa: ${label.replace("*","").trim()}.`;
-    $("quoteAlert").classList.remove("hidden");
-    missing.focus();
-    return;
-  }
-
-  if(state.sourceMode==="photos"&&state.quoteFiles.length===0){
-    $("quoteAlert").textContent="Selecciona al menos una fotografía.";
-    $("quoteAlert").classList.remove("hidden");
-    return;
-  }
-
-  if(state.sourceMode==="bulk"){
-    const pasted=$("sourceBulkList")?.value.trim()||"";
-    if(state.quoteFiles.length===0&&!pasted){
-      $("quoteAlert").textContent="Sube una lista o pega los productos en el campo disponible.";
-      $("quoteAlert").classList.remove("hidden");
-      return;
-    }
-  }
-
-  const name=$("quoteName").value.trim();
-  const destination=$("quoteDestination").value.trim();
-  const modeNames={link:"Enlace",photos:"Fotografías",description:"Descripción",bulk:"Lista con muchos productos"};
-  const lines=[
-    "SOLICITUD DE ASESORÍA Y COTIZACIÓN — CHELME GLOBAL TRADE",
-    "",
-    `Servicio: ${services[state.quoteService].title}`,
-    `Información disponible: ${modeNames[state.sourceMode]}`,
-    `Nombre: ${name}`,
-    `Destino: ${destination}`,
-    `WhatsApp: ${$("quoteClientWhatsapp").value.trim()||"No informado"}`,
-    `Correo: ${$("quoteEmail").value.trim()||"No informado"}`,
-    "",
-    ...collectFields($("sourceFields")),
-    ...collectFields($("serviceFields")),
-    $("quoteNotes").value.trim()?`Comentarios: ${$("quoteNotes").value.trim()}`:"",
-    state.quoteFiles.length?`Archivos seleccionados: ${state.quoteFiles.length} (adjuntar en el chat)`:"",
-    "",
-    `ASESORÍA INICIAL: ${money(CONFIG.advisory.startingPriceUsd)}`,
-    "Estado: pendiente de pago y revisión",
-    `RESULTADO MOSTRADO: ${$("quoteEstimate").textContent}`,
-    ...state.quoteBreakdown,
-    "",
-    "La cantidad de productos o referencias no define por sí sola el flete.",
-    "IMPORTANTE: la revisión y cotización inicial son pagadas. El trabajo comienza después de confirmar el pago.",
-    "La búsqueda de proveedores, inspección, negociación y gestión logística se cotizan por separado.",
-    "Esta estimación es referencial y debe ser confirmada."
-  ].filter(Boolean);
-
-  const text=lines.join("\n");
-
-  if(["photos","bulk"].includes(state.sourceMode) && state.quoteFiles.length && navigator.share && navigator.canShare){
-    try{
-      const shareData={title:"Cotización Chelme Global Trade",text,files:state.quoteFiles};
-      if(navigator.canShare(shareData)){
-        await navigator.share(shareData);
-        return;
-      }
-    }catch(error){
-      if(error.name==="AbortError")return;
-    }
-  }
-
-  window.open(`https://wa.me/${CONFIG.business.whatsapp}?text=${encodeURIComponent(text)}`,"_blank","noopener");
-  if(["photos","bulk"].includes(state.sourceMode) && state.quoteFiles.length){
-    $("quoteAlert").textContent="WhatsApp está abierto. Adjunta los archivos seleccionados antes de enviar.";
-    $("quoteAlert").classList.remove("hidden");
-  }
+  if(missing){const label=missing.closest(".field")?.querySelector("span")?.textContent||"un campo obligatorio";$("quoteAlert").textContent=`Completa: ${label.replace("*","").trim()}.`;$("quoteAlert").classList.remove("hidden");missing.focus();return;}
+  if(state.sourceMode==="photos"&&state.quoteFiles.length===0){$("quoteAlert").textContent="Selecciona al menos una fotografía.";$("quoteAlert").classList.remove("hidden");return;}
+  if(state.sourceMode==="bulk"){const pasted=$("sourceBulkList")?.value.trim()||"";if(state.quoteFiles.length===0&&!pasted){$("quoteAlert").textContent="Sube una lista o pega los productos en el campo disponible.";$("quoteAlert").classList.remove("hidden");return;}}
+  const name=$("quoteName").value.trim(),destination=$("quoteDestination").value.trim(),phone=$("quoteClientWhatsapp").value.trim()||"No informado";
+  const modeNames={link:"Enlace",photos:"Fotografías",description:"Descripción",bulk:"Lista de productos"};
+  const sourceLines=collectFields($("sourceFields")),serviceLines=collectFields($("serviceFields"));
+  const serviceTitle=services[state.quoteService].title,result=$("quoteEstimate").textContent,sourcingStatus=getSelectedSourcingStatus();
+  state.preparedQuoteReference=createQuoteReference();state.preparedQuoteFiles=[...state.quoteFiles];
+  const concise=[...sourceLines.slice(0,4),...serviceLines.slice(0,5)];
+  state.preparedQuoteText=["SOLICITUD CHELME GLOBAL TRADE",`Referencia: ${state.preparedQuoteReference}`,`Servicio: ${serviceTitle}`,`Cliente: ${name}`,`Destino: ${destination}`,`WhatsApp cliente: ${phone}`,`Información disponible: ${modeNames[state.sourceMode]}`,`Proveedor / búsqueda: ${sourcingStatus}`,...concise,`Resultado mostrado: ${result}`,state.quoteFiles.length?`Archivos para adjuntar: ${state.quoteFiles.length}`:"",$("quoteNotes").value.trim()?`Comentarios: ${$("quoteNotes").value.trim()}`:"","",`Asesoría inicial: ${money(CONFIG.advisory.startingPriceUsd)}`,"La revisión comienza después de confirmar la asesoría.","Impuestos y gastos de destino se confirman por separado."].filter(Boolean).join("\n");
+  renderQuotePreview([["Referencia",state.preparedQuoteReference],["Servicio",serviceTitle],["Cliente",name],["Destino",destination],["Información",modeNames[state.sourceMode]],["Búsqueda",sourcingStatus],["Resultado mostrado",result],["Asesoría inicial",money(CONFIG.advisory.startingPriceUsd)]]);
 }
 function setCalcMode(mode){
   state.calcMode=mode;
@@ -811,8 +779,12 @@ function init(){
   document.querySelectorAll("[data-calc-mode]").forEach(b=>b.addEventListener("click",()=>setCalcMode(b.dataset.calcMode)));
 
   $("quoteForm").addEventListener("submit",submitQuote);
+  $("confirmQuoteWhatsapp").addEventListener("click",sendPreparedQuote);
+  $("editQuotePreview").addEventListener("click",()=>{$("quotePreview").classList.add("hidden");$("quoteForm").scrollIntoView({behavior:"smooth",block:"start"});});
   $("clearQuote").addEventListener("click",()=>{
     $("quoteForm").reset();
+    $("quotePreview").classList.add("hidden");
+    state.preparedQuoteText="";state.preparedQuoteFiles=[];state.preparedQuoteReference="";
     setSourceMode(state.sourceMode);
     setService(state.quoteService);
   });
