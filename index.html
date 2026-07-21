@@ -87,7 +87,7 @@
             <span><svg><use href="#i-check"></use></svg> Atención en español</span>
             <span><svg><use href="#i-check"></use></svg> Operación en Yiwu</span>
             <span><svg><use href="#i-check"></use></svg> LCL, FCL e inspecciones</span>
-            <span><svg><use href="#i-check"></use></svg> Primer paso: asesoría paga desde USD 200</span>
+            <span><svg><use href="#i-check"></use></svg> ¿Carga lista? Cotiza gratis en minutos</span>
           </div>
         </div>
         <div class="hero-person">
@@ -116,7 +116,7 @@
           <h2>Tu importación en 5 pasos</h2>
         </header>
         <div class="journey-track">
-          <a class="journey-step" href="asesoria.html"><span class="journey-dot">1</span><span class="journey-copy"><strong>Asesoría</strong><small>Revisamos tu proyecto y cotizamos</small></span></a>
+          <a class="journey-step" href="#cotizar"><span class="journey-dot">1</span><span class="journey-copy"><strong>Cotiza</strong><small>Calcula tu carga gratis o pide asesoría</small></span></a>
           <a class="journey-step" href="como-funciona.html"><span class="journey-dot">2</span><span class="journey-copy"><strong>Compra</strong><small>Negociamos con proveedores en chino</small></span></a>
           <a class="journey-step" href="como-funciona.html"><span class="journey-dot">3</span><span class="journey-copy"><strong>Bodega Yiwu</strong><small>Recibimos, revisamos y consolidamos</small></span></a>
           <a class="journey-step" href="como-funciona.html"><span class="journey-dot">4</span><span class="journey-copy"><strong>Embarque</strong><small>Tu carga zarpa con documentación lista</small></span></a>
@@ -271,10 +271,11 @@
       <div class="container">
         <header class="section-heading">
           <span class="eyebrow dark">Cotización online</span>
-          <h2>Primero revisamos tu proyecto mediante una asesoría pagada</h2>
+          <h2>Dos caminos, según tu caso</h2>
           <p>
-            La asesoría inicial incluye revisión de enlaces, fotografías o listas, estimación de costos
-            y una cotización preliminar. No iniciamos la revisión sin el pago.
+            ¿Ya tienes tu carga o proveedor listo? Calcula con la calculadora, envíanos tu solicitud
+            y la confirmamos <strong>sin costo</strong>. ¿Necesitas que busquemos y cotizemos productos por ti?
+            Ese servicio parte con la asesoría inicial pagada.
           </p>
         </header>
 
@@ -302,17 +303,18 @@
 
         <div class="paid-advisory-gate">
           <div>
-            <span>Primer paso obligatorio</span>
+            <span>Solo si necesitas búsqueda de productos</span>
             <h3>Asesoría + revisión + cotización preliminar</h3>
             <p>
-              Antes de buscar proveedores o calcular una operación específica, revisamos tu proyecto,
-              validamos la información disponible y preparamos una estimación inicial.
+              Si quieres que revisemos tus enlaces, busquemos proveedores o cotizemos productos por ti,
+              ese trabajo parte con la asesoría inicial. Si tu carga ya está lista, no la necesitas:
+              cotiza directo con la calculadora.
             </p>
           </div>
           <div class="paid-advisory-price">
-            <span>Valor inicial</span>
+            <span>Valor del servicio</span>
             <strong id="paidAdvisoryPrice">USD 200</strong>
-            <small>Pago requerido antes de comenzar</small>
+            <small>Solo para búsqueda y cotización de productos</small>
           </div>
         </div>
         <div class="advisory-reservation-panel">
@@ -372,8 +374,8 @@
               <label class="payment-confirmation">
                 <input type="checkbox" id="paymentAcknowledgement" required>
                 <span>
-                  <strong>Entiendo que la asesoría y cotización inicial son pagadas.</strong>
-                  <small>El equipo comenzará la revisión después de confirmar el pago.</small>
+                  <strong>Entiendo cómo funciona la cotización.</strong>
+                  <small>Si mi carga ya está lista, la revisión de esta solicitud no tiene costo. La asesoría pagada aplica solo si pido búsqueda o cotización de productos.</small>
                 </span>
               </label>
 
@@ -386,8 +388,8 @@
             <section class="quote-preview hidden" id="quotePreview" aria-live="polite">
               <div class="quote-preview-heading"><div><span>Resumen antes de enviar</span><h3>Revisa que la información esté correcta</h3></div><strong id="quoteReference"></strong></div>
               <div class="quote-preview-grid" id="quotePreviewGrid"></div>
-              <div class="quote-preview-actions"><button class="btn btn-whatsapp-green" type="button" id="confirmQuoteWhatsapp"><svg><use href="#i-whatsapp"></use></svg> Enviar por WhatsApp</button><button class="btn btn-light" type="button" id="editQuotePreview">Editar información</button><a class="btn btn-gold" href="asesoria.html">Reservar asesoría</a></div>
-              <p class="quote-preview-note">La solicitud no inicia el trabajo. La revisión comienza después de confirmar la asesoría.</p>
+              <div class="quote-preview-actions"><button class="btn btn-whatsapp-green" type="button" id="confirmQuoteWhatsapp"><svg><use href="#i-whatsapp"></use></svg> Enviar por WhatsApp</button><button class="btn btn-gold" type="button" id="quotePdfBtn">Descargar PDF</button><button class="btn btn-light" type="button" id="editQuotePreview">Editar información</button></div>
+              <p class="quote-preview-note">Si tu carga está lista, confirmamos esta solicitud sin costo. Si pides búsqueda de productos, aplica la asesoría inicial.</p>
             </section>
           </section>
         </div>
@@ -490,6 +492,7 @@
 
           <div class="simple-actions">
             <a class="btn btn-primary" href="#cotizar" id="sendSimpleQuote">Enviar para revisión</a>
+            <button class="btn btn-gold" type="button" id="simplePdfBtn">Descargar cotización en PDF</button>
             <button class="btn btn-light" type="button" id="resetSimpleCalc">Empezar de nuevo</button>
           </div>
 
@@ -504,11 +507,11 @@
     <section class="section advisory-focus" id="asesorias">
       <div class="container advisory-grid">
         <div>
-          <span class="eyebrow dark">Asesoría inicial obligatoria</span>
-          <h2>Primero evaluamos tu proyecto. Después avanzamos con compras y logística.</h2>
+          <span class="eyebrow dark">¿No tienes claro qué comprar?</span>
+          <h2>Evaluamos tu proyecto antes de que gastes en el producto equivocado.</h2>
           <p>
-            Esta etapa evita cotizaciones incompletas y permite saber si el producto, presupuesto,
-            cantidad y modalidad de envío tienen sentido antes de comenzar.
+            Si todavía no tienes proveedor o no sabes si tu idea es viable, la asesoría evita
+            cotizaciones incompletas: revisamos producto, presupuesto, cantidad y modalidad antes de comenzar.
           </p>
           <div class="advisory-points">
             <span>Revisión de enlaces, fotos o lista</span>
@@ -619,8 +622,8 @@
           <h2>Antes de cotizar</h2>
         </header>
         <details><summary>¿Puedo cotizar solamente con fotografías?</summary><p>Sí. Puedes enviar fotografías, enlaces o una lista. Primero debes contratar la asesoría inicial, que incluye la revisión y cotización preliminar.</p></details>
-        <details><summary>¿La cotización es gratuita?</summary><p>No. La revisión y cotización inicial forman parte de una asesoría pagada. No se inicia el trabajo hasta confirmar el pago.</p></details>
-        <details><summary>¿Por qué otros sitios cotizan gratis y ustedes no?</summary><p>Muchos cotizadores automáticos entregan un número genérico que no considera tu proveedor real, el estado actual del mercado en Yiwu ni tus condiciones de pago. La asesoría paga permite revisar tu caso puntual antes de comprometer tiempo de nuestro equipo en China, y evita cotizaciones que después cambian por completo.</p></details>
+        <details><summary>¿La cotización es gratuita?</summary><p>Si ya tienes tu carga o proveedor listo, sí: usa la calculadora, envíanos tu solicitud y la confirmamos sin costo. La asesoría pagada aplica solo cuando necesitas que revisemos, busquemos o cotizemos productos por ti.</p></details>
+        <details><summary>¿Cuándo se paga la asesoría?</summary><p>Solo cuando contratas el servicio de revisión y búsqueda de productos: evaluar tu idea, revisar enlaces o fotos, comparar proveedores y preparar una cotización preliminar. Ese trabajo de nuestro equipo en Yiwu parte con la asesoría de USD 200. Cotizar el flete de una carga que ya tienes lista no tiene costo.</p></details>
         <details><summary>¿Qué incluye la asesoría inicial?</summary><p>Incluye revisión del proyecto, producto, cantidades, presupuesto, enlaces o fotos, estimación inicial de costos, recomendación LCL o FCL y próximos pasos.</p></details>
         <details><summary>¿La búsqueda de proveedores está incluida?</summary><p>No. La búsqueda, comparación y negociación con proveedores es un servicio adicional que se cotiza después de la asesoría inicial.</p></details>
         <details><summary>¿Las fotografías se envían automáticamente por WhatsApp?</summary><p>En celulares compatibles se abrirá el menú para compartirlas. En otros equipos se abrirá WhatsApp con el mensaje preparado y deberás adjuntar las fotos desde tu galería.</p></details>
@@ -671,5 +674,7 @@
     })();
   </script>
   <script async src="https://www.tiktok.com/embed.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="pdf-cotizacion.js"></script>
 </body>
 </html>
