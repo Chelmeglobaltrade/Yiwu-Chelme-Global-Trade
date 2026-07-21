@@ -296,3 +296,31 @@ html { scroll-padding-top: 96px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+
+/* ---------- 8. ACCESIBILIDAD (auditoría WCAG 2.1 AA) ---------- */
+/* 8a. Contraste: el dorado de las etiquetas "eyebrow" y del bloque de asesoría
+   medía 3.16–3.31:1 sobre fondo claro. Se oscurece a un tono que da >=5:1. */
+.eyebrow.dark,
+.paid-advisory-gate span {
+  color: #8a6410;
+}
+/* 8b. Contraste: texto gris "muted" que quedaba justo bajo 4.5:1 en algunos usos. */
+.quote-preview-note,
+.service-card p,
+#photoSendHelp {
+  color: #5c6d72;
+}
+
+/* 8c. Áreas de clic más grandes (min. ~44px) en enlaces de texto */
+.main-nav > a:not(.nav-whatsapp) { padding: 11px 14px; }
+.service-card > a { padding-block: 12px; display: inline-flex; }
+footer .footer-grid > div > p:last-of-type a { display: inline-block; padding: 10px 4px; }
+.topbar-social a { padding: 10px; margin: -10px; }
+.footer-social a { padding: 4px; }
+
+/* 8d. Foco visible reforzado en enlaces de texto (no solo botones) */
+a:focus-visible {
+  outline: 3px solid rgba(215,170,40,.55);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
