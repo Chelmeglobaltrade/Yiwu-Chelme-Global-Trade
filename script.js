@@ -29,7 +29,7 @@ const services = {
         <label class="field"><span>Cantidad de proveedores</span><input id="qSuppliers" type="number" min="1" value="1"></label>
         <label class="service-option" style="grid-column:1/-1">
           <input id="qIncludeSourcing" type="checkbox">
-          <span><strong>Necesito búsqueda de proveedor y gestión de compra</strong><small>Solo al marcar esta opción se agrega el ${CONFIG.lcl.sourcingPercent}% sobre el valor FOB, con mínimo de ${money(CONFIG.lcl.minimumSourcingFeeUsd)}.</small></span>
+          <span><strong>Necesito búsqueda de proveedor y gestión de compra</strong><small>Solo al marcar esta opción se agrega este servicio a tu cotización. El detalle del cargo aparece en tu estimación y en el PDF.</small></span>
         </label>
       </div>`
   },
@@ -45,7 +45,7 @@ const services = {
         <label class="field"><span>Puerto o ciudad de origen</span><input id="qOrigin" placeholder="Ningbo, Shanghai, Qingdao..."></label>
         <label class="service-option" style="grid-column:1/-1">
           <input id="qIncludeSourcing" type="checkbox">
-          <span><strong>Necesito búsqueda de proveedor y gestión de compra</strong><small>Solo al marcar esta opción se agrega el ${CONFIG.fcl.sourcingPercent}% sobre el valor FOB, con mínimo de ${money(CONFIG.fcl.minimumSourcingFeeUsd)}.</small></span>
+          <span><strong>Necesito búsqueda de proveedor y gestión de compra</strong><small>Solo al marcar esta opción se agrega este servicio a tu cotización. El detalle del cargo aparece en tu estimación y en el PDF.</small></span>
         </label>
       </div>`
   },
