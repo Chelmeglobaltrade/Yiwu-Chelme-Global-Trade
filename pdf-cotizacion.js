@@ -1,11 +1,20 @@
 /* ============================================================
-   PDF DE COTIZACIÓN AUTOMÁTICA — Chelme Global Trade
-   Genera un PDF referencial desde la calculadora o la vista
-   previa de cotización, usando jsPDF (cargado por CDN).
+   PDF DE COTIZACIÓN AUTOMÁTICA — Chelme Global Trade (v2)
+   Diseño con logo real, nombre de empresa en chino y tabla
+   con filas alternadas. Usa jsPDF cargado por CDN.
    ============================================================ */
 (function () {
   "use strict";
   var CONFIG = window.CHELME_CONFIG || {};
+  var COMPANY_CN = "义乌市写迩每贸易有限公司";
+  var SITE_URL = "chelmeglobaltrade.github.io/Yiwu-Chelme-Global-Trade";
+
+  var PETROL = [18, 63, 73];
+  var PETROL_DARK = [10, 46, 53];
+  var GOLD = [215, 170, 40];
+  var INK = [23, 42, 48];
+  var MUTED = [102, 119, 124];
+  var SOFT = [237, 243, 243];
 
   function pad(n) { return String(n).padStart(2, "0"); }
   function today() {
@@ -22,14 +31,49 @@
     return el ? el.textContent.trim() : "";
   }
 
+  // Convierte una imagen (logo) a dataURL vía canvas
+  function loadImageData(src) {
+    return new Promise(function (resolve) {
+      var img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = function () {
+        try {
+          var c = document.createElement("canvas");
+          c.width = img.naturalWidth; c.height = img.naturalHeight;
+          c.getContext("2d").drawImage(img, 0, 0);
+          resolve({ data: c.toDataURL("image/png"), w: img.naturalWidth, h: img.naturalHeight });
+        } catch (e) { resolve(null); }
+      };
+      img.onerror = function () { resolve(null); };
+      img.src = src;
+    });
+  }
+
+  // Renderiza texto (incluye chino) a imagen para insertarlo en el PDF
+  function textToImage(str, px, color, bold) {
+    var scale = 3;
+    var c = document.createElement("canvas");
+    var ctx = c.getContext("2d");
+    var font = (bold ? "700 " : "400 ") + (px * scale) + "px 'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif";
+    ctx.font = font;
+    var w = Math.ceil(ctx.measureText(str).width) + 4 * scale;
+    var h = Math.ceil(px * scale * 1.45);
+    c.width = w; c.height = h;
+    ctx = c.getContext("2d");
+    ctx.font = font;
+    ctx.fillStyle = color || "#66777c";
+    ctx.textBaseline = "middle";
+    ctx.fillText(str, 2 * scale, h / 2);
+    return { data: c.toDataURL("image/png"), w: w / scale, h: h / scale };
+  }
+
   function collectSimple() {
     var rows = [];
     rows.push(["Volumen", text("simpleCbm")]);
     rows.push(["Modalidad recomendada", text("simpleMethod")]);
     rows.push(["Gestión Chelme", text("simpleManagement")]);
     rows.push(["Logística estimada", text("simpleLogistics")]);
-    var breakdown = document.querySelectorAll("#simpleBreakdown .cost-breakdown-row");
-    breakdown.forEach(function (r) {
+    document.querySelectorAll("#simpleBreakdown .cost-breakdown-row").forEach(function (r) {
       if (r.children.length >= 2) {
         rows.push([r.children[0].textContent.trim(), r.children[r.children.length - 1].textContent.trim()]);
       }
@@ -47,105 +91,142 @@
     return { title: "Solicitud de cotización", total: text("quoteEstimate"), rows: rows, ref: text("quoteReference") };
   }
 
-  function buildPdf(data) {
+  async function buildPdf(data) {
     if (!window.jspdf || !window.jspdf.jsPDF) {
       alert("El generador de PDF aún está cargando. Intenta de nuevo en unos segundos.");
       return;
     }
     var doc = new window.jspdf.jsPDF({ unit: "mm", format: "a4" });
-    var W = 210, M = 18, y;
+    var W = 210, M = 16;
     var ref = data.ref || makeRef();
     var validity = (CONFIG.exchange && CONFIG.exchange.quoteValidityDays) || 3;
     var fx = CONFIG.exchange || {};
+    var biz = CONFIG.business || {};
 
-    // Encabezado
-    doc.setFillColor(18, 63, 73);
-    doc.rect(0, 0, W, 34, "F");
+    // ---- Banda superior dorada fina + encabezado blanco con logo ----
+    doc.setFillColor.apply(doc, [GOLD[0], GOLD[1], GOLD[2]]);
+    doc.rect(0, 0, W, 2.6, "F");
+
+    var logo = await loadImageData("logo.png");
+    if (logo) {
+      var lw = 62, lh = lw * (logo.h / logo.w);
+      if (lh > 18) { lh = 18; lw = lh * (logo.w / logo.h); }
+      doc.addImage(logo.data, "PNG", M, 9, lw, lh);
+    } else {
+      doc.setTextColor.apply(doc, PETROL);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(17);
+      doc.text("CHELME GLOBAL TRADE", M, 18);
+    }
+
+    // Caja de referencia a la derecha
+    doc.setFillColor.apply(doc, PETROL);
+    doc.roundedRect(W - M - 62, 8, 62, 20, 2.5, 2.5, "F");
+    doc.setTextColor(240, 198, 77);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.text("COTIZACIÓN REFERENCIAL", W - M - 31, 13.5, { align: "center" });
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.text(ref, W - M - 31, 19, { align: "center" });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.text("Fecha: " + today() + "  ·  Vigencia: " + validity + " días", W - M - 31, 24.5, { align: "center" });
+
+    // Empresa: nombre chino (como imagen) + ubicación
+    var cn = textToImage(COMPANY_CN + "  ·  Yiwu, Zhejiang, China", 8.5, "#66777c", false);
+    doc.addImage(cn.data, "PNG", M, 30, cn.w * 0.35, cn.h * 0.35);
+
+    // Línea divisoria
+    doc.setDrawColor.apply(doc, GOLD);
+    doc.setLineWidth(0.6);
+    doc.line(M, 38, W - M, 38);
+
+    // ---- Título de la sección ----
+    var y = 46;
+    doc.setTextColor.apply(doc, PETROL);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.text(data.title, M, y);
+    doc.setTextColor.apply(doc, MUTED);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.text("Tipo de cambio comercial: " + (fx.commercialRmbPerUsd || "-") + " RMB/USD · actualizado " + (fx.updatedAt || "-"), W - M, y, { align: "right" });
+    y += 7;
+
+    // ---- Tabla con filas alternadas ----
+    doc.setFillColor.apply(doc, PETROL);
+    doc.rect(M, y, W - 2 * M, 8.5, "F");
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text("CHELME GLOBAL TRADE", M, 15);
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text("Cotización referencial · " + data.title, M, 22);
-    doc.setTextColor(240, 198, 77);
-    doc.text("Tu enlace directo con China · Yiwu, Zhejiang", M, 28);
+    doc.setFontSize(9.5);
+    doc.text("Detalle", M + 4, y + 5.7);
+    doc.text("Valor", W - M - 4, y + 5.7, { align: "right" });
+    y += 8.5;
 
-    // Datos generales
-    y = 44;
-    doc.setTextColor(23, 42, 48);
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "bold");
-    doc.text("Referencia: " + ref, M, y);
-    doc.setFont("helvetica", "normal");
-    doc.text("Fecha: " + today(), W - M, y, { align: "right" });
-    y += 6;
-    doc.setTextColor(102, 119, 124);
-    doc.setFontSize(9);
-    doc.text("Vigencia: " + validity + " días · Tipo de cambio comercial: " +
-      (fx.commercialRmbPerUsd || "-") + " RMB/USD (actualizado " + (fx.updatedAt || "-") + ")", M, y);
-    y += 9;
-
-    // Detalle
-    doc.setDrawColor(220, 230, 231);
-    doc.setFillColor(237, 243, 243);
-    doc.rect(M, y, W - 2 * M, 8, "F");
-    doc.setTextColor(18, 63, 73);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.text("Detalle", M + 3, y + 5.5);
-    doc.text("Valor", W - M - 3, y + 5.5, { align: "right" });
-    y += 8;
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(23, 42, 48);
+    doc.setFontSize(9.5);
+    var zebra = false;
     data.rows.forEach(function (row) {
       if (!row[0] && !row[1]) return;
-      doc.line(M, y, W - M, y);
-      var label = doc.splitTextToSize(row[0], 110);
-      doc.text(label, M + 3, y + 5.5);
-      doc.setFont("helvetica", "bold");
-      doc.text(String(row[1]), W - M - 3, y + 5.5, { align: "right" });
+      var label = doc.splitTextToSize(row[0], 115);
+      var rowH = Math.max(8.5, label.length * 4.6 + 4);
+      if (zebra) {
+        doc.setFillColor.apply(doc, SOFT);
+        doc.rect(M, y, W - 2 * M, rowH, "F");
+      }
+      zebra = !zebra;
+      doc.setTextColor.apply(doc, INK);
       doc.setFont("helvetica", "normal");
-      y += Math.max(8, label.length * 5 + 3);
-      if (y > 240) { doc.addPage(); y = 20; }
+      doc.text(label, M + 4, y + 5.7);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor.apply(doc, PETROL);
+      doc.text(String(row[1]), W - M - 4, y + 5.7, { align: "right" });
+      y += rowH;
+      if (y > 235) { doc.addPage(); y = 20; zebra = false; }
     });
 
-    // Total
-    doc.setFillColor(18, 63, 73);
-    doc.rect(M, y, W - 2 * M, 11, "F");
-    doc.setTextColor(255, 255, 255);
+    // ---- Total en dorado ----
+    doc.setFillColor.apply(doc, GOLD);
+    doc.rect(M, y, W - 2 * M, 12, "F");
+    doc.setTextColor(23, 40, 44);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("Estimación total", M + 3, y + 7.5);
-    doc.text(String(data.total || "Por confirmar"), W - M - 3, y + 7.5, { align: "right" });
-    y += 19;
+    doc.setFontSize(11.5);
+    doc.text("ESTIMACIÓN TOTAL", M + 4, y + 8);
+    doc.setFontSize(12.5);
+    doc.text(String(data.total || "Por confirmar"), W - M - 4, y + 8, { align: "right" });
+    y += 20;
 
-    // Avisos
-    doc.setTextColor(102, 119, 124);
+    // ---- Condiciones ----
+    doc.setTextColor.apply(doc, PETROL);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("Condiciones de esta estimación", M, y);
+    y += 5;
+    doc.setTextColor.apply(doc, MUTED);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
-    var avisos = [
-      "Esta es una estimación referencial y no constituye una cotización final. Precio, MOQ, peso, embalaje, CBM,",
-      "disponibilidad y restricciones deben confirmarse antes de comprar.",
-      "Los impuestos de importación, aduana, gastos portuarios y entrega en destino NO están incluidos y se pagan al llegar la carga.",
-      "El consolidado se factura por CBM (mínimo 1 m³; bajo 5 m³ aplica cargo operativo fijo).",
-      "Para confirmar esta cotización, envía tu solicitud por WhatsApp con la referencia indicada."
-    ];
-    avisos.forEach(function (a) { doc.text(a, M, y); y += 4.2; });
-    y += 4;
+    [
+      "· Estimación referencial: no constituye una cotización final. Precio, MOQ, peso, embalaje, CBM, disponibilidad y",
+      "  restricciones deben confirmarse antes de comprar.",
+      "· Los impuestos de importación, aduana, gastos portuarios y entrega en destino NO están incluidos.",
+      "· El consolidado se factura por CBM: mínimo 1 m³; bajo 5 m³ aplica cargo operativo fijo.",
+      "· Para confirmar, envía tu solicitud por WhatsApp indicando la referencia " + ref + "."
+    ].forEach(function (a) { doc.text(a, M, y); y += 4.1; });
 
-    // Contacto
-    doc.setDrawColor(215, 170, 40);
-    doc.setLineWidth(0.8);
-    doc.line(M, y, W - M, y);
-    y += 6;
-    doc.setTextColor(18, 63, 73);
-    doc.setFontSize(9);
+    // ---- Pie de página ----
+    var fy = 279;
+    doc.setFillColor.apply(doc, PETROL_DARK);
+    doc.rect(0, fy - 7, W, 25, "F");
+    doc.setTextColor(240, 198, 77);
     doc.setFont("helvetica", "bold");
-    var biz = CONFIG.business || {};
-    doc.text("WhatsApp: +" + (biz.whatsapp || ""), M, y);
-    doc.text("Email: " + (biz.email || ""), M + 62, y);
-    doc.text("Instagram: " + (biz.instagramHandle || ""), M + 128, y);
+    doc.setFontSize(9);
+    doc.text("CHELME GLOBAL TRADE — Tu enlace directo con China", W / 2, fy, { align: "center" });
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("WhatsApp +" + (biz.whatsapp || "") + "   ·   " + (biz.email || "") + "   ·   " + (biz.instagramHandle || ""), W / 2, fy + 5.5, { align: "center" });
+    doc.setTextColor(180, 200, 204);
+    doc.text(SITE_URL, W / 2, fy + 10.5, { align: "center" });
 
     doc.save("Cotizacion-Chelme-" + ref + ".pdf");
   }

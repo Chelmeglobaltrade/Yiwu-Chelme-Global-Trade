@@ -39,6 +39,12 @@
 .nav-whatsapp { box-shadow: 0 8px 20px rgba(18,63,73,.22); }
 .nav-whatsapp:hover { transform: translateY(-1px); }
 
+/* ---------- 1b. LOGO MÁS GRANDE ---------- */
+.brand img { width: 300px; max-height: 76px; }
+.nav-wrap { min-height: 94px; }
+@media (max-width: 850px) { .brand img { width: 240px; max-height: 62px; } }
+@media (max-width: 650px) { .brand img { width: 215px; max-height: 56px; } }
+
 /* ---------- 2. HERO CON MÁS AIRE ---------- */
 .hero-grid { padding: 84px 0; gap: 70px; }
 .hero h1 { margin: 24px 0 22px; }
