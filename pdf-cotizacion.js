@@ -213,20 +213,39 @@
       "· Para confirmar, envía tu solicitud por WhatsApp indicando la referencia " + ref + "."
     ].forEach(function (a) { doc.text(a, M, y); y += 4.1; });
 
-    // ---- Pie de página ----
-    var fy = 279;
+    // ---- Pie de página: contacto ordenado en columnas ----
+    var fy = 262;
     doc.setFillColor.apply(doc, PETROL_DARK);
-    doc.rect(0, fy - 7, W, 25, "F");
+    doc.rect(0, fy, W, 297 - fy, "F");
+
     doc.setTextColor(240, 198, 77);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
-    doc.text("CHELME GLOBAL TRADE — Tu enlace directo con China", W / 2, fy, { align: "center" });
+    doc.setFontSize(9.5);
+    doc.text("CHELME GLOBAL TRADE — Tu enlace directo con China", M, fy + 9);
+
+    var colW = (W - 2 * M) / 3;
+    var labelY = fy + 17;
+    var valueY = fy + 22;
+    var col1 = M, col2 = M + colW, col3 = M + colW * 2;
+
+    doc.setTextColor(150, 178, 182);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.text("UBICACIÓN", col1, labelY);
+    doc.text("WHATSAPP / TELÉFONO", col2, labelY);
+    doc.text("CORREO", col3, labelY);
+
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.text("WhatsApp +" + (biz.whatsapp || "") + "   ·   " + (biz.email || "") + "   ·   " + (biz.instagramHandle || ""), W / 2, fy + 5.5, { align: "center" });
-    doc.setTextColor(180, 200, 204);
-    doc.text(SITE_URL, W / 2, fy + 10.5, { align: "center" });
+    doc.setFontSize(8.5);
+    doc.text(doc.splitTextToSize(biz.city || "Yiwu, Zhejiang, China", colW - 6), col1, valueY);
+    doc.text("+" + (biz.whatsapp || ""), col2, valueY);
+    doc.text(doc.splitTextToSize(biz.email || "", colW - 6), col3, valueY);
+
+    doc.setTextColor(150, 178, 182);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.text((biz.instagramHandle ? "IG " + biz.instagramHandle + "   ·   " : "") + SITE_URL, W / 2, fy + 30, { align: "center" });
 
     doc.save("Cotizacion-Chelme-" + ref + ".pdf");
   }

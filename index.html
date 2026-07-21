@@ -54,7 +54,18 @@
       <a class="brand" href="#inicio"><img src="logo.png" alt="Chelme Global Trade"></a>
       <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menú">☰</button>
       <nav class="main-nav" id="mainNav">
-        <a href="#servicios">Servicios</a>
+        <details class="nav-services" id="navServices">
+          <summary>Servicios</summary>
+          <div class="nav-services-menu">
+            <a href="#cotizar" data-service-button="lcl"><strong>Consolidado LCL</strong><small>Paga por m³ utilizado</small></a>
+            <a href="#cotizar" data-service-button="fcl"><strong>Contenedor FCL</strong><small>20GP, 40GP y 40HQ</small></a>
+            <a href="#cotizar" data-service-button="sourcing"><strong>Búsqueda de proveedor</strong><small>Sourcing en Yiwu</small></a>
+            <a href="#cotizar" data-service-button="quality"><strong>Control de calidad</strong><small>Inspección en China</small></a>
+            <a href="#cotizar" data-service-button="translation"><strong>Traducción</strong><small>Remota o presencial</small></a>
+            <a href="viajes-china.html"><strong>Viajes a China</strong><small>Paquetes y agenda</small></a>
+            <a href="asesoria.html"><strong>Asesoría</strong><small>Evaluar tu proyecto</small></a>
+          </div>
+        </details>
         <a href="#cotizar">Cotizar online</a>
         <a href="#calculadora">Calculadora</a>
         <a href="#operaciones">Operaciones</a>
@@ -278,28 +289,6 @@
             Ese servicio parte con la asesoría inicial pagada.
           </p>
         </header>
-
-        <div class="fx-strip" id="tipo-cambio" style="padding:0 0 22px">
-          <div class="fx-card">
-            <div class="fx-copy">
-              <span>Tipo de cambio para cotizaciones</span>
-              <strong><span id="fxCommercialRate">—</span> RMB por USD</strong>
-              <small>Tipo comercial Chelme · actualizado <span id="fxUpdatedAt">—</span></small>
-            </div>
-            <div class="fx-reference">
-              <span>Referencia de mercado</span>
-              <strong id="fxReferenceRate">—</strong>
-              <small id="fxTrendText">—</small>
-            </div>
-            <div class="fx-explanation">
-              <strong>Tipo comercial protegido</strong>
-              <p>
-                Incluye margen por variación cambiaria, costos bancarios y tiempo de liquidación.
-                El tipo utilizado siempre se muestra antes de confirmar.
-              </p>
-            </div>
-          </div>
-        </div>
 
         <div class="paid-advisory-gate">
           <div>

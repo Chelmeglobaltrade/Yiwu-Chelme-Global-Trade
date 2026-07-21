@@ -417,7 +417,7 @@ function updateEstimate(){
         rows.push({label:"Logística conocida",value:money(result.logistics),total:true});
       }
 
-      note=`Pago inicial obligatorio: ${money(CONFIG.advisory.startingPriceUsd)} por asesoría y cotización. Los impuestos y gastos de destino se pagan al llegar.`;
+      note=`Esta cotización no tiene costo. Envíala por WhatsApp o descarga el PDF para confirmar el precio final. Los impuestos y gastos de destino se pagan al llegar.`;
     }else{
       totalText=`Desde ${money(CONFIG.lcl.ratePerCbmUsd)}/m³`;
       note=`Mínimo facturable: ${CONFIG.lcl.minimumBillableCbm} m³. Bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ se agrega el cargo operativo.`;
@@ -455,7 +455,7 @@ function updateEstimate(){
       totalText="Cotización FCL pendiente";
       rows.push({label:"Subtotal conocido sin flete marítimo",value:money(result.knownSubtotal),total:true});
     }
-    note=`Pago inicial obligatorio: ${money(CONFIG.advisory.startingPriceUsd)}. Impuestos y gastos de destino se confirman aparte.`;
+    note=`Esta cotización no tiene costo. Impuestos y gastos de destino se confirman aparte.`;
   }else if(service==="sourcing"){
     totalText=`Asesoría inicial ${money(CONFIG.advisory.startingPriceUsd)}`;
     note=`Después de la asesoría, la búsqueda y gestión de compra se cotizan según el alcance.`;
@@ -526,8 +526,9 @@ async function submitQuote(event){
   const serviceTitle=services[state.quoteService].title,result=$("quoteEstimate").textContent,sourcingStatus=getSelectedSourcingStatus();
   state.preparedQuoteReference=createQuoteReference();state.preparedQuoteFiles=[...state.quoteFiles];
   const concise=[...sourceLines.slice(0,4),...serviceLines.slice(0,5)];
-  state.preparedQuoteText=["SOLICITUD CHELME GLOBAL TRADE",`Referencia: ${state.preparedQuoteReference}`,`Servicio: ${serviceTitle}`,`Cliente: ${name}`,`Destino: ${destination}`,`WhatsApp cliente: ${phone}`,`Información disponible: ${modeNames[state.sourceMode]}`,`Proveedor / búsqueda: ${sourcingStatus}`,...concise,`Resultado mostrado: ${result}`,state.quoteFiles.length?`Archivos para adjuntar: ${state.quoteFiles.length}`:"",$("quoteNotes").value.trim()?`Comentarios: ${$("quoteNotes").value.trim()}`:"","",`Asesoría inicial: ${money(CONFIG.advisory.startingPriceUsd)}`,"La revisión comienza después de confirmar la asesoría.","Impuestos y gastos de destino se confirman por separado."].filter(Boolean).join("\n");
-  renderQuotePreview([["Referencia",state.preparedQuoteReference],["Servicio",serviceTitle],["Cliente",name],["Destino",destination],["Información",modeNames[state.sourceMode]],["Búsqueda",sourcingStatus],["Resultado mostrado",result],["Asesoría inicial",money(CONFIG.advisory.startingPriceUsd)]]);
+  const requiresAdvisory=["sourcing","advisory"].includes(state.quoteService);
+  state.preparedQuoteText=["SOLICITUD CHELME GLOBAL TRADE",`Referencia: ${state.preparedQuoteReference}`,`Servicio: ${serviceTitle}`,`Cliente: ${name}`,`Destino: ${destination}`,`WhatsApp cliente: ${phone}`,`Información disponible: ${modeNames[state.sourceMode]}`,`Proveedor / búsqueda: ${sourcingStatus}`,...concise,`Resultado mostrado: ${result}`,state.quoteFiles.length?`Archivos para adjuntar: ${state.quoteFiles.length}`:"",$("quoteNotes").value.trim()?`Comentarios: ${$("quoteNotes").value.trim()}`:"","",requiresAdvisory?`Asesoría inicial: ${money(CONFIG.advisory.startingPriceUsd)}`:"Esta cotización no tiene costo.",requiresAdvisory?"La revisión comienza después de confirmar la asesoría.":"Quedamos atentos para confirmar por WhatsApp.","Impuestos y gastos de destino se confirman por separado."].filter(Boolean).join("\n");
+  renderQuotePreview([["Referencia",state.preparedQuoteReference],["Servicio",serviceTitle],["Cliente",name],["Destino",destination],["Información",modeNames[state.sourceMode]],["Búsqueda",sourcingStatus],["Resultado mostrado",result],[requiresAdvisory?"Asesoría inicial":"Costo de esta cotización",requiresAdvisory?money(CONFIG.advisory.startingPriceUsd):"Sin costo"]]);
 }
 function setCalcMode(mode){
   state.calcMode=mode;
@@ -610,7 +611,7 @@ function updateSimpleCalc(){
       {label:"Asesoría + revisión + cotización",value:money(CONFIG.advisory.startingPriceUsd),total:true},
       {label:"Búsqueda de proveedor",value:"Se cotiza después",pending:true},
       {label:"Flete por m³",value:"Pendiente de CBM",pending:true}
-    ],"La cantidad de productos no agrega cargos automáticos.");
+    ],"La cantidad de productos no agrega cargos automáticos. Si ya tienes tu carga lista, cambia a “Ya sé el CBM” o “Cajas y medidas”: esa cotización es gratis.");
     state.lastSimpleResult={mode:"review",references,goodsAmount,goodsCurrency};
     return;
   }
@@ -641,12 +642,7 @@ function updateSimpleCalc(){
 
   if(cbm<=0){
     resetSimpleDisplay();
-    $("simpleTotalLabel").textContent="Pago inicial";
-    $("simpleTotal").textContent=money(CONFIG.advisory.startingPriceUsd);
-    $("simpleResultNote").textContent="Ingresa CBM o medidas para calcular el consolidado.";
-    renderBreakdown("simpleBreakdown","Primer paso",[
-      {label:"Asesoría + revisión + cotización",value:money(CONFIG.advisory.startingPriceUsd),total:true}
-    ],`Mínimo facturable del consolidado: ${CONFIG.lcl.minimumBillableCbm} m³.`);
+    $("simpleResultNote").textContent=`Ingresa el CBM o las medidas para calcular tu consolidado sin costo. Mínimo facturable: ${CONFIG.lcl.minimumBillableCbm} m³.`;
     state.lastSimpleResult=null;
     return;
   }
@@ -660,7 +656,6 @@ function updateSimpleCalc(){
   },CONFIG);
 
   const rows=[
-    {label:"Pago inicial: asesoría + cotización",value:money(CONFIG.advisory.startingPriceUsd)},
     {label:`Mercancía ingresada (${goodsCurrency})`,value:originalGoodsText(goodsAmount,goodsCurrency),pending:goodsAmount<=0}
   ];
   if(goodsCurrency==="RMB"&&goodsAmount>0){
@@ -692,7 +687,7 @@ function updateSimpleCalc(){
   if(recommendation.code==="lcl"){
     $("simpleTotalLabel").textContent=goodsAmount>0?"Operación conocida":"Logística estimada";
     $("simpleTotal").textContent=goodsAmount>0?money(lcl.operationTotalKnown):money(lcl.logistics);
-    $("simpleResultNote").textContent=`El pago inicial de ${money(CONFIG.advisory.startingPriceUsd)} se realiza antes de revisar y confirmar esta operación.`;
+    $("simpleResultNote").textContent="Cotización sin costo. Envíala para confirmar precio final y coordinar tu envío.";
     $("simpleMethod").textContent="Consolidado LCL";
     rows.push({
       label:goodsAmount>0?"Total conocido de la operación":"Logística conocida",
@@ -767,6 +762,10 @@ function init(){
 
   $("menuToggle").addEventListener("click",()=>$("mainNav").classList.toggle("open"));
   $("mainNav").querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>$("mainNav").classList.remove("open")));
+  const navServices=$("navServices");
+  if(navServices){
+    navServices.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{navServices.open=false;}));
+  }
 
   document.querySelectorAll("[data-service-button]").forEach(a=>{
     a.addEventListener("click",e=>{
