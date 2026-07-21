@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#123f49"><title>Cursos para importar desde China | Chelme Global Trade</title><link rel="stylesheet" href="styles.css"><script src="config.js"></script></head><body class="standalone-page"><div class="topbar"><div class="container topbar-inner"><span>Operación directa desde Yiwu, China · Atención en español</span><a href="index.html">Volver al inicio</a></div></div><header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><img src="logo.png" alt="Chelme Global Trade"></a><nav class="standalone-nav"><a href="index.html">Inicio</a><a href="asesoria.html">Asesoría</a><a href="viajes-china.html">Viajes a China</a></nav></div></header><main>
+
+<section class="standalone-hero"><div class="container standalone-hero-grid">
+  <div>
+    <span class="eyebrow">Próximamente</span>
+    <h1>Cursos para importar desde China</h1>
+    <p>Estamos preparando cursos prácticos basados en operaciones reales en Yiwu: cómo evaluar un producto, elegir entre consolidado LCL o contenedor completo, y qué revisar antes de pagar a un proveedor.</p>
+  </div>
+  <div class="standalone-price-card">
+    <span>Lanzamiento</span>
+    <strong>En preparación</strong>
+    <small>Todavía sin fecha ni precio confirmados.</small>
+  </div>
+</div></section>
+
+<section class="section section-soft"><div class="container">
+  <header class="section-heading">
+    <span class="eyebrow dark">Lo que estamos preparando</span>
+    <h2>Contenido basado en casos reales de Yiwu</h2>
+    <p>Cada curso se arma a partir de la experiencia directa del equipo trabajando en terreno, no de teoría genérica.</p>
+  </header>
+  <div class="advisory-includes-grid">
+    <div>
+      <h3>Ideas en desarrollo</h3>
+      <ul>
+        <li>Cómo evaluar un producto antes de comprar.</li>
+        <li>Consolidado LCL vs. contenedor FCL: cuándo conviene cada uno.</li>
+        <li>Qué revisar en un control de calidad.</li>
+        <li>Cómo leer una cotización de flete sin sorpresas.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Todavía no está definido</h3>
+      <ul>
+        <li>Fecha de lanzamiento.</li>
+        <li>Precio del curso.</li>
+        <li>Formato (grabado, en vivo o ambos).</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<section class="section"><div class="container">
+  <div class="standalone-form-card" style="max-width:640px;margin:auto">
+    <div class="standalone-form-heading"><div><span>Lista de espera</span><h2>Avísame cuando esté listo</h2></div></div>
+    <form id="coursesForm">
+      <div class="form-grid">
+        <label class="field"><span>Nombre *</span><input id="cName" required></label>
+        <label class="field"><span>WhatsApp *</span><input id="cPhone" required></label>
+        <label class="field" style="grid-column:1/-1"><span>¿Qué te gustaría aprender?</span><textarea id="cInterest" rows="3" placeholder="Ej.: cómo elegir proveedor, cómo calcular el flete, control de calidad..."></textarea></label>
+      </div>
+      <div class="advisory-private-note">No cobramos nada por anotarte en la lista de espera. Solo te contactaremos por WhatsApp cuando el curso esté listo.</div>
+      <div class="quote-actions"><button class="btn btn-gold" type="submit">Quiero que me avisen</button></div>
+      <div class="form-alert hidden" id="cAlert"></div>
+    </form>
+  </div>
+</div></section>
+
+</main><footer><div class="container footer-grid"><img src="logo.png" alt="Chelme Global Trade"><div><strong>Cursos para importar desde China</strong><p>Yiwu, Zhejiang, China</p></div><a href="index.html">Volver al inicio</a></div></footer><script>const CONFIG=window.CHELME_CONFIG,$=id=>document.getElementById(id);$("coursesForm").addEventListener("submit",e=>{e.preventDefault();const req=["cName","cPhone"],m=req.find(id=>!$(id).value.trim());if(m){$("cAlert").textContent="Completa los campos obligatorios.";$("cAlert").classList.remove("hidden");$(m).focus();return}const text=["LISTA DE ESPERA — CURSOS CHELME GLOBAL TRADE",`Nombre: ${$("cName").value.trim()}`,`WhatsApp: ${$("cPhone").value.trim()}`,$("cInterest").value.trim()?`Le interesa aprender: ${$("cInterest").value.trim()}`:"","","Quiero que me avisen cuando el curso esté disponible."].filter(Boolean).join("\n");window.open(`https://wa.me/${CONFIG.business.whatsapp}?text=${encodeURIComponent(text)}`,"_blank","noopener")});</script></body></html>
