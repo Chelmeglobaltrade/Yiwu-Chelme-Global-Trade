@@ -737,7 +737,8 @@ function updateSimpleCalc(){
 }
 function selectServiceAndScroll(service){
   setService(service);
-  $("cotizar").scrollIntoView({behavior:"smooth",block:"start"});
+  const target=$("quoteShell")||$("cotizar");
+  target.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
 function init(){
