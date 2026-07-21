@@ -67,7 +67,6 @@
           </div>
         </details>
         <a href="#cotizar">Cotizar online</a>
-        <a href="#calculadora">Calculadora</a>
         <a href="como-funciona.html">Cómo funciona</a>
         <a href="cursos.html">Cursos</a>
         <a class="nav-whatsapp" data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener">
@@ -303,7 +302,7 @@
               la referencia y las instrucciones de pago. Si tu carga ya está lista, no la necesitas:
               cotiza directo con la calculadora, más abajo.
             </p>
-            <div class="advisory-reservation-actions"><a class="btn btn-gold" href="asesoria.html">Reservar asesoría</a><a class="btn btn-light" href="#calculadora">Calcular gratis</a></div>
+            <div class="advisory-reservation-actions"><a class="btn btn-gold" href="asesoria.html">Reservar asesoría</a><a class="btn btn-light" href="#quoteShell" data-service-button="lcl">Calcular gratis</a></div>
           </div>
           <div class="paid-advisory-price">
             <span>Valor del servicio</span>
@@ -424,73 +423,6 @@
               <li>Impuestos y gastos en destino</li>
             </ul>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="calculadora">
-      <div class="container">
-        <header class="section-heading">
-          <span class="eyebrow dark">Calculadora rápida</span>
-          <h2>Calcula tu carga sin saber de importaciones</h2>
-          <p>Elige lo que sabes. La calculadora te pedirá únicamente los datos necesarios.</p>
-        </header>
-
-        <div class="simple-calculator">
-          <div class="calc-question">
-            <span class="calc-step">1</span>
-            <div><strong>¿Qué información tienes?</strong><small>No necesitas saber todo.</small></div>
-          </div>
-
-          <div class="lcl-formula-card">
-            <div>
-              <span>Fórmula del consolidado</span>
-              <strong>CBM facturable × tarifa + cargo de carga pequeña</strong>
-            </div>
-            <p>
-              Menos de 1 m³ se cobra como 1 m³. Bajo 5 m³ se aplica el cargo operativo configurado.
-              La búsqueda de proveedor solo se suma cuando el cliente la selecciona.
-            </p>
-          </div>
-
-          <div class="calc-modes">
-            <button class="calc-mode active" type="button" data-calc-mode="photos"><svg><use href="#i-camera"></use></svg><span><strong>Solo fotos</strong><small>Solicitar revisión</small></span></button>
-            <button class="calc-mode" type="button" data-calc-mode="boxes"><svg><use href="#i-boxes"></use></svg><span><strong>Cajas y medidas</strong><small>Calculamos el CBM</small></span></button>
-            <button class="calc-mode" type="button" data-calc-mode="cbm"><svg><use href="#i-calculator"></use></svg><span><strong>Ya sé el CBM</strong><small>Cálculo inmediato</small></span></button>
-            <button class="calc-mode" type="button" data-calc-mode="bulk"><svg><use href="#i-file"></use></svg><span><strong>Más de 20 productos</strong><small>Enviar lista completa</small></span></button>
-          </div>
-          <p class="items-clarity">
-            <strong>Importante:</strong> tener 20, 50 o 100 productos no cambia automáticamente el flete.
-            El cálculo depende del volumen total, peso, tipo de mercancía, origen y destino.
-          </p>
-
-          <div id="simpleCalcFields"></div>
-
-          <div class="simple-result">
-            <div class="simple-result-main">
-              <span id="simpleTotalLabel">Estimación inicial</span>
-              <strong id="simpleTotal">Necesitamos revisar las fotos</strong>
-              <small id="simpleResultNote">Sube fotos en la cotización online y dinos la cantidad que necesitas.</small>
-            </div>
-            <div class="simple-result-grid">
-              <div><span>Volumen</span><strong id="simpleCbm">Pendiente</strong></div>
-              <div><span>Modalidad</span><strong id="simpleMethod">Por revisar</strong></div>
-              <div><span>Gestión</span><strong id="simpleManagement">Por revisar</strong></div>
-              <div><span>Logística</span><strong id="simpleLogistics">Por revisar</strong></div>
-            </div>
-          </div>
-          <div class="cost-breakdown hidden" id="simpleBreakdown" aria-live="polite"></div>
-
-          <div class="simple-actions">
-            <a class="btn btn-primary" href="#quoteShell" id="sendSimpleQuote">Enviar para revisión</a>
-            <button class="btn btn-gold" type="button" id="simplePdfBtn">Descargar cotización en PDF</button>
-            <button class="btn btn-light" type="button" id="resetSimpleCalc">Empezar de nuevo</button>
-          </div>
-
-          <p class="calculator-disclaimer">
-            Todos los resultados son referenciales. Precio, MOQ, peso, embalaje, CBM, disponibilidad,
-            restricciones e impuestos deben confirmarse antes de comprar.
-          </p>
         </div>
       </div>
     </section>
@@ -625,8 +557,6 @@
 
   <script src="script.js"></script>
   <script>
-    // V9: la calculadora parte en "Ya sé el CBM" para mostrar cálculo inmediato
-    if (typeof setCalcMode === "function") setCalcMode("cbm");
     // V9: banner de próxima salida, editable desde config.js (lcl.nextDepartureText)
     (function(){
       var el = document.getElementById("departureText");

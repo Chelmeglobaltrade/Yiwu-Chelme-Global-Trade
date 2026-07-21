@@ -8,9 +8,7 @@ const state = {
   quoteService: "lcl",
   sourceMode: "link",
   quoteFiles: [],
-  calcMode: "photos",
   quoteBreakdown: [],
-  lastSimpleResult: null,
   preparedQuoteText: "",
   preparedQuoteFiles: [],
   preparedQuoteReference: ""
@@ -27,6 +25,15 @@ const services = {
         <label class="field"><span>Volumen real, si lo conoces (m³)</span><input id="qCbm" type="number" min="0" step="0.01" placeholder="0"></label>
         <label class="field"><span>Cantidad aproximada</span><input id="qQuantity" type="number" min="1" placeholder="0"></label>
         <label class="field"><span>Cantidad de proveedores</span><input id="qSuppliers" type="number" min="1" value="1"></label>
+        <div class="cbm-helper" style="grid-column:1/-1">
+          <button type="button" class="cbm-helper-toggle" data-cbm-helper-toggle>¿No sabes el CBM? Calcúlalo con las medidas de tus cajas</button>
+          <div class="cbm-helper-fields hidden form-grid" data-cbm-helper-fields>
+            <label class="field"><span>Largo (cm)</span><input type="number" min="0" placeholder="0" data-box-length></label>
+            <label class="field"><span>Ancho (cm)</span><input type="number" min="0" placeholder="0" data-box-width></label>
+            <label class="field"><span>Alto (cm)</span><input type="number" min="0" placeholder="0" data-box-height></label>
+            <label class="field"><span>Cantidad de cajas</span><input type="number" min="1" placeholder="0" data-box-count></label>
+          </div>
+        </div>
         <label class="service-option" style="grid-column:1/-1">
           <input id="qIncludeSourcing" type="checkbox">
           <span><strong>Necesito búsqueda de proveedor y gestión de compra</strong><small>Solo al marcar esta opción se agrega este servicio a tu cotización. El detalle del cargo aparece en tu estimación y en el PDF.</small></span>
@@ -43,6 +50,15 @@ const services = {
         <label class="field"><span>Moneda de los productos</span><select id="qCurrency"><option value="USD">USD</option><option value="RMB">RMB / CNY</option></select></label>
         <label class="field"><span>Volumen estimado (m³)</span><input id="qCbm" type="number" min="0" step="0.01" placeholder="0"></label>
         <label class="field"><span>Puerto o ciudad de origen</span><input id="qOrigin" placeholder="Ningbo, Shanghai, Qingdao..."></label>
+        <div class="cbm-helper" style="grid-column:1/-1">
+          <button type="button" class="cbm-helper-toggle" data-cbm-helper-toggle>¿No sabes el CBM? Calcúlalo con las medidas de tus cajas</button>
+          <div class="cbm-helper-fields hidden form-grid" data-cbm-helper-fields>
+            <label class="field"><span>Largo (cm)</span><input type="number" min="0" placeholder="0" data-box-length></label>
+            <label class="field"><span>Ancho (cm)</span><input type="number" min="0" placeholder="0" data-box-width></label>
+            <label class="field"><span>Alto (cm)</span><input type="number" min="0" placeholder="0" data-box-height></label>
+            <label class="field"><span>Cantidad de cajas</span><input type="number" min="1" placeholder="0" data-box-count></label>
+          </div>
+        </div>
         <label class="service-option" style="grid-column:1/-1">
           <input id="qIncludeSourcing" type="checkbox">
           <span><strong>Necesito búsqueda de proveedor y gestión de compra</strong><small>Solo al marcar esta opción se agrega este servicio a tu cotización. El detalle del cargo aparece en tu estimación y en el PDF.</small></span>
@@ -209,7 +225,27 @@ function setService(service){
     el.addEventListener("input",updateEstimate);
     el.addEventListener("change",updateEstimate);
   });
+  wireCbmHelper();
   updateEstimate();
+}
+
+function wireCbmHelper(){
+  const toggle=document.querySelector("[data-cbm-helper-toggle]");
+  const fields=document.querySelector("[data-cbm-helper-fields]");
+  if(!toggle||!fields)return;
+  toggle.addEventListener("click",()=>fields.classList.toggle("hidden"));
+  const recompute=()=>{
+    const l=Number(document.querySelector("[data-box-length]")?.value)||0;
+    const w=Number(document.querySelector("[data-box-width]")?.value)||0;
+    const h=Number(document.querySelector("[data-box-height]")?.value)||0;
+    const count=Number(document.querySelector("[data-box-count]")?.value)||0;
+    const cbmField=$("qCbm");
+    if(l>0&&w>0&&h>0&&count>0&&cbmField){
+      cbmField.value=((l*w*h/1_000_000)*count).toFixed(3);
+      updateEstimate();
+    }
+  };
+  fields.querySelectorAll("input").forEach(i=>i.addEventListener("input",recompute));
 }
 
 function setSourceMode(mode){
@@ -530,211 +566,6 @@ async function submitQuote(event){
   state.preparedQuoteText=["SOLICITUD CHELME GLOBAL TRADE",`Referencia: ${state.preparedQuoteReference}`,`Servicio: ${serviceTitle}`,`Cliente: ${name}`,`Destino: ${destination}`,`WhatsApp cliente: ${phone}`,`Información disponible: ${modeNames[state.sourceMode]}`,`Proveedor / búsqueda: ${sourcingStatus}`,...concise,`Resultado mostrado: ${result}`,state.quoteFiles.length?`Archivos para adjuntar: ${state.quoteFiles.length}`:"",$("quoteNotes").value.trim()?`Comentarios: ${$("quoteNotes").value.trim()}`:"","",requiresAdvisory?`Asesoría inicial: ${money(CONFIG.advisory.startingPriceUsd)}`:"Esta cotización no tiene costo.",requiresAdvisory?"La revisión comienza después de confirmar la asesoría.":"Quedamos atentos para confirmar por WhatsApp.","Impuestos y gastos de destino se confirman por separado."].filter(Boolean).join("\n");
   renderQuotePreview([["Referencia",state.preparedQuoteReference],["Servicio",serviceTitle],["Cliente",name],["Destino",destination],["Información",modeNames[state.sourceMode]],["Búsqueda",sourcingStatus],["Resultado mostrado",result],[requiresAdvisory?"Asesoría inicial":"Costo de esta cotización",requiresAdvisory?money(CONFIG.advisory.startingPriceUsd):"Sin costo"]]);
 }
-function setCalcMode(mode){
-  state.calcMode=mode;
-  document.querySelectorAll("[data-calc-mode]").forEach(b=>b.classList.toggle("active",b.dataset.calcMode===mode));
-  const wrap=$("simpleCalcFields");
-
-  if(mode==="photos"){
-    wrap.innerHTML=`<div class="simple-fields form-grid">
-      <label class="field"><span>Número de productos o referencias</span><input id="sReferences" type="number" min="1" value="1"></label>
-      <label class="field"><span>Cantidad total aproximada</span><input id="sQuantity" type="number" min="1" placeholder="0"></label>
-      <label class="field"><span>Valor aproximado de la compra (USD)</span><input id="sGoods" type="number" min="0" placeholder="0"></label>
-      <label class="field"><span>Producto principal</span><input id="sProduct" placeholder="Ej.: herramientas, ropa, máquinas..."></label>
-    </div>`;
-  }else if(mode==="bulk"){
-    wrap.innerHTML=`<div class="simple-fields form-grid">
-      <label class="field"><span>Número aproximado de productos o referencias *</span><input id="sReferences" type="number" min="21" value="21"></label>
-      <label class="field"><span>Valor total aproximado</span><input id="sGoods" type="number" min="0" placeholder="0"></label>
-      <label class="field"><span>Moneda</span><select id="sCurrency"><option value="USD">USD</option><option value="RMB">RMB / CNY</option></select></label>
-      <label class="field"><span>CBM total, si lo conoces</span><input id="sCbm" type="number" min="0" step="0.01" placeholder="0"></label>
-      <label class="service-option" style="grid-column:1/-1"><input id="sIncludeSourcing" type="checkbox"><span><strong>Necesito búsqueda de proveedor y gestión de compra</strong><small>Al marcar se agrega el porcentaje correspondiente.</small></span></label>
-      <label class="field"><span>Cantidad de proveedores</span><input id="sSuppliers" type="number" min="1" placeholder="0"></label>
-    </div>`;
-  }else if(mode==="boxes"){
-    wrap.innerHTML=`<div class="simple-fields form-grid">
-      <label class="field"><span>Número de productos o referencias</span><input id="sReferences" type="number" min="1" value="1"></label>
-      <label class="field"><span>Número total de cajas *</span><input id="sBoxes" type="number" min="1" placeholder="0"></label>
-      <label class="field"><span>Valor de productos</span><input id="sGoods" type="number" min="0" placeholder="0"></label>
-      <label class="field"><span>Moneda</span><select id="sCurrency"><option value="USD">USD</option><option value="RMB">RMB / CNY</option></select></label>
-      <label class="service-option" style="grid-column:1/-1"><input id="sIncludeSourcing" type="checkbox"><span><strong>Necesito búsqueda de proveedor y gestión de compra</strong><small>Al marcar se agrega el porcentaje correspondiente.</small></span></label>
-      <label class="field"><span>Largo de una caja promedio (cm) *</span><input id="sLength" type="number" min="0" placeholder="0"></label>
-      <label class="field"><span>Ancho de una caja promedio (cm) *</span><input id="sWidth" type="number" min="0" placeholder="0"></label>
-      <label class="field"><span>Alto de una caja promedio (cm) *</span><input id="sHeight" type="number" min="0" placeholder="0"></label>
-      <label class="field"><span>Peso total aproximado (kg)</span><input id="sWeight" type="number" min="0" placeholder="0"></label>
-    </div>`;
-  }else{
-    wrap.innerHTML=`<div class="simple-fields form-grid">
-      <label class="field"><span>Número de productos o referencias</span><input id="sReferences" type="number" min="1" value="1"></label>
-      <label class="field"><span>CBM total *</span><input id="sCbm" type="number" min="0" step="0.01" placeholder="0"></label>
-      <label class="field"><span>Valor de productos</span><input id="sGoods" type="number" min="0" placeholder="0"></label>
-      <label class="field"><span>Moneda</span><select id="sCurrency"><option value="USD">USD</option><option value="RMB">RMB / CNY</option></select></label>
-      <label class="service-option" style="grid-column:1/-1"><input id="sIncludeSourcing" type="checkbox"><span><strong>Necesito búsqueda de proveedor y gestión de compra</strong><small>Al marcar se agrega el porcentaje correspondiente.</small></span></label>
-      <label class="field"><span>Peso total aproximado (kg)</span><input id="sWeight" type="number" min="0" placeholder="0"></label>
-      <label class="field"><span>Cantidad total de unidades</span><input id="sUnits" type="number" min="0" placeholder="0"></label>
-    </div>`;
-  }
-
-  wrap.querySelectorAll("input,select").forEach(i=>{
-    i.addEventListener("input",updateSimpleCalc);
-    i.addEventListener("change",updateSimpleCalc);
-  });
-  updateSimpleCalc();
-}
-
-function resetSimpleDisplay(){
-  $("simpleTotalLabel").textContent="Estimación inicial";
-  $("simpleTotal").textContent="Completa los datos";
-  $("simpleResultNote").textContent="Necesitamos el CBM o las medidas de las cajas.";
-  $("simpleCbm").textContent="Pendiente";
-  $("simpleMethod").textContent="Por revisar";
-  $("simpleManagement").textContent="Por revisar";
-  $("simpleLogistics").textContent="Por revisar";
-  renderBreakdown("simpleBreakdown","Desglose",[]);
-}
-
-function updateSimpleCalc(){
-  const references=val("sReferences")||1;
-  const goodsAmount=val("sGoods");
-  const goodsCurrency=$("sCurrency")?.value||"USD";
-  const includeSourcing=Boolean($("sIncludeSourcing")?.checked);
-
-  if(state.calcMode==="photos"){
-    $("simpleTotalLabel").textContent="Pago inicial";
-    $("simpleTotal").textContent=money(CONFIG.advisory.startingPriceUsd);
-    $("simpleResultNote").textContent=`La asesoría pagada permite revisar ${Math.round(references)} referencia(s) y preparar una cotización preliminar.`;
-    $("simpleCbm").textContent="Pendiente";
-    $("simpleMethod").textContent="Por revisar";
-    $("simpleManagement").textContent="Según servicio";
-    $("simpleLogistics").textContent="Pendiente";
-    renderBreakdown("simpleBreakdown","Primer paso",[
-      {label:"Asesoría + revisión + cotización",value:money(CONFIG.advisory.startingPriceUsd),total:true},
-      {label:"Búsqueda de proveedor",value:"Se cotiza después",pending:true},
-      {label:"Flete por m³",value:"Pendiente de CBM",pending:true}
-    ],"La cantidad de productos no agrega cargos automáticos. Si ya tienes tu carga lista, cambia a “Ya sé el CBM” o “Cajas y medidas”: esa cotización es gratis.");
-    state.lastSimpleResult={mode:"review",references,goodsAmount,goodsCurrency};
-    return;
-  }
-
-  let cbm=val("sCbm");
-  if(state.calcMode==="boxes"){
-    const boxes=val("sBoxes");
-    cbm=(val("sLength")*val("sWidth")*val("sHeight")/1_000_000)*boxes;
-  }
-
-  if(state.calcMode==="bulk"&&cbm<=0){
-    $("simpleTotalLabel").textContent="Pago inicial";
-    $("simpleTotal").textContent=money(CONFIG.advisory.startingPriceUsd);
-    $("simpleResultNote").textContent=`Puedes enviar ${Math.round(references)} o más referencias en una lista.`;
-    $("simpleCbm").textContent="Pendiente";
-    $("simpleMethod").textContent="Por revisar";
-    $("simpleManagement").textContent=includeSourcing?"Seleccionada":"No seleccionada";
-    $("simpleLogistics").textContent="Pendiente";
-    renderBreakdown("simpleBreakdown","Información actual",[
-      {label:"Asesoría + revisión + cotización",value:money(CONFIG.advisory.startingPriceUsd),total:true},
-      {label:"Número de referencias",value:String(Math.round(references))},
-      {label:"Búsqueda de proveedor",value:includeSourcing?"Seleccionada":"No seleccionada"},
-      {label:"CBM total",value:"Pendiente",pending:true}
-    ],"Sube Excel, PDF, CSV o pega la lista.");
-    state.lastSimpleResult={mode:"bulk_review",references,goodsAmount,goodsCurrency,cbm:0,includeSourcing};
-    return;
-  }
-
-  if(cbm<=0){
-    resetSimpleDisplay();
-    $("simpleResultNote").textContent=`Ingresa el CBM o las medidas para calcular tu consolidado sin costo. Mínimo facturable: ${CONFIG.lcl.minimumBillableCbm} m³.`;
-    state.lastSimpleResult=null;
-    return;
-  }
-
-  const recommendation=CHELME_PRICING.recommendMode(cbm,CONFIG);
-  const lcl=CHELME_PRICING.calculateLcl({
-    goodsAmount,
-    goodsCurrency,
-    cbm,
-    includeSourcing
-  },CONFIG);
-
-  const rows=[
-    {label:`Mercancía ingresada (${goodsCurrency})`,value:originalGoodsText(goodsAmount,goodsCurrency),pending:goodsAmount<=0}
-  ];
-  if(goodsCurrency==="RMB"&&goodsAmount>0){
-    rows.push({label:`Equivalente a ${CONFIG.exchange.commercialRmbPerUsd.toFixed(4)} RMB/USD`,value:money(lcl.goodsUsd)});
-  }
-  rows.push({label:"Volumen real",value:`${fmt(lcl.actualCbm,2)} m³`});
-  rows.push({label:"Volumen facturable",value:`${fmt(lcl.billableCbm,2)} m³`});
-  if(lcl.minimumApplied){
-    rows.push({label:"Mínimo aplicado",value:`${fmt(lcl.minimumBillableCbm,2)} m³`,pending:true});
-  }
-  rows.push({label:`Flete base (${fmt(lcl.billableCbm,2)} × ${money(lcl.baseRate)})`,value:money(lcl.baseFreight)});
-  if(lcl.smallCargo){
-    rows.push({label:`Cargo operativo bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³`,value:money(lcl.smallCargoExtra)});
-  }
-  rows.push({
-    label:`Búsqueda y gestión de compra (${CONFIG.lcl.sourcingPercent}%)`,
-    value:includeSourcing
-      ? (lcl.sourcing!==null?money(lcl.sourcing):"Pendiente")
-      : "No seleccionada",
-    pending:includeSourcing&&lcl.sourcing===null
-  });
-
-  $("simpleCbm").textContent=`${fmt(lcl.actualCbm,2)} m³ real / ${fmt(lcl.billableCbm,2)} m³ facturable`;
-  $("simpleManagement").textContent=includeSourcing
-    ? (lcl.sourcing!==null?money(lcl.sourcing):"Pendiente")
-    : "No seleccionada";
-  $("simpleLogistics").textContent=money(lcl.logistics);
-
-  if(recommendation.code==="lcl"){
-    $("simpleTotalLabel").textContent=goodsAmount>0?"Operación conocida":"Logística estimada";
-    $("simpleTotal").textContent=goodsAmount>0?money(lcl.operationTotalKnown):money(lcl.logistics);
-    $("simpleResultNote").textContent="Cotización sin costo. Envíala para confirmar precio final y coordinar tu envío.";
-    $("simpleMethod").textContent="Consolidado LCL";
-    rows.push({
-      label:goodsAmount>0?"Total conocido de la operación":"Logística conocida",
-      value:goodsAmount>0?money(lcl.operationTotalKnown):money(lcl.logistics),
-      total:true
-    });
-  }else if(recommendation.code==="compare"){
-    $("simpleTotalLabel").textContent="Referencia LCL";
-    $("simpleTotal").textContent=goodsAmount>0?money(lcl.operationTotalKnown):money(lcl.logistics);
-    $("simpleResultNote").textContent="Este volumen debe compararse con un contenedor. No se elige FCL automáticamente.";
-    $("simpleMethod").textContent="Comparar LCL / FCL";
-    rows.push({label:"Referencia LCL conocida",value:goodsAmount>0?money(lcl.operationTotalKnown):money(lcl.logistics),total:true});
-    rows.push({label:"Alternativa FCL",value:"Cotizar flete real",pending:true});
-  }else{
-    const fcl=CHELME_PRICING.calculateFcl({
-      goodsAmount,
-      goodsCurrency,
-      container:recommendation.container,
-      includeSourcing
-    },CONFIG);
-    $("simpleTotalLabel").textContent="Resultado";
-    $("simpleTotal").textContent="Cotización FCL necesaria";
-    $("simpleResultNote").textContent=`Por volumen conviene revisar ${recommendation.container}; falta confirmar el flete marítimo.`;
-    $("simpleMethod").textContent=`Evaluar ${recommendation.container}`;
-    $("simpleManagement").textContent=includeSourcing
-      ? (fcl.sourcing!==null?money(fcl.sourcing):"Pendiente")
-      : "No seleccionada";
-    $("simpleLogistics").textContent="Flete por confirmar";
-  }
-
-  renderBreakdown(
-    "simpleBreakdown",
-    "Cómo se está cobrando",
-    rows,
-    "Los impuestos, agencia de aduanas, puerto y entrega se pagan o confirman al llegar."
-  );
-  state.lastSimpleResult={
-    mode:recommendation.code,
-    references,
-    goodsAmount,
-    goodsCurrency,
-    cbm,
-    includeSourcing,
-    container:recommendation.container,
-    lcl
-  };
-}
 function selectServiceAndScroll(service){
   setService(service);
   const target=$("quoteShell")||$("cotizar");
@@ -776,7 +607,6 @@ function init(){
   });
   document.querySelectorAll("[data-quote-service]").forEach(b=>b.addEventListener("click",()=>setService(b.dataset.quoteService)));
   document.querySelectorAll("[data-source-mode]").forEach(b=>b.addEventListener("click",()=>setSourceMode(b.dataset.sourceMode)));
-  document.querySelectorAll("[data-calc-mode]").forEach(b=>b.addEventListener("click",()=>setCalcMode(b.dataset.calcMode)));
 
   $("quoteForm").addEventListener("submit",submitQuote);
   $("confirmQuoteWhatsapp").addEventListener("click",sendPreparedQuote);
@@ -788,36 +618,8 @@ function init(){
     setSourceMode(state.sourceMode);
     setService(state.quoteService);
   });
-  $("resetSimpleCalc").addEventListener("click",()=>setCalcMode("photos"));
-  $("sendSimpleQuote").addEventListener("click",()=>{
-    const result=state.lastSimpleResult;
-    if(state.calcMode==="bulk"){
-      setSourceMode("bulk");
-      setService(result?.mode==="fcl_review"?"fcl":"lcl");
-    }else if(state.calcMode==="photos"){
-      setSourceMode("photos");
-      setService("sourcing");
-    }else{
-      setSourceMode("description");
-      setService(result?.mode==="fcl_review"?"fcl":"lcl");
-    }
-
-    setTimeout(()=>{
-      if($("sourceReferences")&&result?.references)$("sourceReferences").value=result.references;
-      if($("sourceBulkGoods")&&result?.goods)$("sourceBulkGoods").value=result.goods;
-      if($("sourceBulkCbm")&&result?.cbm)$("sourceBulkCbm").value=result.cbm;
-      if($("qGoods")&&result?.goodsAmount)$("qGoods").value=result.goodsAmount;
-      if($("qCurrency")&&result?.goodsCurrency)$("qCurrency").value=result.goodsCurrency;
-      if($("qIncludeSourcing"))$("qIncludeSourcing").checked=Boolean(result?.includeSourcing);
-      if($("qCbm")&&result?.cbm)$("qCbm").value=result.cbm;
-      if($("qContainer")&&result?.container)$("qContainer").value=result.container;
-      updateEstimate();
-    },0);
-  });
-
   setSourceMode("link");
   setService("lcl");
-  setCalcMode("photos");
 }
 
 init();

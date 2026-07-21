@@ -13,6 +13,29 @@
    los usos a la vez. */
 :root { --gold-dark: #8a6410; }
 
+/* ---------- 0b. HELPER "CBM DESDE CAJAS" (fusionado desde la calculadora rápida) ---------- */
+.cbm-helper { margin: 4px 0 6px; }
+.cbm-helper-toggle {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--petrol-2);
+  font-weight: 700;
+  font-size: .84rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.cbm-helper-toggle:hover { color: var(--petrol); }
+.cbm-helper-fields {
+  margin-top: 10px;
+  padding: 14px;
+  border: 1px dashed #c6d5d7;
+  border-radius: 14px;
+  background: #f8fafa;
+  gap: 12px;
+}
+@media (max-width: 650px) { .cbm-helper-fields { grid-template-columns: 1fr 1fr; } }
+
 /* ---------- 1. BOTONES MÁS BONITOS ---------- */
 .btn, .service-button {
   min-height: 50px;

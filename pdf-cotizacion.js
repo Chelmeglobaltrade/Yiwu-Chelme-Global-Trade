@@ -67,20 +67,6 @@
     return { data: c.toDataURL("image/png"), w: w / scale, h: h / scale };
   }
 
-  function collectSimple() {
-    var rows = [];
-    rows.push(["Volumen", text("simpleCbm")]);
-    rows.push(["Modalidad recomendada", text("simpleMethod")]);
-    rows.push(["Gestión Chelme", text("simpleManagement")]);
-    rows.push(["Logística estimada", text("simpleLogistics")]);
-    document.querySelectorAll("#simpleBreakdown .cost-breakdown-row").forEach(function (r) {
-      if (r.children.length >= 2) {
-        rows.push([r.children[0].textContent.trim(), r.children[r.children.length - 1].textContent.trim()]);
-      }
-    });
-    return { title: "Calculadora rápida", total: text("simpleTotal"), rows: rows };
-  }
-
   function collectPreview() {
     var rows = [];
     document.querySelectorAll("#quotePreviewGrid .quote-preview-item").forEach(function (item) {
@@ -263,8 +249,6 @@
   }
 
   ready(function () {
-    var b1 = document.getElementById("simplePdfBtn");
-    if (b1) b1.addEventListener("click", function () { buildPdf(collectSimple()); });
     var b2 = document.getElementById("quotePdfBtn");
     if (b2) b2.addEventListener("click", function () { buildPdf(collectPreview()); });
   });
