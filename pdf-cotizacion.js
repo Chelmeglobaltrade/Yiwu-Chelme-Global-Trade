@@ -213,39 +213,46 @@
       "· Para confirmar, envía tu solicitud por WhatsApp indicando la referencia " + ref + "."
     ].forEach(function (a) { doc.text(a, M, y); y += 4.1; });
 
-    // ---- Pie de página: contacto ordenado en columnas ----
-    var fy = 262;
+    // ---- Pie de página: contacto ordenado en filas ----
+    var fy = 254;
     doc.setFillColor.apply(doc, PETROL_DARK);
     doc.rect(0, fy, W, 297 - fy, "F");
 
     doc.setTextColor(240, 198, 77);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9.5);
-    doc.text("CHELME GLOBAL TRADE — Tu enlace directo con China", M, fy + 9);
+    doc.text("CHELME GLOBAL TRADE — Tu enlace directo con China", M, fy + 8);
 
-    var colW = (W - 2 * M) / 3;
-    var labelY = fy + 17;
-    var valueY = fy + 22;
-    var col1 = M, col2 = M + colW, col3 = M + colW * 2;
-
+    // Fila 1: ubicación (ancho completo, puede ocupar 2 líneas)
     doc.setTextColor(150, 178, 182);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7);
-    doc.text("UBICACIÓN", col1, labelY);
-    doc.text("WHATSAPP / TELÉFONO", col2, labelY);
-    doc.text("CORREO", col3, labelY);
-
+    doc.text("UBICACIÓN EN CHINA", M, fy + 16);
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
-    doc.text(doc.splitTextToSize(biz.city || "Yiwu, Zhejiang, China", colW - 6), col1, valueY);
-    doc.text("+" + (biz.whatsapp || ""), col2, valueY);
-    doc.text(doc.splitTextToSize(biz.email || "", colW - 6), col3, valueY);
+    doc.text(doc.splitTextToSize(biz.address || biz.city || "Yiwu, Zhejiang, China", W - 2 * M), M, fy + 20.5);
 
+    // Fila 2: WhatsApp/teléfono y correo en dos columnas
+    var half = (W - 2 * M) / 2;
+    var col1 = M, col2 = M + half;
+    var row2LabelY = fy + 30, row2ValueY = fy + 34.5;
+    doc.setTextColor(150, 178, 182);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.text("WHATSAPP / TELÉFONO", col1, row2LabelY);
+    doc.text("CORREO", col2, row2LabelY);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.text("+" + (biz.whatsapp || ""), col1, row2ValueY);
+    doc.text(doc.splitTextToSize(biz.email || "", half - 6), col2, row2ValueY);
+
+    // Fila 3: redes / sitio
     doc.setTextColor(150, 178, 182);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
-    doc.text((biz.instagramHandle ? "IG " + biz.instagramHandle + "   ·   " : "") + SITE_URL, W / 2, fy + 30, { align: "center" });
+    doc.text((biz.instagramHandle ? "IG " + biz.instagramHandle + "   ·   " : "") + SITE_URL, W / 2, fy + 41, { align: "center" });
 
     doc.save("Cotizacion-Chelme-" + ref + ".pdf");
   }
