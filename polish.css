@@ -92,6 +92,7 @@
   .main-nav {
     top: 88px;
     padding: 10px;
+    gap: 2px;
     border-radius: 18px;
     box-shadow: 0 24px 70px rgba(4,28,34,.25);
   }
