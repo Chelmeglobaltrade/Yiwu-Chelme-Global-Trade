@@ -36,6 +36,9 @@
 }
 @media (max-width: 650px) { .cbm-helper-fields { grid-template-columns: 1fr 1fr; } }
 
+.quote-early-pdf { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 10px 0 20px; }
+.quote-early-pdf small { color: var(--muted); font-size: .78rem; }
+
 /* ---------- 1. BOTONES MÁS BONITOS ---------- */
 .btn, .service-button {
   min-height: 50px;

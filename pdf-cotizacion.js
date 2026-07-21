@@ -67,6 +67,17 @@
     return { data: c.toDataURL("image/png"), w: w / scale, h: h / scale };
   }
 
+  function collectLive() {
+    var rows = [];
+    document.querySelectorAll("#quoteBreakdown .cost-breakdown-row").forEach(function (r) {
+      if (r.children.length >= 2) {
+        rows.push([r.children[0].textContent.trim(), r.children[r.children.length - 1].textContent.trim()]);
+      }
+    });
+    var serviceTitle = text("quoteTitle") || "Cotización";
+    return { title: serviceTitle, total: text("quoteEstimate"), rows: rows };
+  }
+
   function collectPreview() {
     var rows = [];
     document.querySelectorAll("#quotePreviewGrid .quote-preview-item").forEach(function (item) {
@@ -249,6 +260,15 @@
   }
 
   ready(function () {
+    var b1 = document.getElementById("livePdfBtn");
+    if (b1) b1.addEventListener("click", function () {
+      var rows = document.querySelectorAll("#quoteBreakdown .cost-breakdown-row");
+      if (!rows.length) {
+        alert("Completa primero los datos del formulario para calcular tu estimación.");
+        return;
+      }
+      buildPdf(collectLive());
+    });
     var b2 = document.getElementById("quotePdfBtn");
     if (b2) b2.addEventListener("click", function () { buildPdf(collectPreview()); });
   });
