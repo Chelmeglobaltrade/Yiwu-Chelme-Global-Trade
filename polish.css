@@ -4,6 +4,15 @@
    No modifica la estructura; solo pule lo existente.
    ============================================================ */
 
+/* ---------- 0. TOKEN DE COLOR: contraste accesible ----------
+   --gold-dark se usa como texto sobre fondos claros en varios
+   componentes (.eyebrow.dark, .service-label, .service-card>span,
+   .quote-title-row span, .paid-advisory-gate span). El valor original
+   (#ad8110) no alcanza 4.5:1 de contraste en varios de esos casos.
+   Se sobreescribe la variable una sola vez aquí y corrige todos
+   los usos a la vez. */
+:root { --gold-dark: #8a6410; }
+
 /* ---------- 1. BOTONES MÁS BONITOS ---------- */
 .btn, .service-button {
   min-height: 50px;
