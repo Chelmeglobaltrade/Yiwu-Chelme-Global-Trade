@@ -186,6 +186,7 @@
   font-weight: 900; font-size: 1.15rem;
   box-shadow: 0 10px 24px rgba(215,170,40,.35), 0 0 0 6px #fff;
 }
+.journey-step .journey-copy { display: flex; flex-direction: column; align-items: center; }
 .journey-step strong { margin-top: 14px; color: var(--petrol); font-size: .98rem; }
 .journey-step small { margin-top: 5px; color: var(--muted); font-size: .8rem; line-height: 1.45; }
 .journey-more { display: flex; justify-content: center; margin-top: 26px; }
@@ -193,7 +194,7 @@
   .journey-track { grid-template-columns: 1fr; gap: 0; }
   .journey-track::before { top: 8%; bottom: 8%; left: 26px; right: auto; width: 3px; height: auto; background: linear-gradient(180deg, #d7aa28, #1d5b66); }
   .journey-step { flex-direction: row; text-align: left; gap: 16px; padding: 12px 0; }
-  .journey-step .journey-copy { display: flex; flex-direction: column; }
+  .journey-step .journey-copy { align-items: flex-start; }
   .journey-step strong { margin-top: 0; }
   .journey-dot { flex: none; }
 }
