@@ -131,6 +131,36 @@
       </div>
     </section>
 
+    <section class="journey-section">
+      <div class="container">
+        <header class="section-heading">
+          <span class="eyebrow dark">Así de simple</span>
+          <h2>Tu importación en 5 pasos</h2>
+        </header>
+        <div class="journey-track">
+          <a class="journey-step" href="asesoria.html"><span class="journey-dot">1</span><span class="journey-copy"><strong>Asesoría</strong><small>Revisamos tu proyecto y cotizamos</small></span></a>
+          <a class="journey-step" href="como-funciona.html"><span class="journey-dot">2</span><span class="journey-copy"><strong>Compra</strong><small>Negociamos con proveedores en chino</small></span></a>
+          <a class="journey-step" href="como-funciona.html"><span class="journey-dot">3</span><span class="journey-copy"><strong>Bodega Yiwu</strong><small>Recibimos, revisamos y consolidamos</small></span></a>
+          <a class="journey-step" href="como-funciona.html"><span class="journey-dot">4</span><span class="journey-copy"><strong>Embarque</strong><small>Tu carga zarpa con documentación lista</small></span></a>
+          <a class="journey-step" href="como-funciona.html"><span class="journey-dot">5</span><span class="journey-copy"><strong>Llegada</strong><small>Pagas impuestos y recibes tu carga</small></span></a>
+        </div>
+        <div class="journey-more"><a class="btn btn-light" href="como-funciona.html">Ver el proceso completo con plazos</a></div>
+      </div>
+    </section>
+
+    <section class="departure-banner">
+      <div class="container departure-banner-inner">
+        <div class="departure-banner-copy">
+          <svg><use href="#i-container"></use></svg>
+          <div>
+            <span>Próximo consolidado Chelme</span>
+            <strong id="departureText">Consultar próxima salida</strong>
+          </div>
+        </div>
+        <a class="btn btn-gold" href="#cotizar">Reservar mi espacio</a>
+      </div>
+    </section>
+
     <section class="section" id="servicios">
       <div class="container">
         <header class="section-heading">
@@ -633,6 +663,12 @@
   <script>
     // V9: la calculadora parte en "Ya sé el CBM" para mostrar cálculo inmediato
     if (typeof setCalcMode === "function") setCalcMode("cbm");
+    // V9: banner de próxima salida, editable desde config.js (lcl.nextDepartureText)
+    (function(){
+      var el = document.getElementById("departureText");
+      var cfg = window.CHELME_CONFIG;
+      if (el && cfg && cfg.lcl && cfg.lcl.nextDepartureText) el.textContent = cfg.lcl.nextDepartureText;
+    })();
   </script>
   <script async src="https://www.tiktok.com/embed.js"></script>
 </body>
