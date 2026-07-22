@@ -327,39 +327,56 @@
             </div>
 
             <form id="quoteForm" novalidate>
-              <div class="quote-source-title">
-                <strong>¿Qué información tienes del producto?</strong>
-                <span>Elige solo una opción. También puedes cambiarla después.</span>
+              <div class="quote-step">
+                <div class="quote-step-head">
+                  <span class="quote-step-num">1</span>
+                  <div><h4>¿Qué información tienes del producto?</h4><span>Elige solo una opción. También puedes cambiarla después.</span></div>
+                </div>
+                <div class="source-tabs">
+                  <button class="source-tab active" type="button" data-source-mode="link"><svg><use href="#i-link"></use></svg><span><strong>Tengo un enlace</strong><small>1688, Alibaba u otro</small></span></button>
+                  <button class="source-tab" type="button" data-source-mode="photos"><svg><use href="#i-camera"></use></svg><span><strong>Solo tengo fotos</strong><small>Sube imágenes</small></span></button>
+                  <button class="source-tab" type="button" data-source-mode="description"><svg><use href="#i-pencil"></use></svg><span><strong>Puedo describirlo</strong><small>Nosotros lo buscamos</small></span></button>
+                  <button class="source-tab" type="button" data-source-mode="bulk"><svg><use href="#i-file"></use></svg><span><strong>Tengo muchos productos</strong><small>Excel, PDF, CSV o lista</small></span></button>
+                </div>
+                <div id="sourceFields"></div>
               </div>
 
-              <div class="source-tabs">
-                <button class="source-tab active" type="button" data-source-mode="link"><svg><use href="#i-link"></use></svg><span><strong>Tengo un enlace</strong><small>1688, Alibaba u otro</small></span></button>
-                <button class="source-tab" type="button" data-source-mode="photos"><svg><use href="#i-camera"></use></svg><span><strong>Solo tengo fotos</strong><small>Sube imágenes</small></span></button>
-                <button class="source-tab" type="button" data-source-mode="description"><svg><use href="#i-pencil"></use></svg><span><strong>Puedo describirlo</strong><small>Nosotros lo buscamos</small></span></button>
-                <button class="source-tab" type="button" data-source-mode="bulk"><svg><use href="#i-file"></use></svg><span><strong>Tengo muchos productos</strong><small>Excel, PDF, CSV o lista</small></span></button>
+              <div class="quote-step">
+                <div class="quote-step-head">
+                  <span class="quote-step-num">2</span>
+                  <div><h4>Tus datos de contacto</h4><span>Para enviarte la confirmación por WhatsApp o correo.</span></div>
+                </div>
+                <div class="form-grid client-grid">
+                  <label class="field"><span>Nombre *</span><input type="text" id="quoteName" required placeholder="Tu nombre"></label>
+                  <label class="field"><span>Ciudad o país de destino *</span><input type="text" id="quoteDestination" required placeholder="Ej.: Santiago, Chile"></label>
+                  <label class="field"><span>WhatsApp</span><input type="text" id="quoteClientWhatsapp" placeholder="+56..."></label>
+                  <label class="field"><span>Correo</span><input type="email" id="quoteEmail" placeholder="correo@ejemplo.com"></label>
+                </div>
               </div>
 
-              <div id="sourceFields"></div>
-
-              <div class="form-grid client-grid">
-                <label class="field"><span>Nombre *</span><input type="text" id="quoteName" required placeholder="Tu nombre"></label>
-                <label class="field"><span>Ciudad o país de destino *</span><input type="text" id="quoteDestination" required placeholder="Ej.: Santiago, Chile"></label>
-                <label class="field"><span>WhatsApp</span><input type="text" id="quoteClientWhatsapp" placeholder="+56..."></label>
-                <label class="field"><span>Correo</span><input type="email" id="quoteEmail" placeholder="correo@ejemplo.com"></label>
+              <div class="quote-step">
+                <div class="quote-step-head">
+                  <span class="quote-step-num">3</span>
+                  <div><h4>Detalles del servicio</h4><span>Completa lo que sepas; lo que falte lo revisamos contigo.</span></div>
+                </div>
+                <div id="serviceFields"></div>
+                <label class="field"><span>Comentarios adicionales</span><textarea id="quoteNotes" rows="4" placeholder="Colores, modelos, calidad esperada, fecha, presupuesto u otra información."></textarea></label>
               </div>
 
-              <div id="serviceFields"></div>
-
-              <label class="field"><span>Comentarios adicionales</span><textarea id="quoteNotes" rows="4" placeholder="Colores, modelos, calidad esperada, fecha, presupuesto u otra información."></textarea></label>
-
-              <div class="estimate-box">
-                <div><span>Resultado inicial</span><strong id="quoteEstimate">Por calcular</strong></div>
-                <p id="quoteEstimateNote">Completa los datos disponibles.</p>
-              </div>
-              <div class="cost-breakdown hidden" id="quoteBreakdown" aria-live="polite"></div>
-              <div class="quote-early-pdf">
-                <button class="btn btn-light" type="button" id="livePdfBtn"><svg><use href="#i-file"></use></svg> Descargar esta estimación en PDF</button>
-                <small>No necesitas completar tus datos para descargar esta estimación.</small>
+              <div class="quote-step quote-step-result">
+                <div class="quote-step-head">
+                  <span class="quote-step-num">4</span>
+                  <div><h4>Tu estimación</h4><span>Se actualiza mientras completas el formulario.</span></div>
+                </div>
+                <div class="estimate-box">
+                  <div><span>Resultado inicial</span><strong id="quoteEstimate">Por calcular</strong></div>
+                  <p id="quoteEstimateNote">Completa los datos disponibles.</p>
+                </div>
+                <div class="cost-breakdown hidden" id="quoteBreakdown" aria-live="polite"></div>
+                <div class="quote-early-pdf">
+                  <button class="btn btn-light" type="button" id="livePdfBtn"><svg><use href="#i-file"></use></svg> Descargar esta estimación en PDF</button>
+                  <small>No necesitas completar tus datos para descargar esta estimación.</small>
+                </div>
               </div>
 
               <div class="form-alert hidden" id="quoteAlert"></div>

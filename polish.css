@@ -39,6 +39,35 @@
 .quote-early-pdf { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 10px 0 20px; }
 .quote-early-pdf small { color: var(--muted); font-size: .78rem; }
 
+/* 0c. PASOS NUMERADOS DEL COTIZADOR (rediseño de #quoteShell) */
+.quote-step {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fafcfc;
+  padding: 22px;
+  margin: 0 0 20px;
+}
+.quote-step-result { background: linear-gradient(180deg, #fafcfc, #f2f7f7); }
+.quote-step-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.quote-step-num {
+  flex: none; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--petrol); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: .82rem;
+}
+.quote-step-head h4 { margin: 0; color: var(--petrol); font-size: 1.02rem; }
+.quote-step-head span { display: block; margin-top: 3px; color: var(--muted); font-size: .82rem; }
+.quote-step .source-panel, .quote-step .service-field-panel {
+  border: 0; background: transparent; padding: 0; margin: 0;
+}
+.quote-step .client-grid { margin: 0; }
+.quote-step .estimate-box { margin: 0; }
+.quote-step .cost-breakdown { margin-top: 16px; }
+.quote-step > * + * { margin-top: 16px; }
+@media (max-width: 650px) {
+  .quote-step { padding: 18px; }
+}
+
 /* ---------- 1. BOTONES MÁS BONITOS ---------- */
 .btn, .service-button {
   min-height: 50px;
