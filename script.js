@@ -118,15 +118,6 @@ const services = {
         <label class="field"><span>Presupuesto estimado (USD)</span><input id="qBudget" type="number" min="0" placeholder="0"></label>
         <label class="field"><span>¿Has importado antes?</span><select id="qExperience"><option>No</option><option>Sí, una vez</option><option>Sí, varias veces</option></select></label>
       </div>`
-  },
-  packaging: {
-    title: "Cotizar etiquetado y marca privada",
-    badge: "Cotización personalizada",
-    html: `
-      <div class="service-field-panel form-grid">
-        <label class="field"><span>Cantidad aproximada</span><input id="qQuantity" type="number" min="1" placeholder="0"></label>
-        <label class="field"><span>Servicio</span><select id="qPackaging"><option>Etiquetas</option><option>Shipping marks</option><option>Código de barras</option><option>Empaque personalizado</option><option>Marca privada completa</option></select></label>
-      </div>`
   }
 };
 
