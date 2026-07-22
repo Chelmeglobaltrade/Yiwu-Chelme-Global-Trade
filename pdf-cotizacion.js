@@ -17,9 +17,16 @@
   var SOFT = [237, 243, 243];
 
   function pad(n) { return String(n).padStart(2, "0"); }
-  function today() {
-    var d = new Date();
+  function fmtDate(d) {
     return pad(d.getDate()) + "-" + pad(d.getMonth() + 1) + "-" + d.getFullYear();
+  }
+  function today() {
+    return fmtDate(new Date());
+  }
+  function addDays(days) {
+    var d = new Date();
+    d.setDate(d.getDate() + days);
+    return d;
   }
   function makeRef() {
     var d = new Date();
@@ -88,6 +95,59 @@
     return { title: "Solicitud de cotización", total: text("quoteEstimate"), rows: rows, ref: text("quoteReference") };
   }
 
+  // Franja superior compacta usada solo en páginas de continuación
+  function drawContinuationHeader(doc, W, M, ref) {
+    doc.setFillColor.apply(doc, PETROL);
+    doc.rect(0, 0, W, 13, "F");
+    doc.setTextColor(240, 198, 77);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.5);
+    doc.text("CHELME GLOBAL TRADE", M, 8.3);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("Cotización " + ref + "  ·  continuación", W - M, 8.3, { align: "right" });
+  }
+
+  // Pie de página completo (contacto). Se dibuja una sola vez, en la última página.
+  function drawFullFooter(doc, W, fy, biz) {
+    doc.setFillColor.apply(doc, PETROL_DARK);
+    doc.rect(0, fy, W, 297 - fy, "F");
+
+    doc.setTextColor(240, 198, 77);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9.5);
+    doc.text("CHELME GLOBAL TRADE — Tu enlace directo con China", 16, fy + 8);
+
+    doc.setTextColor(150, 178, 182);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.text("UBICACIÓN EN CHINA", 16, fy + 16);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.text(doc.splitTextToSize(biz.address || biz.city || "Yiwu, Zhejiang, China", W - 32), 16, fy + 20.5);
+
+    var half = (W - 32) / 2;
+    var col1 = 16, col2 = 16 + half;
+    var row2LabelY = fy + 30, row2ValueY = fy + 34.5;
+    doc.setTextColor(150, 178, 182);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.text("WHATSAPP / TELÉFONO", col1, row2LabelY);
+    doc.text("CORREO", col2, row2LabelY);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.text("+" + (biz.whatsapp || ""), col1, row2ValueY);
+    doc.text(doc.splitTextToSize(biz.email || "", half - 6), col2, row2ValueY);
+
+    doc.setTextColor(150, 178, 182);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.text((biz.instagramHandle ? "IG " + biz.instagramHandle + "   ·   " : "") + SITE_URL, W / 2, fy + 41, { align: "center" });
+  }
+
   async function buildPdf(data) {
     if (!window.jspdf || !window.jspdf.jsPDF) {
       alert("El generador de PDF aún está cargando. Intenta de nuevo en unos segundos.");
@@ -97,8 +157,10 @@
     var W = 210, M = 16;
     var ref = data.ref || makeRef();
     var validity = (CONFIG.exchange && CONFIG.exchange.quoteValidityDays) || 3;
+    var validUntil = fmtDate(addDays(validity));
     var fx = CONFIG.exchange || {};
     var biz = CONFIG.business || {};
+    var FOOTER_H = 43;
 
     // ---- Banda superior dorada fina + encabezado blanco con logo ----
     doc.setFillColor.apply(doc, [GOLD[0], GOLD[1], GOLD[2]]);
@@ -128,7 +190,7 @@
     doc.text(ref, W - M - 31, 19, { align: "center" });
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
-    doc.text("Fecha: " + today() + "  ·  Vigencia: " + validity + " días", W - M - 31, 24.5, { align: "center" });
+    doc.text("Emitida: " + today() + "  ·  Válida hasta: " + validUntil, W - M - 31, 24.5, { align: "center" });
 
     // Empresa: nombre chino (como imagen) + ubicación
     var cn = textToImage(COMPANY_CN + "  ·  Yiwu, Zhejiang, China", 8.5, "#66777c", false);
@@ -167,6 +229,12 @@
       if (!row[0] && !row[1]) return;
       var label = doc.splitTextToSize(row[0], 115);
       var rowH = Math.max(8.5, label.length * 4.6 + 4);
+      if (y + rowH > 270) {
+        doc.addPage();
+        drawContinuationHeader(doc, W, M, ref);
+        y = 22;
+        zebra = false;
+      }
       if (zebra) {
         doc.setFillColor.apply(doc, SOFT);
         doc.rect(M, y, W - 2 * M, rowH, "F");
@@ -179,8 +247,14 @@
       doc.setTextColor.apply(doc, PETROL);
       doc.text(String(row[1]), W - M - 4, y + 5.7, { align: "right" });
       y += rowH;
-      if (y > 235) { doc.addPage(); y = 20; zebra = false; }
     });
+
+    // Si el total no alcanza a entrar cómodamente, se pasa a una página nueva
+    if (y + 20 > 270) {
+      doc.addPage();
+      drawContinuationHeader(doc, W, M, ref);
+      y = 22;
+    }
 
     // ---- Total en dorado ----
     doc.setFillColor.apply(doc, GOLD);
@@ -191,65 +265,67 @@
     doc.text("ESTIMACIÓN TOTAL", M + 4, y + 8);
     doc.setFontSize(12.5);
     doc.text(String(data.total || "Por confirmar"), W - M - 4, y + 8, { align: "right" });
-    y += 20;
+    y += 18;
 
-    // ---- Condiciones ----
+    // ---- Condiciones: panel con fondo suave y borde lateral ----
+    var conditionItems = [
+      "Estimación referencial: no constituye una cotización final. Precio, MOQ, peso, embalaje, CBM, disponibilidad y restricciones deben confirmarse antes de comprar.",
+      "Los impuestos de importación, aduana, gastos portuarios y entrega en destino NO están incluidos.",
+      "El consolidado se factura por CBM: mínimo 1 m³; bajo 5 m³ aplica cargo operativo fijo.",
+      "Para confirmar, envía tu solicitud por WhatsApp indicando la referencia " + ref + "."
+    ];
+    var textW = W - 2 * M - 10;
+    var wrapped = conditionItems.map(function (item) { return doc.splitTextToSize("•  " + item, textW); });
+    var lineCount = wrapped.reduce(function (n, arr) { return n + arr.length; }, 0);
+    var panelH = 11 + lineCount * 4.3;
+
+    // Si el panel de condiciones + el pie de página no caben, se abre una página nueva
+    if (y + panelH + FOOTER_H > 297) {
+      doc.addPage();
+      drawContinuationHeader(doc, W, M, ref);
+      y = 22;
+    }
+
+    doc.setFillColor(244, 247, 247);
+    doc.roundedRect(M, y, W - 2 * M, panelH, 2, 2, "F");
+    doc.setFillColor.apply(doc, GOLD);
+    doc.rect(M, y, 1.4, panelH, "F");
+
     doc.setTextColor.apply(doc, PETROL);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
-    doc.text("Condiciones de esta estimación", M, y);
-    y += 5;
+    doc.text("Condiciones de esta estimación", M + 6, y + 7);
+    var cy = y + 13;
     doc.setTextColor.apply(doc, MUTED);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
-    [
-      "· Estimación referencial: no constituye una cotización final. Precio, MOQ, peso, embalaje, CBM, disponibilidad y",
-      "  restricciones deben confirmarse antes de comprar.",
-      "· Los impuestos de importación, aduana, gastos portuarios y entrega en destino NO están incluidos.",
-      "· El consolidado se factura por CBM: mínimo 1 m³; bajo 5 m³ aplica cargo operativo fijo.",
-      "· Para confirmar, envía tu solicitud por WhatsApp indicando la referencia " + ref + "."
-    ].forEach(function (a) { doc.text(a, M, y); y += 4.1; });
+    wrapped.forEach(function (lines) {
+      doc.text(lines, M + 6, cy);
+      cy += lines.length * 4.3;
+    });
+    y += panelH + 8;
 
-    // ---- Pie de página: contacto ordenado en filas ----
-    var fy = 254;
-    doc.setFillColor.apply(doc, PETROL_DARK);
-    doc.rect(0, fy, W, 297 - fy, "F");
+    // ---- Pie de página: contacto, en la última página, siempre dentro del margen ----
+    var fy = Math.max(297 - FOOTER_H, y);
+    if (fy + FOOTER_H > 297) fy = 297 - FOOTER_H;
+    drawFullFooter(doc, W, fy, biz);
 
-    doc.setTextColor(240, 198, 77);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9.5);
-    doc.text("CHELME GLOBAL TRADE — Tu enlace directo con China", M, fy + 8);
-
-    // Fila 1: ubicación (ancho completo, puede ocupar 2 líneas)
-    doc.setTextColor(150, 178, 182);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(7);
-    doc.text("UBICACIÓN EN CHINA", M, fy + 16);
-    doc.setTextColor(255, 255, 255);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8.5);
-    doc.text(doc.splitTextToSize(biz.address || biz.city || "Yiwu, Zhejiang, China", W - 2 * M), M, fy + 20.5);
-
-    // Fila 2: WhatsApp/teléfono y correo en dos columnas
-    var half = (W - 2 * M) / 2;
-    var col1 = M, col2 = M + half;
-    var row2LabelY = fy + 30, row2ValueY = fy + 34.5;
-    doc.setTextColor(150, 178, 182);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(7);
-    doc.text("WHATSAPP / TELÉFONO", col1, row2LabelY);
-    doc.text("CORREO", col2, row2LabelY);
-    doc.setTextColor(255, 255, 255);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8.5);
-    doc.text("+" + (biz.whatsapp || ""), col1, row2ValueY);
-    doc.text(doc.splitTextToSize(biz.email || "", half - 6), col2, row2ValueY);
-
-    // Fila 3: redes / sitio
-    doc.setTextColor(150, 178, 182);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.5);
-    doc.text((biz.instagramHandle ? "IG " + biz.instagramHandle + "   ·   " : "") + SITE_URL, W / 2, fy + 41, { align: "center" });
+    // ---- Numeración de páginas ----
+    var totalPages = doc.internal.getNumberOfPages();
+    if (totalPages > 1) {
+      for (var p = 1; p <= totalPages; p++) {
+        doc.setPage(p);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(7.5);
+        if (p < totalPages) {
+          doc.setTextColor.apply(doc, MUTED);
+          doc.text("Página " + p + " de " + totalPages + "  ·  Cotización " + ref, W - M, 291, { align: "right" });
+        } else {
+          doc.setTextColor(150, 178, 182);
+          doc.text("Página " + p + " de " + totalPages, W - M, 294, { align: "right" });
+        }
+      }
+    }
 
     doc.save("Cotizacion-Chelme-" + ref + ".pdf");
   }
