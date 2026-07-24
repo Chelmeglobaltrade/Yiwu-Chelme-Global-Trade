@@ -181,7 +181,7 @@ textarea{resize:vertical}
 .faq-wrap details p{margin:0;padding:0 20px 20px;color:var(--muted)}
 footer{padding:35px 0;background:var(--petrol-3);color:rgba(255,255,255,.78)}
 .footer-grid{display:grid;grid-template-columns:220px 1fr auto;gap:30px;align-items:center}
-.footer-grid>img{width:220px;padding:7px;border-radius:9px;background:white}
+.footer-grid>img{width:200px;height:auto;object-fit:contain}
 .footer-grid strong{color:white}
 .footer-grid p{margin:4px 0 0}
 .footer-social{display:flex;gap:12px}
