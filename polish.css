@@ -102,6 +102,8 @@
 .btn-light:hover { border-color: #b9cbcd; background: #e7efef; }
 .nav-whatsapp { box-shadow: 0 8px 20px rgba(18,63,73,.22); }
 .nav-whatsapp:hover { transform: translateY(-1px); }
+.nav-travel { box-shadow: 0 8px 20px rgba(215,170,40,.3); }
+.nav-travel:hover { transform: translateY(-1px); }
 
 /* ---------- 1b. LOGO MÁS GRANDE ---------- */
 .brand img { width: 340px; max-height: 92px; }
@@ -228,9 +230,9 @@
     border-radius: 12px;
     font-size: 1rem;
   }
-  .main-nav > a:not(.nav-whatsapp):hover,
-  .main-nav > a:not(.nav-whatsapp):active { background: #eef4f4; }
-  .nav-whatsapp { justify-content: center; margin-top: 6px; }
+  .main-nav > a:not(.nav-whatsapp):not(.nav-travel):hover,
+  .main-nav > a:not(.nav-whatsapp):not(.nav-travel):active { background: #eef4f4; }
+  .nav-whatsapp, .nav-travel { justify-content: center; margin-top: 6px; }
   .menu-toggle { min-width: 46px; min-height: 46px; }
 }
 @media (max-width: 650px) {
@@ -376,7 +378,7 @@ html { scroll-padding-top: 96px; }
 }
 
 /* 8c. Áreas de clic más grandes (min. ~44px) en enlaces de texto */
-.main-nav > a:not(.nav-whatsapp) { padding: 11px 14px; }
+.main-nav > a:not(.nav-whatsapp):not(.nav-travel) { padding: 11px 14px; }
 .service-card > a { padding-block: 12px; display: inline-flex; }
 footer .footer-grid > div > p:last-of-type a { display: inline-block; padding: 10px 4px; }
 .topbar-social a { padding: 10px; margin: -10px; }
