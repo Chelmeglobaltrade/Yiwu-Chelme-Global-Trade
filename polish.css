@@ -408,3 +408,7 @@ a:focus-visible {
 .travel-includes-grid>div:last-child li,.advisory-includes-grid>div:last-child li{color:var(--muted)}
 .travel-includes-grid>div:first-child li::before,.advisory-includes-grid>div:first-child li::before{content:"\2713";flex:0 0 20px;width:20px;height:20px;border-radius:50%;background:var(--gold);color:#17282c;font-size:.68rem;font-weight:900;display:grid;place-items:center;margin-top:1px}
 .travel-includes-grid>div:last-child li::before,.advisory-includes-grid>div:last-child li::before{content:"+";flex:0 0 20px;width:20px;height:20px;border-radius:50%;background:#e4e9e9;color:var(--muted);font-size:.85rem;font-weight:900;display:grid;place-items:center;margin-top:1px}
+
+/* ---------- 10. NOTA DE ITINERARIO PERSONALIZADO (bajo los paquetes) ---------- */
+.travel-custom-note{margin-top:20px;padding:16px 20px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:.9rem;text-align:center}
+.travel-custom-note a{margin-left:4px;font-weight:850;color:var(--petrol-2)}
