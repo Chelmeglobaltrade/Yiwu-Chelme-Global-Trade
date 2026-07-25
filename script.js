@@ -1,6 +1,7 @@
 const CONFIG = window.CHELME_CONFIG;
 const $ = (id) => document.getElementById(id);
 const money = (value) => new Intl.NumberFormat("es-CL",{style:"currency",currency:"USD",maximumFractionDigits:2}).format(Number(value)||0);
+const moneyClp = (value) => new Intl.NumberFormat("es-CL",{style:"currency",currency:"CLP",maximumFractionDigits:0}).format(Number(value)||0);
 const fmt = (value, decimals=2) => new Intl.NumberFormat("es-CL",{minimumFractionDigits:decimals,maximumFractionDigits:decimals}).format(Number(value)||0);
 const val = (id) => Number.parseFloat($(id)?.value)||0;
 
@@ -139,7 +140,7 @@ function setupBusinessLinks(){
   if($("fxReferenceRate"))$("fxReferenceRate").textContent=`${CONFIG.exchange.referenceRmbPerUsd.toFixed(4)} RMB/USD`;
   if($("fxUpdatedAt"))$("fxUpdatedAt").textContent=CONFIG.exchange.updatedAt;
   if($("fxTrendText"))$("fxTrendText").textContent=`${trend.usdText} (${trend.percent>=0?"+":""}${trend.percent.toFixed(2)}%)`;
-  if($("paidAdvisoryPrice"))$("paidAdvisoryPrice").textContent=money(CONFIG.advisory.startingPriceUsd);
+  if($("paidAdvisoryPrice"))$("paidAdvisoryPrice").textContent=moneyClp(CONFIG.advisory.startingPriceClp);
   if($("transferAmount"))$("transferAmount").textContent=money(CONFIG.payment.amountUsd);
   if($("advisoryStartingPrice"))$("advisoryStartingPrice").textContent=`Desde ${money(CONFIG.advisory.startingPriceUsd)}`;
   document.querySelectorAll("[data-instagram-handle]").forEach(e=>e.textContent=CONFIG.business.instagramHandle);

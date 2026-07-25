@@ -24,6 +24,8 @@ window.CHELME_CONFIG = {
 
   advisory: {
     startingPriceUsd: 200,
+    startingPriceClp: 190000,
+    clpReferenceNote: "Valor en CLP referencial según tipo de cambio, actualizado periódicamente.",
     includes: [
       "Revisión inicial del proyecto",
       "Evaluación de producto, cantidad y presupuesto",
@@ -38,9 +40,10 @@ window.CHELME_CONFIG = {
 
   payment: {
     amountUsd: 200,
+    amountClp: 190000,
     referencePrefix: "ASESORIA",
     bankDetailsPublished: false,
-    methods: ["Transferencia bancaria en USD", "USDT"],
+    methods: ["Transferencia bancaria en CLP", "Transferencia bancaria en USD", "USDT"],
     instructions: [
       "Solicita los datos de pago actualizados por WhatsApp.",
       "Transfiere el valor exacto de la asesoría inicial.",
