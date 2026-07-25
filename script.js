@@ -140,7 +140,7 @@ function setupBusinessLinks(){
   if($("fxReferenceRate"))$("fxReferenceRate").textContent=`${CONFIG.exchange.referenceRmbPerUsd.toFixed(4)} RMB/USD`;
   if($("fxUpdatedAt"))$("fxUpdatedAt").textContent=CONFIG.exchange.updatedAt;
   if($("fxTrendText"))$("fxTrendText").textContent=`${trend.usdText} (${trend.percent>=0?"+":""}${trend.percent.toFixed(2)}%)`;
-  if($("paidAdvisoryPrice"))$("paidAdvisoryPrice").textContent=moneyClp(CONFIG.advisory.startingPriceClp);
+  if($("paidAdvisoryPrice"))$("paidAdvisoryPrice").textContent=money(CONFIG.advisory.startingPriceUsd);
   if($("transferAmount"))$("transferAmount").textContent=money(CONFIG.payment.amountUsd);
   if($("advisoryStartingPrice"))$("advisoryStartingPrice").textContent=`Desde ${money(CONFIG.advisory.startingPriceUsd)}`;
   document.querySelectorAll("[data-instagram-handle]").forEach(e=>e.textContent=CONFIG.business.instagramHandle);

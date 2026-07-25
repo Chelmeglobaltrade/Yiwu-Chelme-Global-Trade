@@ -442,3 +442,62 @@ a:focus-visible {
 .standalone-price-card{
   box-shadow:0 20px 44px rgba(0,0,0,.2);
 }
+
+/* ---------- 12. COTIZADOR: PASOS CON MÁS CARÁCTER Y MICRO-INTERACCIONES ----------
+   Antes: los 4 pasos del cotizador se veían casi idénticos entre sí (mismo
+   blanco, mismo borde tenue), sin sensación de recorrido, y las tarjetas
+   de elección (menú de servicios, fuente del producto) no reaccionaban
+   al pasar el mouse ni al tocar en celular.
+   Ahora: acento dorado a la izquierda + sombra real en cada paso, una
+   línea que conecta los números de paso (sensación de avance), el paso
+   de resultado pasa a fondo petróleo oscuro para que no se pierda en el
+   scroll (es el momento más importante del flujo), y las tarjetas
+   interactivas responden al hover/foco igual que el resto de los
+   botones del sitio. */
+.quote-step{
+  position:relative;
+  border-left:4px solid var(--gold);
+  border-radius:6px 16px 16px 6px;
+  box-shadow:0 12px 26px rgba(18,63,73,.08);
+  transition:box-shadow .2s ease;
+}
+.quote-step:hover{ box-shadow:0 16px 32px rgba(18,63,73,.13); }
+.quote-step:not(:last-child)::after{
+  content:"";
+  position:absolute;
+  left:-4px;
+  bottom:-20px;
+  width:4px;
+  height:20px;
+  background:var(--gold);
+  opacity:.35;
+}
+.quote-step-result{
+  border-left-color:var(--gold);
+  background:linear-gradient(155deg,var(--petrol),var(--petrol-3));
+  box-shadow:0 20px 44px rgba(18,63,73,.24);
+}
+.quote-step-result .quote-step-head h4{ color:#fff; }
+.quote-step-result .quote-step-head span{ color:rgba(255,255,255,.68); }
+.quote-step-result .quote-step-num{ background:var(--gold); color:#17282c; }
+.quote-step-result .estimate-box{
+  background:rgba(255,255,255,.09);
+  box-shadow:none;
+}
+.quote-step-result .quote-early-pdf small{ color:rgba(255,255,255,.65); }
+
+.quote-menu-item{ transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease; }
+.quote-menu-item:hover{ transform:translateY(-2px); box-shadow:0 10px 22px rgba(18,63,73,.1); border-color:var(--petrol-2); }
+.quote-menu-item.active:hover{ transform:none; box-shadow:var(--shadow); }
+
+.source-tab{ transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease; }
+.source-tab:hover{ transform:translateY(-2px); box-shadow:0 10px 22px rgba(18,63,73,.08); border-color:var(--petrol-2); }
+.source-tab.active:hover{ transform:none; }
+
+.payment-confirmation{ transition:box-shadow .18s ease,border-color .18s ease,background .18s ease; }
+.payment-confirmation:has(input:checked){ background:#f6faf9; border-color:#cfe2e2; box-shadow:0 8px 20px rgba(18,63,73,.08); }
+
+.quote-actions .btn-primary{ box-shadow:0 14px 30px rgba(18,63,73,.3); }
+@media(max-width:650px){
+  .quote-step:not(:last-child)::after{ display:none; }
+}
