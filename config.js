@@ -55,10 +55,10 @@ window.CHELME_CONFIG = {
   },
 
   lcl: {
-    ratePerCbmUsd: 270,
+    ratePerCbmUsd: 250,
     minimumBillableCbm: 1,
     smallCargoThresholdCbm: 5,
-    smallCargoExtraPerCbmUsd: 100,
+    smallCargoExtraFlatUsd: 100,
     sourcingPercent: 8,
     minimumSourcingFeeUsd: 200,
     minimumRecommendedGoodsUsd: 5000,

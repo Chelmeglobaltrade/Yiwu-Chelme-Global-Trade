@@ -427,7 +427,7 @@ function updateEstimate(){
       }
       rows.push({label:`Flete consolidado (${fmt(result.billableCbm,2)} m³ × ${money(result.baseRate)})`,value:money(result.baseFreight)});
       if(result.smallCargo){
-        rows.push({label:`Cargo operativo bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ (${fmt(result.billableCbm,2)} × ${money(result.smallCargoExtraRate)})`,value:money(result.smallCargoExtra)});
+        rows.push({label:`Cargo operativo por carga bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ (fijo)`,value:money(result.smallCargoExtra)});
       }
       rows.push({
         label:`Búsqueda y gestión de compra (${CONFIG.lcl.sourcingPercent}%)`,
