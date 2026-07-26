@@ -439,13 +439,13 @@ function updateEstimate(){
 
       if(goodsAmount>0){
         totalText=money(result.operationTotalKnown);
-        rows.push({label:"Total conocido de la operación",value:money(result.operationTotalKnown),total:true});
+        rows.push({label:"Estimado total (incluye tu mercancía)",value:money(result.operationTotalKnown),total:true});
       }else{
         totalText=money(result.logistics);
         rows.push({label:"Logística conocida",value:money(result.logistics),total:true});
       }
 
-      note=`Esta cotización no tiene costo. Envíala por WhatsApp o descarga el PDF para confirmar el precio final. Los impuestos y gastos de destino se pagan al llegar.`;
+      note=`Esta cotización no tiene costo. El valor de mercancía es el que tú informaste: lo confirmamos junto a tu proveedor antes del precio final. Envíala por WhatsApp o descarga el PDF. Los impuestos y gastos de destino se pagan al llegar.`;
     }else{
       totalText=`Desde ${money(CONFIG.lcl.ratePerCbmUsd)}/m³`;
       note=`Mínimo facturable: ${CONFIG.lcl.minimumBillableCbm} m³. Bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ se agrega el cargo operativo.`;
@@ -478,12 +478,12 @@ function updateEstimate(){
 
     if(result.freightKnown&&goodsAmount>0){
       totalText=money(result.totalKnown);
-      rows.push({label:"Total conocido antes de impuestos y destino",value:money(result.totalKnown),total:true});
+      rows.push({label:"Estimado total antes de impuestos y destino",value:money(result.totalKnown),total:true});
     }else{
       totalText="Cotización FCL pendiente";
       rows.push({label:"Subtotal conocido sin flete marítimo",value:money(result.knownSubtotal),total:true});
     }
-    note=`Esta cotización no tiene costo. Impuestos y gastos de destino se confirman aparte.`;
+    note=`Esta cotización no tiene costo. El valor de mercancía es el que tú informaste: lo confirmamos junto a tu proveedor antes del precio final. Impuestos y gastos de destino se confirman aparte.`;
   }else if(service==="sourcing"){
     totalText=`Asesoría inicial ${money(CONFIG.advisory.startingPriceUsd)}`;
     note=`Después de la asesoría, la búsqueda y gestión de compra se cotizan según el alcance.`;
