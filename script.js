@@ -212,6 +212,10 @@ function setService(service){
   const data = services[service];
   $("quoteTitle").textContent=data.title;
   $("quoteBadge").textContent=data.badge;
+  const submitBtnText=$("quoteSubmitBtnText");
+  if(submitBtnText){
+    submitBtnText.textContent=service==="fcl"?"Solicitar cotización FCL":"Revisar solicitud";
+  }
   $("serviceFields").innerHTML=data.html;
   $("serviceFields").querySelectorAll("input,select,textarea").forEach(el=>{
     el.addEventListener("input",updateEstimate);
@@ -466,24 +470,13 @@ function updateEstimate(){
     if(goodsCurrency==="RMB"&&goodsAmount>0){
       rows.push({label:`Equivalente usando ${CONFIG.exchange.commercialRmbPerUsd.toFixed(4)} RMB/USD`,value:money(result.goodsUsd)});
     }
-    rows.push({
-      label:`Búsqueda y gestión de compra (${CONFIG.fcl.sourcingPercent}%)`,
-      value:includeSourcing
-        ? (result.sourcing!==null?money(result.sourcing):"Pendiente")
-        : "No seleccionada",
-      pending:includeSourcing&&result.sourcing===null
-    });
-    rows.push({label:"Gastos operativos estimados en China",value:money(result.chinaLocal)});
-    rows.push({label:`Flete marítimo ${container}`,value:result.freightKnown?money(result.oceanFreight):"Por confirmar",pending:!result.freightKnown});
+    rows.push({label:"Búsqueda y gestión de compra",value:"Se confirma en la propuesta"});
+    rows.push({label:"Gastos operativos en China",value:"Sujeto a cotización"});
+    rows.push({label:`Flete marítimo (${container})`,value:"Cotización vigente requerida"});
 
-    if(result.freightKnown&&goodsAmount>0){
-      totalText=money(result.totalKnown);
-      rows.push({label:"Estimado total antes de impuestos y destino",value:money(result.totalKnown),total:true});
-    }else{
-      totalText="Cotización FCL pendiente";
-      rows.push({label:"Subtotal conocido sin flete marítimo",value:money(result.knownSubtotal),total:true});
-    }
-    note=`Esta cotización no tiene costo. El valor de mercancía es el que tú informaste: lo confirmamos junto a tu proveedor antes del precio final. Impuestos y gastos de destino se confirman aparte.`;
+    totalText="Total pendiente de cotización personalizada";
+    rows.push({label:"Total",value:"Total pendiente de cotización personalizada",total:true});
+    note=`Esta simulación inicial es gratuita y no constituye una cotización definitiva. El flete marítimo, los gastos operativos en China, los costos en destino, los impuestos y los servicios adicionales se confirman mediante una cotización personalizada y vigente.`;
   }else if(service==="sourcing"){
     totalText=`Asesoría inicial ${money(CONFIG.advisory.startingPriceUsd)}`;
     note=`Después de la asesoría, la búsqueda y gestión de compra se cotizan según el alcance.`;
