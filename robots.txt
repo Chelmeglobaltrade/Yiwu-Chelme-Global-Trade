@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://chelmeglobaltrade.github.io/Yiwu-Chelme-Global-Trade/sitemap.xml
