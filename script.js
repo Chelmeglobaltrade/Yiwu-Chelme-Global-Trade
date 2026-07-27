@@ -490,11 +490,24 @@ function updateEstimate(){
   $("quoteEstimateNote").textContent=note;
   renderBreakdown("quoteBreakdown","Desglose transparente",rows,note);
 }
+function fieldLabel(el){
+  const fieldSpan=el.closest(".field")?.querySelector("span");
+  if(fieldSpan)return fieldSpan.textContent.trim();
+  const optionText=el.closest("label")?.querySelector("strong");
+  if(optionText)return optionText.textContent.trim();
+  return el.id;
+}
+
 function collectFields(root){
   const lines=[];
   root.querySelectorAll("input,select,textarea").forEach(el=>{
-    if(el.type==="file"||!el.value?.trim())return;
-    const label=el.closest(".field")?.querySelector("span")?.textContent||el.id;
+    if(el.type==="file")return;
+    const label=fieldLabel(el);
+    if(el.type==="checkbox"){
+      lines.push(`${label}: ${el.checked?"Sí":"No"}`);
+      return;
+    }
+    if(!el.value?.trim())return;
     lines.push(`${label}: ${el.value.trim()}`);
   });
   return lines;
