@@ -7,7 +7,7 @@
   "use strict";
   var CONFIG = window.CHELME_CONFIG || {};
   var COMPANY_CN = "义乌市写迩每贸易有限公司";
-  var SITE_URL = "chelmeglobaltrade.github.io/Yiwu-Chelme-Global-Trade";
+  var SITE_URL = "chelmeglobaltrade.com";
 
   var PETROL = [18, 63, 73];
   var PETROL_DARK = [10, 46, 53];
