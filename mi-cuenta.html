@@ -11,9 +11,17 @@
 
 <section class="section"><div class="container">
 
-  <h2>Mis pedidos</h2>
+  <h2 id="ordersTitle">Mis pedidos</h2>
   <div id="ordersEmpty" style="margin-top:16px;color:var(--muted)" hidden>Todavía no tienes pedidos registrados. Cuando confirmemos una cotización contigo, la verás aquí.</div>
   <div id="ordersList" style="margin-top:20px;display:flex;flex-direction:column;gap:16px"></div>
+
+</div></section>
+
+<section class="section section-soft" id="teamSection" hidden><div class="container">
+
+  <h2>Gestionar equipo</h2>
+  <p style="color:var(--muted);margin-top:8px">Las personas que ya se registraron en la página. Puedes hacerlas administradoras para que vean todos los pedidos, o quitarles ese acceso.</p>
+  <div id="teamList" style="margin-top:20px;display:flex;flex-direction:column;gap:10px"></div>
 
 </div></section>
 
@@ -30,7 +38,7 @@
     entregado: { bg: '#e6f7ec', fg: '#1f7a43' }
   };
 
-  function renderOrders(orders){
+  function renderOrders(orders, customersById){
     var list = document.getElementById('ordersList');
     var empty = document.getElementById('ordersEmpty');
     if (!orders.length) { empty.hidden = false; return; }
@@ -43,16 +51,66 @@
         var on = i <= stageIndex;
         return '<div style="flex:1;height:5px;border-radius:3px;background:' + (on ? 'var(--petrol)' : 'var(--line)') + '"></div>';
       }).join('');
+      var customer = customersById && customersById[order.user_id];
+      var customerLine = customer
+        ? '<div style="font-size:.78rem;color:var(--muted)">Cliente: ' + (customer.full_name || customer.email || order.user_id) + '</div>'
+        : '';
       return '' +
         '<div style="border:1px solid var(--line);border-radius:16px;padding:20px;background:#fff;box-shadow:var(--shadow)">' +
           '<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
-            '<div><strong>' + (order.reference || 'Pedido') + '</strong><div style="font-size:.78rem;color:var(--muted)">Creado el ' + date + '</div></div>' +
+            '<div><strong>' + (order.reference || 'Pedido') + '</strong><div style="font-size:.78rem;color:var(--muted)">Creado el ' + date + '</div>' + customerLine + '</div>' +
             '<span style="background:' + style.bg + ';color:' + style.fg + ';padding:5px 12px;border-radius:999px;font-size:.75rem;font-weight:700;white-space:nowrap">' + label + '</span>' +
           '</div>' +
           '<div style="display:flex;gap:5px;margin-top:16px">' + segs + '</div>' +
           (order.notes ? '<p style="margin-top:12px;font-size:.86rem;color:var(--muted)">' + order.notes + '</p>' : '') +
         '</div>';
     }).join('');
+  }
+
+  var ROLE_LABELS = { cliente: 'Cliente', admin: 'Administrador', owner: 'Dueño' };
+
+  function renderTeam(members, myId){
+    var list = document.getElementById('teamList');
+    list.innerHTML = members.map(function(member){
+      var isSelf = member.id === myId;
+      var isOwner = member.role === 'owner';
+      var name = member.full_name || member.email || 'Sin nombre';
+      var actionBtn = '';
+      if (!isOwner) {
+        var makingAdmin = member.role !== 'admin';
+        actionBtn = '<button type="button" class="btn team-role-btn" data-id="' + member.id + '" data-newrole="' +
+          (makingAdmin ? 'admin' : 'cliente') + '" style="background:transparent;border:1px solid var(--line);font-size:.82rem;padding:8px 14px">' +
+          (makingAdmin ? 'Hacer administrador' : 'Quitar administrador') + '</button>';
+      }
+      return '' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;padding:14px 18px;background:#fff">' +
+          '<div><strong>' + name + (isSelf ? ' (tú)' : '') + '</strong><div style="font-size:.78rem;color:var(--muted)">' + (member.email || '') + ' · ' + (ROLE_LABELS[member.role] || member.role) + '</div></div>' +
+          actionBtn +
+        '</div>';
+    }).join('');
+
+    list.querySelectorAll('.team-role-btn').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        btn.disabled = true;
+        btn.textContent = 'Guardando...';
+        var res = await supabaseClient
+          .from('profiles')
+          .update({ role: btn.dataset.newrole })
+          .eq('id', btn.dataset.id);
+        if (res.error) {
+          alert('No se pudo actualizar: ' + res.error.message);
+        }
+        loadTeam(myId);
+      });
+    });
+  }
+
+  async function loadTeam(myId){
+    var teamRes = await supabaseClient
+      .from('profiles')
+      .select('id, email, full_name, role')
+      .order('created_at', { ascending: true });
+    renderTeam(teamRes.data || [], myId);
   }
 
   async function init(){
@@ -65,17 +123,32 @@
 
     var profileRes = await supabaseClient
       .from('profiles')
-      .select('full_name')
+      .select('full_name, role')
       .eq('id', session.user.id)
       .single();
+    var profile = profileRes.data;
+    var isStaff = profile && (profile.role === 'admin' || profile.role === 'owner');
     document.getElementById('welcomeName').textContent =
-      (profileRes.data && profileRes.data.full_name) || session.user.email;
+      (profile && profile.full_name) || session.user.email;
 
     var ordersRes = await supabaseClient
       .from('orders')
       .select('*')
       .order('created_at', { ascending: false });
-    renderOrders(ordersRes.data || []);
+
+    var customersById = null;
+    if (isStaff) {
+      document.getElementById('ordersTitle').textContent = 'Todos los pedidos';
+      var customersRes = await supabaseClient.from('profiles').select('id, full_name, email');
+      customersById = {};
+      (customersRes.data || []).forEach(function(c){ customersById[c.id] = c; });
+    }
+    renderOrders(ordersRes.data || [], customersById);
+
+    if (profile && profile.role === 'owner') {
+      document.getElementById('teamSection').hidden = false;
+      loadTeam(session.user.id);
+    }
   }
 
   document.getElementById('logoutBtn').addEventListener('click', async function(){
