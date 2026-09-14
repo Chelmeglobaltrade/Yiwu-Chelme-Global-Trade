@@ -49,19 +49,19 @@
       var date = new Date(order.created_at).toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' });
       var segs = ORDER_STATUS_ORDER.map(function(_, i){
         var on = i <= stageIndex;
-        return '<div style="flex:1;height:5px;border-radius:3px;background:' + (on ? 'var(--petrol)' : 'var(--line)') + '"></div>';
+        return '<div class="account-status-seg' + (on ? ' is-done' : '') + '"></div>';
       }).join('');
       var customer = customersById && customersById[order.user_id];
       var customerLine = customer
         ? '<div style="font-size:.78rem;color:var(--muted)">Cliente: ' + (customer.full_name || customer.email || order.user_id) + '</div>'
         : '';
       return '' +
-        '<div style="border:1px solid var(--line);border-radius:16px;padding:20px;background:#fff;box-shadow:var(--shadow)">' +
+        '<div class="account-card">' +
           '<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
-            '<div><strong>' + (order.reference || 'Pedido') + '</strong><div style="font-size:.78rem;color:var(--muted)">Creado el ' + date + '</div>' + customerLine + '</div>' +
-            '<span style="background:' + style.bg + ';color:' + style.fg + ';padding:5px 12px;border-radius:999px;font-size:.75rem;font-weight:700;white-space:nowrap">' + label + '</span>' +
+            '<div><strong>' + (order.reference || 'Pedido') + '</strong><div style="font-size:.78rem;color:var(--muted);margin-top:3px">Creado el ' + date + '</div>' + customerLine + '</div>' +
+            '<span class="account-pill" style="background:' + style.bg + ';color:' + style.fg + '">' + label + '</span>' +
           '</div>' +
-          '<div style="display:flex;gap:5px;margin-top:16px">' + segs + '</div>' +
+          '<div class="account-status-bar">' + segs + '</div>' +
           (order.notes ? '<p style="margin-top:12px;font-size:.86rem;color:var(--muted)">' + order.notes + '</p>' : '') +
         '</div>';
     }).join('');
@@ -78,13 +78,13 @@
       var actionBtn = '';
       if (!isOwner) {
         var makingAdmin = member.role !== 'admin';
-        actionBtn = '<button type="button" class="btn team-role-btn" data-id="' + member.id + '" data-newrole="' +
-          (makingAdmin ? 'admin' : 'cliente') + '" style="background:transparent;border:1px solid var(--line);font-size:.82rem;padding:8px 14px">' +
+        actionBtn = '<button type="button" class="team-role-btn" data-id="' + member.id + '" data-newrole="' +
+          (makingAdmin ? 'admin' : 'cliente') + '">' +
           (makingAdmin ? 'Hacer administrador' : 'Quitar administrador') + '</button>';
       }
       return '' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;padding:14px 18px;background:#fff">' +
-          '<div><strong>' + name + (isSelf ? ' (tú)' : '') + '</strong><div style="font-size:.78rem;color:var(--muted)">' + (member.email || '') + ' · ' + (ROLE_LABELS[member.role] || member.role) + '</div></div>' +
+        '<div class="team-row">' +
+          '<div><strong>' + name + (isSelf ? ' (tú)' : '') + '</strong><div style="font-size:.78rem;color:var(--muted);margin-top:3px">' + (member.email || '') + ' · ' + (ROLE_LABELS[member.role] || member.role) + '</div></div>' +
           actionBtn +
         '</div>';
     }).join('');
