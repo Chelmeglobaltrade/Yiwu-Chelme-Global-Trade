@@ -34,5 +34,15 @@
     navServices.querySelectorAll("a").forEach(function (a) {
       a.addEventListener("click", function () { navServices.open = false; });
     });
+    var navServicesCloseTimer = null;
+    navServices.addEventListener("mouseenter", function () {
+      if (window.innerWidth <= 850) return;
+      clearTimeout(navServicesCloseTimer);
+      navServices.open = true;
+    });
+    navServices.addEventListener("mouseleave", function () {
+      if (window.innerWidth <= 850) return;
+      navServicesCloseTimer = setTimeout(function () { navServices.open = false; }, 150);
+    });
   }
 })();
