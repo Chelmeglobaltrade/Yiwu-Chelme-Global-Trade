@@ -38,10 +38,11 @@
     entregado: { bg: '#e6f7ec', fg: '#1f7a43' }
   };
 
-  function renderOrders(orders, customersById){
+  function renderOrders(orders, customersById, isStaff){
     var list = document.getElementById('ordersList');
     var empty = document.getElementById('ordersEmpty');
-    if (!orders.length) { empty.hidden = false; return; }
+    empty.hidden = true;
+    if (!orders.length) { empty.hidden = false; list.innerHTML = ''; return; }
     list.innerHTML = orders.map(function(order){
       var label = ORDER_STATUS_LABELS[order.status] || order.status;
       var style = STATUS_STYLES[order.status] || STATUS_STYLES.pedido_confirmado;
@@ -55,6 +56,13 @@
       var customerLine = customer
         ? '<div style="font-size:.78rem;color:var(--muted)">Cliente: ' + (customer.full_name || customer.email || order.user_id) + '</div>'
         : '';
+      var statusControl = isStaff
+        ? '<select class="order-status-select" data-id="' + order.id + '">' +
+            ORDER_STATUS_ORDER.map(function(s){
+              return '<option value="' + s + '"' + (s === order.status ? ' selected' : '') + '>' + ORDER_STATUS_LABELS[s] + '</option>';
+            }).join('') +
+          '</select>'
+        : '';
       return '' +
         '<div class="account-card">' +
           '<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
@@ -63,8 +71,31 @@
           '</div>' +
           '<div class="account-status-bar">' + segs + '</div>' +
           (order.notes ? '<p style="margin-top:12px;font-size:.86rem;color:var(--muted)">' + order.notes + '</p>' : '') +
+          statusControl +
         '</div>';
     }).join('');
+
+    if (isStaff) {
+      list.querySelectorAll('.order-status-select').forEach(function(sel){
+        sel.addEventListener('change', async function(){
+          var newStatus = sel.value;
+          sel.disabled = true;
+          var res = await supabaseClient.from('orders').update({ status: newStatus }).eq('id', sel.dataset.id);
+          if (res.error) {
+            alert('No se pudo actualizar el estado: ' + res.error.message);
+          }
+          loadOrders(true, customersById);
+        });
+      });
+    }
+  }
+
+  async function loadOrders(isStaff, customersById){
+    var ordersRes = await supabaseClient
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false });
+    renderOrders(ordersRes.data || [], customersById, isStaff);
   }
 
   var ROLE_LABELS = { cliente: 'Cliente', admin: 'Administrador', owner: 'Dueño' };
@@ -131,11 +162,6 @@
     document.getElementById('welcomeName').textContent =
       (profile && profile.full_name) || session.user.email;
 
-    var ordersRes = await supabaseClient
-      .from('orders')
-      .select('*')
-      .order('created_at', { ascending: false });
-
     var customersById = null;
     if (isStaff) {
       document.getElementById('ordersTitle').textContent = 'Todos los pedidos';
@@ -143,7 +169,7 @@
       customersById = {};
       (customersRes.data || []).forEach(function(c){ customersById[c.id] = c; });
     }
-    renderOrders(ordersRes.data || [], customersById);
+    await loadOrders(isStaff, customersById);
 
     if (profile && profile.role === 'owner') {
       document.getElementById('teamSection').hidden = false;
