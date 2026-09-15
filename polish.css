@@ -134,15 +134,29 @@
   top: calc(100% + 12px);
   left: 50%;
   transform: translateX(-50%);
-  display: grid;
-  grid-template-columns: repeat(2, 226px);
-  gap: 2px;
-  padding: 10px;
+  display: flex;
+  gap: 4px;
+  padding: 16px 14px;
   border: 1px solid var(--line);
   border-radius: 18px;
   background: #fff;
   box-shadow: 0 24px 60px rgba(18,63,73,.2);
   z-index: 80;
+}
+.nav-services-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  padding: 0 14px;
+}
+.nav-services-group + .nav-services-group { border-left: 1px solid var(--line); }
+.nav-services-group-label {
+  font-size: .68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+  padding: 4px 13px 10px;
 }
 .nav-services-menu a {
   display: flex;
@@ -160,12 +174,16 @@
   .nav-services-menu {
     position: static;
     transform: none;
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    gap: 10px;
     box-shadow: none;
     border: 0;
     padding: 2px 0 6px 10px;
     margin-top: 2px;
   }
+  .nav-services-group { min-width: 0; padding: 0; }
+  .nav-services-group + .nav-services-group { border-left: 0; border-top: 1px solid var(--line); padding-top: 8px; }
+  .nav-services-group-label { padding: 4px 3px 4px; }
 }
 
 /* ---------- 2. HERO CON MÁS AIRE ---------- */
