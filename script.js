@@ -644,7 +644,11 @@ function init(){
     setService(state.quoteService);
   });
   setSourceMode("link");
-  setService("lcl");
+  const requestedService=new URLSearchParams(location.search).get("service");
+  setService(requestedService&&services[requestedService]?requestedService:"lcl");
+  if(requestedService&&services[requestedService]&&location.hash==="#quoteShell"){
+    setTimeout(()=>$("quoteShell").scrollIntoView({behavior:"smooth",block:"start"}),50);
+  }
 }
 
 init();
