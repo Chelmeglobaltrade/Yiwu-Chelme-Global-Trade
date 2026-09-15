@@ -31,6 +31,23 @@
 
 </div></section>
 
+<section class="section" id="newOrderSection" hidden><div class="container" style="max-width:460px">
+
+  <h2>Crear pedido</h2>
+  <p style="color:var(--muted);margin-top:8px">Para pedidos confirmados por WhatsApp u otro canal que no pasaron por el cotizador online.</p>
+  <div class="auth-card" style="margin-top:20px">
+    <form id="newOrderForm" class="auth-form">
+      <label class="auth-field">Cliente<select id="newOrderCustomer" required></select></label>
+      <label class="auth-field">Referencia<input type="text" id="newOrderReference" placeholder="Ej: Contenedor 20GP - Septiembre"></label>
+      <label class="auth-field">Estado inicial<select id="newOrderStatus"></select></label>
+      <label class="auth-field">Notas<textarea id="newOrderNotes" rows="3"></textarea></label>
+      <button type="submit" class="btn btn-gold" style="width:100%">Crear pedido</button>
+    </form>
+    <p id="newOrderMessage" class="auth-message" hidden></p>
+  </div>
+
+</div></section>
+
 <section class="section section-soft" id="teamSection" hidden><div class="container">
 
   <h2>Gestionar equipo</h2>
@@ -112,6 +129,43 @@
     renderOrders(ordersRes.data || [], customersById, isStaff);
   }
 
+  function setupNewOrderForm(customersById){
+    var customerSelect = document.getElementById('newOrderCustomer');
+    var statusSelect = document.getElementById('newOrderStatus');
+    var customers = Object.values(customersById).sort(function(a, b){
+      return (a.full_name || a.email || '').localeCompare(b.full_name || b.email || '');
+    });
+    customerSelect.innerHTML = customers.map(function(c){
+      return '<option value="' + c.id + '">' + (c.full_name || c.email) + '</option>';
+    }).join('');
+    statusSelect.innerHTML = ORDER_STATUS_ORDER.map(function(s){
+      return '<option value="' + s + '">' + ORDER_STATUS_LABELS[s] + '</option>';
+    }).join('');
+
+    var form = document.getElementById('newOrderForm');
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+      var msg = document.getElementById('newOrderMessage');
+      msg.textContent = 'Creando...';
+      msg.hidden = false;
+      msg.classList.remove('is-error');
+      var res = await supabaseClient.from('orders').insert({
+        user_id: customerSelect.value,
+        status: statusSelect.value,
+        reference: document.getElementById('newOrderReference').value.trim() || null,
+        notes: document.getElementById('newOrderNotes').value.trim() || null
+      });
+      if (res.error) {
+        msg.textContent = 'No se pudo crear: ' + res.error.message;
+        msg.classList.add('is-error');
+        return;
+      }
+      msg.textContent = 'Pedido creado.';
+      form.reset();
+      loadOrders(true, customersById);
+    });
+  }
+
   var ROLE_LABELS = { cliente: 'Cliente', admin: 'Administrador', owner: 'Dueño' };
 
   function renderTeam(members, myId){
@@ -184,6 +238,8 @@
       var customersRes = await supabaseClient.from('profiles').select('id, full_name, email');
       customersById = {};
       (customersRes.data || []).forEach(function(c){ customersById[c.id] = c; });
+      setupNewOrderForm(customersById);
+      document.getElementById('newOrderSection').hidden = false;
     }
     await loadOrders(isStaff, customersById);
 
