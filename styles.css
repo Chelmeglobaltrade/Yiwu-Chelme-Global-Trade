@@ -195,15 +195,15 @@ footer{padding:35px 0;background:var(--petrol-3);color:rgba(255,255,255,.78)}
   .hero-grid,.china-grid{grid-template-columns:1fr}
   .hero-person{max-width:600px;justify-self:center}
   .service-grid{grid-template-columns:repeat(2,1fr)}
-  .quote-shell{grid-template-columns:1fr}
+  .quote-shell{grid-template-columns:minmax(0,1fr)}
   .quote-menu{position:static;grid-template-columns:repeat(4,1fr)}
   .gallery-grid{grid-template-columns:repeat(2,1fr)}
   .social-card{align-items:flex-start;flex-direction:column}
-}
-@media(max-width:850px){
   .menu-toggle{display:block}
   .main-nav{display:none;position:absolute;top:76px;left:4%;right:4%;flex-direction:column;align-items:stretch;padding:18px;border:1px solid var(--line);border-radius:16px;background:white;box-shadow:var(--shadow)}
   .main-nav.open{display:flex}
+}
+@media(max-width:850px){
   .quick-grid{grid-template-columns:repeat(2,1fr)}
   .main-services{grid-template-columns:1fr}
   .source-tabs{grid-template-columns:1fr}
@@ -215,7 +215,8 @@ footer{padding:35px 0;background:var(--petrol-3);color:rgba(255,255,255,.78)}
   .hero h1{font-size:2.7rem}
   .hero-person{display:none}
   .hero-grid{padding:56px 0}
-  .quick-grid,.service-grid,.quote-menu,.form-grid,.gallery-grid,.footer-grid,.china-points{grid-template-columns:1fr}
+  .quick-grid,.service-grid,.form-grid,.gallery-grid,.footer-grid,.china-points{grid-template-columns:1fr}
+  .quote-menu{grid-template-columns:minmax(0,1fr)}
   .feature-service ul{grid-template-columns:1fr}
   .quote-card{padding:20px}
   .photo-preview{grid-template-columns:repeat(3,1fr)}
