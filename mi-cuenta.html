@@ -9,7 +9,21 @@
 
 <section class="standalone-hero"><div class="container"><span class="eyebrow">Portal del cliente</span><h1>Hola, <span id="welcomeName">...</span></h1><p>Aquí puedes ver tus pedidos y cotizaciones. Cualquier duda, escríbenos por WhatsApp.</p><div style="margin-top:8px"><button type="button" id="logoutBtn" class="btn" style="background:transparent;border:1px solid var(--line)">Cerrar sesión</button></div></div></section>
 
-<section class="section"><div class="container">
+<section class="section"><div class="container" style="max-width:460px">
+
+  <h2>Mi perfil</h2>
+  <div class="auth-card" style="margin-top:20px">
+    <form id="profileForm" class="auth-form">
+      <label class="auth-field">Nombre completo<input type="text" id="profileName" autocomplete="name"></label>
+      <label class="auth-field">WhatsApp<input type="tel" id="profilePhone" placeholder="+56 9 1234 5678" autocomplete="tel"></label>
+      <button type="submit" class="btn btn-gold" style="width:100%">Guardar cambios</button>
+    </form>
+    <p id="profileMessage" class="auth-message" hidden></p>
+  </div>
+
+</div></section>
+
+<section class="section section-soft"><div class="container">
 
   <h2 id="ordersTitle">Mis pedidos</h2>
   <div id="ordersEmpty" style="margin-top:16px;color:var(--muted)" hidden>Todavía no tienes pedidos registrados. Cuando confirmemos una cotización contigo, la verás aquí.</div>
@@ -154,13 +168,15 @@
 
     var profileRes = await supabaseClient
       .from('profiles')
-      .select('full_name, role')
+      .select('full_name, phone, role')
       .eq('id', session.user.id)
       .single();
     var profile = profileRes.data;
     var isStaff = profile && (profile.role === 'admin' || profile.role === 'owner');
     document.getElementById('welcomeName').textContent =
       (profile && profile.full_name) || session.user.email;
+    document.getElementById('profileName').value = (profile && profile.full_name) || '';
+    document.getElementById('profilePhone').value = (profile && profile.phone) || '';
 
     var customersById = null;
     if (isStaff) {
@@ -180,6 +196,29 @@
   document.getElementById('logoutBtn').addEventListener('click', async function(){
     await supabaseClient.auth.signOut();
     window.location.href = 'login.html';
+  });
+
+  document.getElementById('profileForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    var msg = document.getElementById('profileMessage');
+    var name = document.getElementById('profileName').value.trim();
+    var phone = document.getElementById('profilePhone').value.trim();
+    msg.textContent = 'Guardando...';
+    msg.hidden = false;
+    msg.classList.remove('is-error');
+    var sessionRes = await supabaseClient.auth.getSession();
+    var session = sessionRes.data.session;
+    var res = await supabaseClient
+      .from('profiles')
+      .update({ full_name: name, phone: phone })
+      .eq('id', session.user.id);
+    if (res.error) {
+      msg.textContent = 'No se pudo guardar: ' + res.error.message;
+      msg.classList.add('is-error');
+      return;
+    }
+    document.getElementById('welcomeName').textContent = name || session.user.email;
+    msg.textContent = 'Perfil actualizado.';
   });
 
   init();
