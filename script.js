@@ -538,7 +538,24 @@ function renderQuotePreview(items){
   $("quotePreview").classList.remove("hidden");
   $("quotePreview").scrollIntoView({behavior:"smooth",block:"center"});
 }
+async function saveQuoteAsOrder(){
+  try{
+    if(typeof supabaseClient==="undefined")return;
+    const sessionRes=await supabaseClient.auth.getSession();
+    const session=sessionRes.data.session;
+    if(!session)return;
+    await supabaseClient.from("orders").insert({
+      user_id:session.user.id,
+      reference:`${services[state.quoteService].title} · ${state.preparedQuoteReference}`,
+      notes:state.preparedQuoteText
+    });
+  }catch(error){
+    console.warn("No se pudo guardar el pedido en la cuenta:",error);
+  }
+}
+
 async function sendPreparedQuote(){
+  saveQuoteAsOrder();
   const text=state.preparedQuoteText,files=state.preparedQuoteFiles;
   if(files.length&&navigator.share&&navigator.canShare){
     try{const data={title:"Solicitud Chelme Global Trade",text,files};if(navigator.canShare(data)){await navigator.share(data);return;}}catch(error){if(error.name==="AbortError")return;}
