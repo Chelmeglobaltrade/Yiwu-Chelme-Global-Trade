@@ -9,7 +9,7 @@
 
 <section class="standalone-hero"><div class="container"><span class="eyebrow">Portal del cliente</span><h1>Hola, <span id="welcomeName">...</span></h1><p>Aquí puedes ver tus pedidos y cotizaciones. Cualquier duda, escríbenos por WhatsApp.</p><div style="margin-top:8px"><button type="button" id="logoutBtn" class="btn" style="background:transparent;border:1px solid var(--line)">Cerrar sesión</button></div></div></section>
 
-<section class="section"><div class="container" style="max-width:460px">
+<section class="account-section"><div class="container" style="max-width:460px">
 
   <h2>Mi perfil</h2>
   <div class="auth-card" style="margin-top:20px">
@@ -23,32 +23,33 @@
 
 </div></section>
 
-<section class="section section-soft"><div class="container">
+<section class="account-section section-soft"><div class="container">
 
-  <h2 id="ordersTitle">Mis pedidos</h2>
+  <div class="account-section-heading">
+    <h2 id="ordersTitle">Mis pedidos</h2>
+    <button type="button" id="toggleNewOrderBtn" class="btn" style="background:transparent;border:1px solid var(--line)" hidden>+ Agregar pedido</button>
+  </div>
   <div id="ordersEmpty" style="margin-top:16px;color:var(--muted)" hidden>Todavía no tienes pedidos registrados. Cuando confirmemos una cotización contigo, la verás aquí.</div>
   <div id="ordersList" style="margin-top:20px;display:flex;flex-direction:column;gap:16px"></div>
 
-</div></section>
-
-<section class="section" id="newOrderSection" hidden><div class="container" style="max-width:460px">
-
-  <h2>Crear pedido</h2>
-  <p style="color:var(--muted);margin-top:8px">Para pedidos confirmados por WhatsApp u otro canal que no pasaron por el cotizador online.</p>
-  <div class="auth-card" style="margin-top:20px">
-    <form id="newOrderForm" class="auth-form">
-      <label class="auth-field">Cliente<select id="newOrderCustomer" required></select></label>
-      <label class="auth-field">Referencia<input type="text" id="newOrderReference" placeholder="Ej: Contenedor 20GP - Septiembre"></label>
-      <label class="auth-field">Estado inicial<select id="newOrderStatus"></select></label>
-      <label class="auth-field">Notas<textarea id="newOrderNotes" rows="3"></textarea></label>
-      <button type="submit" class="btn btn-gold" style="width:100%">Crear pedido</button>
-    </form>
-    <p id="newOrderMessage" class="auth-message" hidden></p>
+  <div id="newOrderSection" hidden style="margin-top:28px;max-width:460px">
+    <h3 style="margin-bottom:4px">Nuevo pedido</h3>
+    <p style="color:var(--muted);font-size:.86rem;margin-bottom:16px">Para pedidos confirmados por WhatsApp u otro canal que no pasaron por el cotizador online.</p>
+    <div class="auth-card">
+      <form id="newOrderForm" class="auth-form">
+        <label class="auth-field">Cliente<select id="newOrderCustomer" required></select></label>
+        <label class="auth-field">Referencia<input type="text" id="newOrderReference" placeholder="Ej: Contenedor 20GP - Septiembre"></label>
+        <label class="auth-field">Estado inicial<select id="newOrderStatus"></select></label>
+        <label class="auth-field">Notas<textarea id="newOrderNotes" rows="3"></textarea></label>
+        <button type="submit" class="btn btn-gold" style="width:100%">Crear pedido</button>
+      </form>
+      <p id="newOrderMessage" class="auth-message" hidden></p>
+    </div>
   </div>
 
 </div></section>
 
-<section class="section section-soft" id="teamSection" hidden><div class="container">
+<section class="account-section section-soft" id="teamSection" hidden><div class="container">
 
   <h2>Gestionar equipo</h2>
   <p style="color:var(--muted);margin-top:8px">Las personas que ya se registraron en la página. Puedes hacerlas administradoras para que vean todos los pedidos, o quitarles ese acceso.</p>
@@ -94,11 +95,11 @@
         ? '<div style="font-size:.78rem;color:var(--muted)">Cliente: ' + escapeHtml(customer.full_name || customer.email || order.user_id) + '</div>'
         : '';
       var statusControl = isStaff
-        ? '<select class="order-status-select" data-id="' + order.id + '">' +
+        ? '<div class="order-status-row"><span>Estado:</span><select class="order-status-select" data-id="' + order.id + '">' +
             ORDER_STATUS_ORDER.map(function(s){
               return '<option value="' + s + '"' + (s === order.status ? ' selected' : '') + '>' + ORDER_STATUS_LABELS[s] + '</option>';
             }).join('') +
-          '</select>'
+          '</select></div>'
         : '';
       return '' +
         '<div class="account-card">' +
@@ -169,6 +170,11 @@
       msg.textContent = 'Pedido creado.';
       form.reset();
       loadOrders(true, customersById);
+      setTimeout(function(){
+        document.getElementById('newOrderSection').hidden = true;
+        document.getElementById('toggleNewOrderBtn').textContent = '+ Agregar pedido';
+        msg.hidden = true;
+      }, 1200);
     });
   }
 
@@ -245,7 +251,14 @@
       customersById = {};
       (customersRes.data || []).forEach(function(c){ customersById[c.id] = c; });
       setupNewOrderForm(customersById);
-      document.getElementById('newOrderSection').hidden = false;
+      var toggleBtn = document.getElementById('toggleNewOrderBtn');
+      toggleBtn.hidden = false;
+      toggleBtn.addEventListener('click', function(){
+        var panel = document.getElementById('newOrderSection');
+        panel.hidden = !panel.hidden;
+        toggleBtn.textContent = panel.hidden ? '+ Agregar pedido' : 'Cerrar';
+        if (!panel.hidden) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
     }
     await loadOrders(isStaff, customersById);
 
