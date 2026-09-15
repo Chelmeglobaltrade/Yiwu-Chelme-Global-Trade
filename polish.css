@@ -509,8 +509,9 @@ a:focus-visible {
 .auth-tab-btn.is-active{ background:var(--petrol); color:#fff; }
 .auth-form{ display:flex; flex-direction:column; gap:18px; }
 .auth-field{ display:flex; flex-direction:column; gap:7px; font-size:.86rem; font-weight:700; color:var(--ink); }
-.auth-field input{ padding:13px 14px; border:1px solid var(--line); border-radius:12px; font-size:.95rem; font-family:inherit; font-weight:400; transition:border-color .18s ease,box-shadow .18s ease; }
-.auth-field input:focus{ outline:none; border-color:var(--petrol-2); box-shadow:0 0 0 3px rgba(18,63,73,.1); }
+.auth-field input,.auth-field select,.auth-field textarea{ padding:13px 14px; border:1px solid var(--line); border-radius:12px; font-size:.95rem; font-family:inherit; font-weight:400; color:var(--ink); background:#fff; transition:border-color .18s ease,box-shadow .18s ease; }
+.auth-field textarea{ resize:vertical; }
+.auth-field input:focus,.auth-field select:focus,.auth-field textarea:focus{ outline:none; border-color:var(--petrol-2); box-shadow:0 0 0 3px rgba(18,63,73,.1); }
 .auth-message{ margin-top:18px; font-size:.86rem; padding:12px 14px; border-radius:10px; background:var(--soft); color:var(--petrol); }
 .auth-message.is-error{ background:#fbeaea; color:var(--danger); }
 
