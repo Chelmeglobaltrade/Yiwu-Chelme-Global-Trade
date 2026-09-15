@@ -612,6 +612,16 @@ function init(){
   const navServices=$("navServices");
   if(navServices){
     navServices.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{navServices.open=false;}));
+    let navServicesCloseTimer=null;
+    navServices.addEventListener("mouseenter",()=>{
+      if(window.innerWidth<=850)return;
+      clearTimeout(navServicesCloseTimer);
+      navServices.open=true;
+    });
+    navServices.addEventListener("mouseleave",()=>{
+      if(window.innerWidth<=850)return;
+      navServicesCloseTimer=setTimeout(()=>{navServices.open=false;},150);
+    });
   }
 
   document.querySelectorAll("[data-service-button]").forEach(a=>{
