@@ -521,8 +521,13 @@ a:focus-visible {
 .account-status-seg{ flex:1; height:6px; border-radius:4px; background:var(--line); }
 .account-status-seg.is-done{ background:var(--petrol); }
 .account-pill{ padding:6px 14px; border-radius:999px; font-size:.72rem; font-weight:700; white-space:nowrap; letter-spacing:.02em; }
-.order-status-select{ margin-top:14px; padding:8px 12px; border-radius:10px; border:1px solid var(--line); font-size:.82rem; font-family:inherit; color:var(--ink); background:#fff; cursor:pointer; }
+.order-status-row{ display:flex; align-items:center; gap:10px; margin-top:14px; }
+.order-status-row span{ font-size:.82rem; font-weight:700; color:var(--ink); }
+.order-status-select{ padding:8px 12px; border-radius:10px; border:1px solid var(--line); font-size:.82rem; font-family:inherit; color:var(--ink); background:#fff; cursor:pointer; }
 .order-status-select:disabled{ opacity:.6; cursor:default; }
+
+.account-section{ padding:56px 0; }
+.account-section-heading{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
 
 .team-row{ display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; border:1px solid var(--line); border-radius:16px; padding:16px 20px; background:#fff; transition:box-shadow .18s ease; }
 .team-row:hover{ box-shadow:0 10px 24px rgba(18,63,73,.08); }
