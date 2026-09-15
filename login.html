@@ -21,6 +21,7 @@
       <label class="auth-field">Correo<input type="email" id="loginEmail" required autocomplete="email"></label>
       <label class="auth-field">Contraseña<input type="password" id="loginPassword" required autocomplete="current-password"></label>
       <button type="submit" class="btn btn-gold" style="width:100%">Entrar</button>
+      <p style="margin-top:12px;font-size:.82rem;text-align:center"><a href="#" id="forgotPasswordLink" style="color:var(--muted)">¿Olvidaste tu contraseña?</a></p>
     </form>
 
     <form id="signupForm" class="auth-form" style="display:none">
@@ -101,6 +102,24 @@
     } else {
       showMessage('Cuenta creada. Revisa tu correo para confirmar tu cuenta antes de iniciar sesión.', false);
     }
+  });
+
+  document.getElementById('forgotPasswordLink').addEventListener('click', async function(e){
+    e.preventDefault();
+    var email = document.getElementById('loginEmail').value.trim();
+    if (!email) {
+      showMessage('Escribe tu correo arriba y vuelve a hacer clic en "¿Olvidaste tu contraseña?".', true);
+      return;
+    }
+    showMessage('Enviando enlace...', false);
+    var result = await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/reset-password.html'
+    });
+    if (result.error) {
+      showMessage(result.error.message, true);
+      return;
+    }
+    showMessage('Te enviamos un correo con un enlace para restablecer tu contraseña.', false);
   });
 
   supabaseClient.auth.getSession().then(function(res){
