@@ -61,6 +61,12 @@
 <script src="supabase-config.js"></script>
 <script>
 (function(){
+  function escapeHtml(str){
+    return String(str == null ? '' : str).replace(/[&<>"']/g, function(c){
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
   var STATUS_STYLES = {
     pedido_confirmado: { bg: '#eef3f2', fg: '#3c5b56' },
     produccion_yiwu: { bg: '#eef3f2', fg: '#3c5b56' },
@@ -85,7 +91,7 @@
       }).join('');
       var customer = customersById && customersById[order.user_id];
       var customerLine = customer
-        ? '<div style="font-size:.78rem;color:var(--muted)">Cliente: ' + (customer.full_name || customer.email || order.user_id) + '</div>'
+        ? '<div style="font-size:.78rem;color:var(--muted)">Cliente: ' + escapeHtml(customer.full_name || customer.email || order.user_id) + '</div>'
         : '';
       var statusControl = isStaff
         ? '<select class="order-status-select" data-id="' + order.id + '">' +
@@ -97,11 +103,11 @@
       return '' +
         '<div class="account-card">' +
           '<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
-            '<div><strong>' + (order.reference || 'Pedido') + '</strong><div style="font-size:.78rem;color:var(--muted);margin-top:3px">Creado el ' + date + '</div>' + customerLine + '</div>' +
+            '<div><strong>' + escapeHtml(order.reference || 'Pedido') + '</strong><div style="font-size:.78rem;color:var(--muted);margin-top:3px">Creado el ' + date + '</div>' + customerLine + '</div>' +
             '<span class="account-pill" style="background:' + style.bg + ';color:' + style.fg + '">' + label + '</span>' +
           '</div>' +
           '<div class="account-status-bar">' + segs + '</div>' +
-          (order.notes ? '<p style="margin-top:12px;font-size:.86rem;color:var(--muted)">' + order.notes + '</p>' : '') +
+          (order.notes ? '<p style="margin-top:12px;font-size:.86rem;color:var(--muted)">' + escapeHtml(order.notes) + '</p>' : '') +
           statusControl +
         '</div>';
     }).join('');
@@ -136,7 +142,7 @@
       return (a.full_name || a.email || '').localeCompare(b.full_name || b.email || '');
     });
     customerSelect.innerHTML = customers.map(function(c){
-      return '<option value="' + c.id + '">' + (c.full_name || c.email) + '</option>';
+      return '<option value="' + c.id + '">' + escapeHtml(c.full_name || c.email) + '</option>';
     }).join('');
     statusSelect.innerHTML = ORDER_STATUS_ORDER.map(function(s){
       return '<option value="' + s + '">' + ORDER_STATUS_LABELS[s] + '</option>';
@@ -183,7 +189,7 @@
       }
       return '' +
         '<div class="team-row">' +
-          '<div><strong>' + name + (isSelf ? ' (tú)' : '') + '</strong><div style="font-size:.78rem;color:var(--muted);margin-top:3px">' + (member.email || '') + ' · ' + (ROLE_LABELS[member.role] || member.role) + '</div></div>' +
+          '<div><strong>' + escapeHtml(name) + (isSelf ? ' (tú)' : '') + '</strong><div style="font-size:.78rem;color:var(--muted);margin-top:3px">' + escapeHtml(member.email || '') + ' · ' + escapeHtml(ROLE_LABELS[member.role] || member.role) + '</div></div>' +
           actionBtn +
         '</div>';
     }).join('');
