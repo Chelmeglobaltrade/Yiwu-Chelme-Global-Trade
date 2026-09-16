@@ -559,6 +559,8 @@ a:focus-visible {
 .portal-tab .n{ display:inline-flex; align-items:center; justify-content:center; min-width:19px; height:19px; padding:0 5px; border-radius:999px; background:var(--soft); color:var(--muted); font-size:.68rem; margin-left:6px; }
 .portal-tab.active{ background:var(--petrol); color:#fff; }
 .portal-tab.active .n{ background:rgba(255,255,255,.2); color:#fff; }
+.portal-tab .n.n-alert{ background:var(--gold); color:#123f49; font-weight:700; }
+.portal-tab.active .n.n-alert{ background:var(--gold); color:#123f49; }
 .portal-tab:not(.active):hover{ color:var(--petrol); }
 .portal-panel{ padding-top:26px; }
 
