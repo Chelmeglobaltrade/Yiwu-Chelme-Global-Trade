@@ -609,20 +609,19 @@ function init(){
 
   $("menuToggle").addEventListener("click",()=>$("mainNav").classList.toggle("open"));
   $("mainNav").querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>$("mainNav").classList.remove("open")));
-  const navServices=$("navServices");
-  if(navServices){
-    navServices.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{navServices.open=false;}));
-    let navServicesCloseTimer=null;
-    navServices.addEventListener("mouseenter",()=>{
+  document.querySelectorAll(".nav-services").forEach(dd=>{
+    dd.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{dd.open=false;}));
+    let closeTimer=null;
+    dd.addEventListener("mouseenter",()=>{
       if(window.innerWidth<=850)return;
-      clearTimeout(navServicesCloseTimer);
-      navServices.open=true;
+      clearTimeout(closeTimer);
+      dd.open=true;
     });
-    navServices.addEventListener("mouseleave",()=>{
+    dd.addEventListener("mouseleave",()=>{
       if(window.innerWidth<=850)return;
-      navServicesCloseTimer=setTimeout(()=>{navServices.open=false;},150);
+      closeTimer=setTimeout(()=>{dd.open=false;},150);
     });
-  }
+  });
 
   document.querySelectorAll("[data-service-button]").forEach(a=>{
     a.addEventListener("click",e=>{

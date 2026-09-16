@@ -29,20 +29,19 @@
       a.addEventListener("click", function () { nav.classList.remove("open"); });
     });
   }
-  var navServices = $("navServices");
-  if (navServices) {
-    navServices.querySelectorAll("a").forEach(function (a) {
-      a.addEventListener("click", function () { navServices.open = false; });
+  document.querySelectorAll(".nav-services").forEach(function (dd) {
+    dd.querySelectorAll("a").forEach(function (a) {
+      a.addEventListener("click", function () { dd.open = false; });
     });
-    var navServicesCloseTimer = null;
-    navServices.addEventListener("mouseenter", function () {
+    var closeTimer = null;
+    dd.addEventListener("mouseenter", function () {
       if (window.innerWidth <= 850) return;
-      clearTimeout(navServicesCloseTimer);
-      navServices.open = true;
+      clearTimeout(closeTimer);
+      dd.open = true;
     });
-    navServices.addEventListener("mouseleave", function () {
+    dd.addEventListener("mouseleave", function () {
       if (window.innerWidth <= 850) return;
-      navServicesCloseTimer = setTimeout(function () { navServices.open = false; }, 150);
+      closeTimer = setTimeout(function () { dd.open = false; }, 150);
     });
-  }
+  });
 })();
