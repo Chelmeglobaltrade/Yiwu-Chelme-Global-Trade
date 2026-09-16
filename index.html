@@ -180,7 +180,7 @@
         <a href="#quoteShell" data-service-button="lcl"><svg><use href="#i-boxes"></use></svg><span><strong>Consolidado LCL</strong><small>Paga por el espacio utilizado</small></span></a>
         <a href="#quoteShell" data-service-button="fcl"><svg><use href="#i-container"></use></svg><span><strong>Contenedor FCL</strong><small>20GP, 40GP y 40HQ</small></span></a>
         <a href="#quoteShell" data-service-button="quality"><svg><use href="#i-shield"></use></svg><span><strong>Control de calidad</strong><small>Inspección presencial</small></span></a>
-        <a href="#quoteShell" data-service-button="trip"><svg><use href="#i-plane"></use></svg><span><strong>Viaja a China</strong><small>Guía y acompañamiento</small></span></a>
+        <a href="viajes-china.html"><svg><use href="#i-plane"></use></svg><span><strong>Viaja a China</strong><small>Guía y acompañamiento</small></span></a>
       </div>
     </section>
 
@@ -372,103 +372,39 @@
           <span class="eyebrow dark">Cotización online</span>
           <h2>Cotiza tu importación</h2>
           <p>
-            Completa los datos de tu carga y mira el estimado de costos al instante,
-            <strong>sin costo</strong>. ¿Necesitas que busquemos proveedores o coticemos productos por ti?
-            Elige "Asesoría" en el menú.
+            Elige tu servicio y mira un <strong>estimado aproximado al instante, sin costo</strong>.
+            Crea tu cuenta para agregar el valor de tu mercancía, enviar fotos o un enlace, y recibir
+            el desglose exacto guardado en tus pedidos.
           </p>
         </header>
 
-        <div class="quote-shell" id="quoteShell">
+        <div class="quote-shell mini-estimator" id="quoteShell">
           <aside class="quote-menu">
-            <button class="quote-menu-item active" data-quote-service="lcl"><svg><use href="#i-boxes"></use></svg><span><strong>Consolidado LCL</strong><small>Carga por m³</small></span></button>
-            <button class="quote-menu-item" data-quote-service="fcl"><svg><use href="#i-container"></use></svg><span><strong>Contenedor FCL</strong><small>Carga completa</small></span></button>
-            <button class="quote-menu-item" data-quote-service="quality"><svg><use href="#i-shield"></use></svg><span><strong>Control de calidad</strong><small>Inspección en China</small></span></button>
-            <button class="quote-menu-item" data-quote-service="sourcing"><svg><use href="#i-search"></use></svg><span><strong>Buscar proveedor</strong><small>Sourcing</small></span></button>
-            <button class="quote-menu-item" data-quote-service="translation"><svg><use href="#i-language"></use></svg><span><strong>Traducción</strong><small>Remota o presencial</small></span></button>
-            <button class="quote-menu-item" data-quote-service="advisory"><svg><use href="#i-chat"></use></svg><span><strong>Asesoría</strong><small>Evaluar proyecto</small></span></button>
+            <button class="quote-menu-item active" data-mini-service="lcl"><svg><use href="#i-boxes"></use></svg><span><strong>Consolidado LCL</strong><small>Carga por m³</small></span></button>
+            <button class="quote-menu-item" data-mini-service="fcl"><svg><use href="#i-container"></use></svg><span><strong>Contenedor FCL</strong><small>Carga completa</small></span></button>
+            <button class="quote-menu-item" data-mini-service="quality"><svg><use href="#i-shield"></use></svg><span><strong>Control de calidad</strong><small>Inspección en China</small></span></button>
+            <button class="quote-menu-item" data-mini-service="sourcing"><svg><use href="#i-search"></use></svg><span><strong>Buscar proveedor</strong><small>Sourcing</small></span></button>
+            <button class="quote-menu-item" data-mini-service="translation"><svg><use href="#i-language"></use></svg><span><strong>Traducción</strong><small>Remota o presencial</small></span></button>
+            <button class="quote-menu-item" data-mini-service="advisory"><svg><use href="#i-chat"></use></svg><span><strong>Asesoría</strong><small>Evaluar proyecto</small></span></button>
           </aside>
 
           <section class="quote-card">
             <div class="quote-title-row">
-              <div><span>Solicitud online</span><h3 id="quoteTitle">Cotizar carga consolidada</h3></div>
-              <strong id="quoteBadge">Estimación disponible</strong>
+              <div><span>Estimado rápido</span><h3 id="miniTitle">Consolidado LCL</h3></div>
+              <strong id="miniBadge">Estimación aproximada</strong>
             </div>
 
-            <form id="quoteForm" novalidate>
-              <div class="quote-step">
-                <div class="quote-step-head">
-                  <span class="quote-step-num">1</span>
-                  <div><h4>¿Qué información tienes del producto?</h4><span>Elige solo una opción. También puedes cambiarla después.</span></div>
-                </div>
-                <div class="source-tabs">
-                  <button class="source-tab active" type="button" data-source-mode="link"><svg><use href="#i-link"></use></svg><span><strong>Tengo un enlace</strong><small>1688, Alibaba u otro</small></span></button>
-                  <button class="source-tab" type="button" data-source-mode="photos"><svg><use href="#i-camera"></use></svg><span><strong>Solo tengo fotos</strong><small>Sube imágenes</small></span></button>
-                  <button class="source-tab" type="button" data-source-mode="description"><svg><use href="#i-pencil"></use></svg><span><strong>Puedo describirlo</strong><small>Nosotros lo buscamos</small></span></button>
-                  <button class="source-tab" type="button" data-source-mode="bulk"><svg><use href="#i-file"></use></svg><span><strong>Tengo muchos productos</strong><small>Excel, PDF, CSV o lista</small></span></button>
-                </div>
-                <div id="sourceFields"></div>
-              </div>
+            <div id="miniFields" class="form-grid"></div>
 
-              <div class="quote-step">
-                <div class="quote-step-head">
-                  <span class="quote-step-num">2</span>
-                  <div><h4>Tus datos de contacto</h4><span>Para enviarte la confirmación por WhatsApp o correo.</span></div>
-                </div>
-                <div class="form-grid client-grid">
-                  <label class="field"><span>Nombre *</span><input type="text" id="quoteName" required placeholder="Tu nombre"></label>
-                  <label class="field"><span>Ciudad o país de destino *</span><input type="text" id="quoteDestination" required placeholder="Ej.: Santiago, Chile"></label>
-                  <label class="field"><span>WhatsApp</span><input type="text" id="quoteClientWhatsapp" placeholder="+56..."></label>
-                  <label class="field"><span>Correo</span><input type="email" id="quoteEmail" placeholder="correo@ejemplo.com"></label>
-                </div>
-              </div>
+            <div class="estimate-box">
+              <div><span>Estimado aproximado</span><strong id="miniEstimate">Desde US$250/m³</strong></div>
+              <p id="miniEstimateNote">Ingresa el volumen para ver un estimado de flete.</p>
+            </div>
 
-              <div class="quote-step">
-                <div class="quote-step-head">
-                  <span class="quote-step-num">3</span>
-                  <div><h4>Detalles del servicio</h4><span>Completa lo que sepas; lo que falte lo revisamos contigo.</span></div>
-                </div>
-                <div id="serviceFields"></div>
-                <label class="field"><span>Comentarios adicionales</span><textarea id="quoteNotes" rows="4" placeholder="Colores, modelos, calidad esperada, fecha, presupuesto u otra información."></textarea></label>
-              </div>
-
-              <div class="quote-step quote-step-result">
-                <div class="quote-step-head">
-                  <span class="quote-step-num">4</span>
-                  <div><h4>Tu estimación</h4><span>Se actualiza mientras completas el formulario.</span></div>
-                </div>
-                <div class="estimate-box">
-                  <div><span>Resultado inicial</span><strong id="quoteEstimate">Por calcular</strong></div>
-                  <p id="quoteEstimateNote">Completa los datos disponibles.</p>
-                </div>
-                <div class="cost-breakdown hidden" id="quoteBreakdown" aria-live="polite"></div>
-                <div class="quote-early-pdf">
-                  <button class="btn btn-light" type="button" id="livePdfBtn"><svg><use href="#i-file"></use></svg> Descargar esta estimación en PDF</button>
-                  <small>No necesitas completar tus datos para descargar esta estimación.</small>
-                </div>
-              </div>
-
-              <div class="form-alert hidden" id="quoteAlert"></div>
-
-              <label class="payment-confirmation">
-                <input type="checkbox" id="paymentAcknowledgement" required>
-                <span>
-                  <strong>Entiendo cómo funciona la cotización.</strong>
-                  <small>Si mi carga ya está lista, la revisión de esta solicitud no tiene costo. La asesoría pagada aplica solo si pido búsqueda o cotización de productos.</small>
-                </span>
-              </label>
-
-              <div class="quote-actions">
-                <button class="btn btn-primary" type="submit" id="quoteSubmitBtn"><svg><use href="#i-check"></use></svg> <span id="quoteSubmitBtnText">Revisar solicitud</span></button>
-                <button class="btn btn-light" type="button" id="clearQuote">Limpiar</button>
-              </div>
-              <p class="form-help" id="photoSendHelp"></p>
-            </form>
-            <section class="quote-preview hidden" id="quotePreview" aria-live="polite">
-              <div class="quote-preview-heading"><div><span>Resumen antes de enviar</span><h3>Revisa que la información esté correcta</h3></div><strong id="quoteReference"></strong></div>
-              <div class="quote-preview-grid" id="quotePreviewGrid"></div>
-              <div class="quote-preview-actions"><button class="btn btn-whatsapp-green" type="button" id="confirmQuoteWhatsapp"><svg><use href="#i-whatsapp"></use></svg> Enviar por WhatsApp</button><button class="btn btn-gold" type="button" id="quotePdfBtn">Descargar PDF</button><button class="btn btn-light" type="button" id="editQuotePreview">Editar información</button></div>
-              <p class="quote-preview-note">Si tu carga está lista, confirmamos esta solicitud sin costo. Si pides búsqueda de productos, aplica la asesoría inicial.</p>
-            </section>
+            <div class="mini-estimator-cta">
+              <a class="btn btn-gold" id="miniSignupLink" href="login.html?tab=signup&service=lcl">Crea tu cuenta para tu cotización completa</a>
+              <p>Con tu cuenta agregas el valor de tu mercancía, envías fotos o un enlace del producto, y recibes el desglose exacto — guardado en tus pedidos para seguir tu importación.</p>
+            </div>
           </section>
         </div>
       </div>
@@ -654,7 +590,5 @@
     })();
   </script>
   <script async src="https://www.tiktok.com/embed.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="pdf-cotizacion.js"></script>
 </body>
 </html>

@@ -9,6 +9,114 @@
 
 <section class="standalone-hero"><div class="container"><span class="eyebrow">Portal del cliente</span><h1>Hola, <span id="welcomeName">...</span></h1><p>Aquí puedes ver tus pedidos y cotizaciones. Cualquier duda, escríbenos por WhatsApp.</p><div style="margin-top:8px"><button type="button" id="logoutBtn" class="btn" style="background:transparent;border:1px solid var(--line)">Cerrar sesión</button></div></div></section>
 
+<section class="section section-soft" id="cotizar">
+  <div class="container">
+    <header class="section-heading">
+      <span class="eyebrow dark">Cotización online</span>
+      <h2>Cotiza tu importación</h2>
+      <p>
+        Completa los datos de tu carga y mira el estimado de costos al instante,
+        <strong>sin costo</strong>. ¿Necesitas que busquemos proveedores o coticemos productos por ti?
+        Elige "Asesoría" en el menú.
+      </p>
+    </header>
+
+    <div class="quote-shell" id="quoteShell">
+      <aside class="quote-menu">
+        <button class="quote-menu-item active" data-quote-service="lcl"><svg><use href="#i-boxes"></use></svg><span><strong>Consolidado LCL</strong><small>Carga por m³</small></span></button>
+        <button class="quote-menu-item" data-quote-service="fcl"><svg><use href="#i-container"></use></svg><span><strong>Contenedor FCL</strong><small>Carga completa</small></span></button>
+        <button class="quote-menu-item" data-quote-service="quality"><svg><use href="#i-shield"></use></svg><span><strong>Control de calidad</strong><small>Inspección en China</small></span></button>
+        <button class="quote-menu-item" data-quote-service="sourcing"><svg><use href="#i-search"></use></svg><span><strong>Buscar proveedor</strong><small>Sourcing</small></span></button>
+        <button class="quote-menu-item" data-quote-service="translation"><svg><use href="#i-language"></use></svg><span><strong>Traducción</strong><small>Remota o presencial</small></span></button>
+        <button class="quote-menu-item" data-quote-service="advisory"><svg><use href="#i-chat"></use></svg><span><strong>Asesoría</strong><small>Evaluar proyecto</small></span></button>
+      </aside>
+
+      <section class="quote-card">
+        <div class="quote-title-row">
+          <div><span>Solicitud online</span><h3 id="quoteTitle">Cotizar carga consolidada</h3></div>
+          <strong id="quoteBadge">Estimación disponible</strong>
+        </div>
+
+        <form id="quoteForm" novalidate>
+          <div class="quote-step">
+            <div class="quote-step-head">
+              <span class="quote-step-num">1</span>
+              <div><h4>¿Qué información tienes del producto?</h4><span>Elige solo una opción. También puedes cambiarla después.</span></div>
+            </div>
+            <div class="source-tabs">
+              <button class="source-tab active" type="button" data-source-mode="link"><svg><use href="#i-link"></use></svg><span><strong>Tengo un enlace</strong><small>1688, Alibaba u otro</small></span></button>
+              <button class="source-tab" type="button" data-source-mode="photos"><svg><use href="#i-camera"></use></svg><span><strong>Solo tengo fotos</strong><small>Sube imágenes</small></span></button>
+              <button class="source-tab" type="button" data-source-mode="description"><svg><use href="#i-pencil"></use></svg><span><strong>Puedo describirlo</strong><small>Nosotros lo buscamos</small></span></button>
+              <button class="source-tab" type="button" data-source-mode="bulk"><svg><use href="#i-file"></use></svg><span><strong>Tengo muchos productos</strong><small>Excel, PDF, CSV o lista</small></span></button>
+            </div>
+            <div id="sourceFields"></div>
+          </div>
+
+          <div class="quote-step">
+            <div class="quote-step-head">
+              <span class="quote-step-num">2</span>
+              <div><h4>Tus datos de contacto</h4><span>Para enviarte la confirmación por WhatsApp o correo.</span></div>
+            </div>
+            <div class="form-grid client-grid">
+              <label class="field"><span>Nombre *</span><input type="text" id="quoteName" required placeholder="Tu nombre"></label>
+              <label class="field"><span>Ciudad o país de destino *</span><input type="text" id="quoteDestination" required placeholder="Ej.: Santiago, Chile"></label>
+              <label class="field"><span>WhatsApp</span><input type="text" id="quoteClientWhatsapp" placeholder="+56..."></label>
+              <label class="field"><span>Correo</span><input type="email" id="quoteEmail" placeholder="correo@ejemplo.com"></label>
+            </div>
+          </div>
+
+          <div class="quote-step">
+            <div class="quote-step-head">
+              <span class="quote-step-num">3</span>
+              <div><h4>Detalles del servicio</h4><span>Completa lo que sepas; lo que falte lo revisamos contigo.</span></div>
+            </div>
+            <div id="serviceFields"></div>
+            <label class="field"><span>Comentarios adicionales</span><textarea id="quoteNotes" rows="4" placeholder="Colores, modelos, calidad esperada, fecha, presupuesto u otra información."></textarea></label>
+          </div>
+
+          <div class="quote-step quote-step-result">
+            <div class="quote-step-head">
+              <span class="quote-step-num">4</span>
+              <div><h4>Tu estimación</h4><span>Se actualiza mientras completas el formulario.</span></div>
+            </div>
+            <div class="estimate-box">
+              <div><span>Resultado inicial</span><strong id="quoteEstimate">Por calcular</strong></div>
+              <p id="quoteEstimateNote">Completa los datos disponibles.</p>
+            </div>
+            <div class="cost-breakdown hidden" id="quoteBreakdown" aria-live="polite"></div>
+            <div class="quote-early-pdf">
+              <button class="btn btn-light" type="button" id="livePdfBtn"><svg><use href="#i-file"></use></svg> Descargar esta estimación en PDF</button>
+              <small>No necesitas completar tus datos para descargar esta estimación.</small>
+            </div>
+          </div>
+
+          <div class="form-alert hidden" id="quoteAlert"></div>
+
+          <label class="payment-confirmation">
+            <input type="checkbox" id="paymentAcknowledgement" required>
+            <span>
+              <strong>Entiendo cómo funciona la cotización.</strong>
+              <small>Si mi carga ya está lista, la revisión de esta solicitud no tiene costo. La asesoría pagada aplica solo si pido búsqueda o cotización de productos.</small>
+            </span>
+          </label>
+
+          <div class="quote-actions">
+            <button class="btn btn-primary" type="submit" id="quoteSubmitBtn"><svg><use href="#i-check"></use></svg> <span id="quoteSubmitBtnText">Revisar solicitud</span></button>
+            <button class="btn btn-light" type="button" id="clearQuote">Limpiar</button>
+          </div>
+          <p class="form-help" id="photoSendHelp"></p>
+        </form>
+        <section class="quote-preview hidden" id="quotePreview" aria-live="polite">
+          <div class="quote-preview-heading"><div><span>Resumen antes de enviar</span><h3>Revisa que la información esté correcta</h3></div><strong id="quoteReference"></strong></div>
+          <div class="quote-preview-grid" id="quotePreviewGrid"></div>
+          <div class="quote-preview-actions"><button class="btn btn-whatsapp-green" type="button" id="confirmQuoteWhatsapp"><svg><use href="#i-whatsapp"></use></svg> Enviar por WhatsApp</button><button class="btn btn-gold" type="button" id="quotePdfBtn">Descargar PDF</button><button class="btn btn-light" type="button" id="editQuotePreview">Editar información</button></div>
+          <p class="quote-preview-note">Si tu carga está lista, confirmamos esta solicitud sin costo. Si pides búsqueda de productos, aplica la asesoría inicial.</p>
+        </section>
+      </section>
+    </div>
+  </div>
+</section>
+
 <section class="account-section"><div class="container" style="max-width:460px">
 
   <h2>Mi perfil</h2>
@@ -57,9 +165,12 @@
 
 </div></section>
 
-</main><footer><div class="container footer-grid"><img src="logo-light.png" alt="Chelme Global Trade"><div><strong>Importaciones y servicios comerciales desde China</strong><p><span data-business-city></span> · <a data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener">WhatsApp</a> · <a data-email-link></a> · <a href="index.html#contacto-yiwu">Contacto</a></p><p style="font-size:.78rem;margin-top:8px"><a href="como-funciona.html">Cómo funciona</a> · <a href="terminos-y-condiciones.html">Términos y condiciones</a> · <a href="politica-privacidad.html">Privacidad</a> · <a href="mercancias-restringidas.html">Mercancías restringidas</a></p></div><div class="footer-social"><a data-instagram-link target="_blank" rel="noopener"><svg><use href="#i-instagram"></use></svg></a><a data-tiktok-link target="_blank" rel="noopener"><svg><use href="#i-tiktok"></use></svg></a><a data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg></a></div></div></footer><div class="sticky-cta-bar"><a class="sticky-cta-btn sticky-cta-quote" href="index.html#cotizar">Cotizar ahora</a><a class="sticky-cta-btn sticky-cta-whatsapp" data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> WhatsApp</a></div><script src="site-chrome.js"></script>
+</main><footer><div class="container footer-grid"><img src="logo-light.png" alt="Chelme Global Trade"><div><strong>Importaciones y servicios comerciales desde China</strong><p><span data-business-city></span> · <a data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener">WhatsApp</a> · <a data-email-link></a> · <a href="index.html#contacto-yiwu">Contacto</a></p><p style="font-size:.78rem;margin-top:8px"><a href="como-funciona.html">Cómo funciona</a> · <a href="terminos-y-condiciones.html">Términos y condiciones</a> · <a href="politica-privacidad.html">Privacidad</a> · <a href="mercancias-restringidas.html">Mercancías restringidas</a></p></div><div class="footer-social"><a data-instagram-link target="_blank" rel="noopener"><svg><use href="#i-instagram"></use></svg></a><a data-tiktok-link target="_blank" rel="noopener"><svg><use href="#i-tiktok"></use></svg></a><a data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg></a></div></div></footer><div class="sticky-cta-bar"><a class="sticky-cta-btn sticky-cta-quote" href="#cotizar">Cotizar ahora</a><a class="sticky-cta-btn sticky-cta-whatsapp" data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> WhatsApp</a></div><script src="site-chrome.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="pdf-cotizacion.js"></script>
+<script src="quote-wizard.js"></script>
 <script>
 (function(){
   function escapeHtml(str){
@@ -243,6 +354,12 @@
       (profile && profile.full_name) || session.user.email;
     document.getElementById('profileName').value = (profile && profile.full_name) || '';
     document.getElementById('profilePhone').value = (profile && profile.phone) || '';
+
+    initQuoteWizard({
+      name: (profile && profile.full_name) || '',
+      email: session.user.email || '',
+      phone: (profile && profile.phone) || ''
+    });
 
     var customersById = null;
     if (isStaff) {
