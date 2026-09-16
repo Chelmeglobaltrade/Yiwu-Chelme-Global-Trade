@@ -169,8 +169,12 @@
 .nav-services-menu a:hover { background: #eef4f4; }
 .nav-services-menu strong { font-size: .87rem; }
 .nav-services-menu small { color: var(--muted); font-size: .74rem; }
+.nav-travel-dd summary { background: var(--gold); color: #17282c; box-shadow: 0 8px 20px rgba(215,170,40,.3); }
+.nav-travel-dd summary:hover { background: var(--gold-dark); transform: translateY(-1px); }
+.nav-travel-dd[open] summary { background: var(--gold-dark); }
 @media (max-width: 850px) {
   .nav-services summary { justify-content: space-between; }
+  .nav-travel-dd { margin-top: 6px; }
   .nav-services-menu {
     position: static;
     transform: none;
