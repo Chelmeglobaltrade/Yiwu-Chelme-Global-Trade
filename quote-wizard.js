@@ -458,24 +458,59 @@ function renderQuotePreview(items){
   $("quotePreview").classList.remove("hidden");
   $("quotePreview").scrollIntoView({behavior:"smooth",block:"center"});
 }
-async function saveQuoteAsOrder(){
+function buildQuoteFieldsPayload(){
+  const service=state.quoteService;
+  const payload={service,source_mode:state.sourceMode};
+  let description=null;
+  if(service==="lcl"||service==="fcl"){
+    payload.goods_value=val("qGoods")||null;
+    payload.goods_currency=$("qCurrency")?.value||"USD";
+    payload.cbm=val("qCbm")||null;
+    payload.include_sourcing=Boolean($("qIncludeSourcing")?.checked);
+    if(service==="fcl")description=`Contenedor ${$("qContainer")?.value||""}`.trim();
+  }else if(service==="quality"){
+    payload.quantity=Number($("qReferences")?.value)||null;
+    description=[$("qCity")?.value,$("qInspection")?.value,$("qScope")?.value].filter(Boolean).join(" · ");
+  }else if(service==="sourcing"){
+    payload.quantity=Number($("qQuantity")?.value)||null;
+    payload.goods_value=val("qBudget")||null;
+    description=[$("qCustom")?.value,$("qQuality")?.value].filter(Boolean).join(" · ");
+  }else if(service==="translation"){
+    description=[$("qTranslationMode")?.value,[$("qDuration")?.value,$("qDurationUnit")?.value].filter(Boolean).join(" "),$("qTranslationCity")?.value].filter(Boolean).join(" · ");
+  }else if(service==="advisory"){
+    payload.goods_value=val("qBudget")||null;
+    description=$("qExperience")?.value||null;
+  }
+  if(state.sourceMode==="link")payload.source_link=$("sourceLink")?.value||null;
+  const sourceDesc=[$("sourceProductName")?.value,$("sourceDescription")?.value].filter(Boolean).join(" — ");
+  payload.description=[description,sourceDesc].filter(Boolean).join(" — ")||null;
+  return payload;
+}
+
+async function saveQuoteAsQuote(){
   try{
-    if(typeof supabaseClient==="undefined")return;
+    if(typeof supabaseClient==="undefined")return null;
     const sessionRes=await supabaseClient.auth.getSession();
     const session=sessionRes.data.session;
-    if(!session)return;
-    await supabaseClient.from("orders").insert({
+    if(!session)return null;
+    const fields=buildQuoteFieldsPayload();
+    const res=await supabaseClient.from("quotes").insert({
       user_id:session.user.id,
-      reference:`${services[state.quoteService].title} · ${state.preparedQuoteReference}`,
-      notes:state.preparedQuoteText
-    });
+      reference:state.preparedQuoteReference,
+      client_notes:$("quoteNotes")?.value.trim()||null,
+      staff_notes:state.preparedQuoteText,
+      ...fields
+    }).select().single();
+    if(res.error){console.warn("No se pudo guardar la cotización:",res.error);return null;}
+    return res.data;
   }catch(error){
-    console.warn("No se pudo guardar el pedido en la cuenta:",error);
+    console.warn("No se pudo guardar la cotización:",error);
+    return null;
   }
 }
 
 async function sendPreparedQuote(){
-  saveQuoteAsOrder();
+  saveQuoteAsQuote();
   const text=state.preparedQuoteText,files=state.preparedQuoteFiles;
   if(files.length&&navigator.share&&navigator.canShare){
     try{const data={title:"Solicitud Chelme Global Trade",text,files};if(navigator.canShare(data)){await navigator.share(data);return;}}catch(error){if(error.name==="AbortError")return;}
@@ -502,6 +537,33 @@ async function submitQuote(event){
   renderQuotePreview([["Referencia",state.preparedQuoteReference],["Servicio",serviceTitle],["Cliente",name],["Destino",destination],["Información",modeNames[state.sourceMode]],["Búsqueda",sourcingStatus],["Resultado mostrado",result],[requiresAdvisory?"Asesoría inicial":"Costo de esta cotización",requiresAdvisory?money(CONFIG.advisory.startingPriceUsd):"Sin costo"]]);
 }
 
+let wizardStep=0;
+const WIZARD_STEP_LABELS=["Producto","Contacto","Servicio","Estimado"];
+
+function renderWizardStep(){
+  document.querySelectorAll("[data-wizard-step]").forEach(el=>{
+    el.classList.toggle("wizard-active",Number(el.dataset.wizardStep)===wizardStep);
+  });
+  const back=$("wizardBack"),next=$("wizardNext");
+  if(back)back.style.visibility=wizardStep===0?"hidden":"visible";
+  if(next)next.hidden=wizardStep===WIZARD_STEP_LABELS.length-1;
+  const stepper=$("wizardStepper");
+  if(stepper){
+    stepper.innerHTML=WIZARD_STEP_LABELS.map((label,i)=>{
+      const cls=i<wizardStep?"done":i===wizardStep?"current":"";
+      const dot=`<div class="wizard-step-dot ${cls}">${i<wizardStep?"&#10003;":i+1}</div>`;
+      const line=i<WIZARD_STEP_LABELS.length-1?'<div class="wizard-step-line"></div>':"";
+      return dot+line;
+    }).join("")+`<span class="wizard-step-label">${WIZARD_STEP_LABELS[wizardStep]}</span>`;
+  }
+}
+
+function goWizardStep(delta){
+  wizardStep=Math.max(0,Math.min(WIZARD_STEP_LABELS.length-1,wizardStep+delta));
+  renderWizardStep();
+  $("quoteShell")?.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
 function initQuoteWizard(prefill){
   document.querySelectorAll("[data-quote-service]").forEach(b=>b.addEventListener("click",()=>setService(b.dataset.quoteService)));
   document.querySelectorAll("[data-source-mode]").forEach(b=>b.addEventListener("click",()=>setSourceMode(b.dataset.sourceMode)));
@@ -509,12 +571,15 @@ function initQuoteWizard(prefill){
   $("quoteForm").addEventListener("submit",submitQuote);
   $("confirmQuoteWhatsapp").addEventListener("click",sendPreparedQuote);
   $("editQuotePreview").addEventListener("click",()=>{$("quotePreview").classList.add("hidden");$("quoteForm").scrollIntoView({behavior:"smooth",block:"start"});});
+  $("wizardBack")?.addEventListener("click",()=>goWizardStep(-1));
+  $("wizardNext")?.addEventListener("click",()=>goWizardStep(1));
   $("clearQuote").addEventListener("click",()=>{
     $("quoteForm").reset();
     $("quotePreview").classList.add("hidden");
     state.preparedQuoteText="";state.preparedQuoteFiles=[];state.preparedQuoteReference="";
     setSourceMode(state.sourceMode);
     setService(state.quoteService);
+    wizardStep=0;renderWizardStep();
     if(prefill)applyPrefill(prefill);
   });
 
@@ -522,6 +587,7 @@ function initQuoteWizard(prefill){
   const requestedService=new URLSearchParams(location.search).get("service");
   setService(requestedService&&services[requestedService]?requestedService:"lcl");
   if(prefill)applyPrefill(prefill);
+  renderWizardStep();
 }
 
 function applyPrefill(prefill){
