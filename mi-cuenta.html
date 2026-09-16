@@ -187,8 +187,16 @@
 <section class="section" id="panel-team" hidden><div class="container">
 
   <h2>Gestionar equipo</h2>
-  <p style="color:var(--muted);margin-top:8px">Las personas que ya se registraron en la página. Puedes hacerlas administradoras para que vean todos los pedidos, o quitarles ese acceso.</p>
+  <p style="color:var(--muted);margin-top:8px">Administradores actuales. Pueden ver todos los pedidos y cotizaciones de todos los clientes.</p>
   <div id="teamList" style="margin-top:20px;display:flex;flex-direction:column;gap:10px"></div>
+
+  <h3 style="margin-top:36px;margin-bottom:6px">Hacer administrador a un cliente</h3>
+  <p style="color:var(--muted);font-size:.86rem;margin-bottom:14px">Busca por nombre o correo — no se muestra la lista completa de clientes registrados.</p>
+  <div style="display:flex;gap:8px;max-width:440px;flex-wrap:wrap">
+    <input type="text" id="teamSearchInput" placeholder="Nombre o correo del cliente..." style="flex:1;min-width:220px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);font-family:inherit;font-size:.88rem">
+    <button type="button" id="teamSearchBtn" class="btn" style="background:transparent;border:1px solid var(--line)">Buscar</button>
+  </div>
+  <div id="teamSearchResults" style="margin-top:14px;display:flex;flex-direction:column;gap:10px"></div>
 
 </div></section>
 
@@ -557,27 +565,26 @@
 
   var ROLE_LABELS = { cliente: 'Cliente', admin: 'Administrador', owner: 'Dueño' };
 
-  function renderTeam(members, myId){
-    var list = document.getElementById('teamList');
-    list.innerHTML = members.map(function(member){
-      var isSelf = member.id === myId;
-      var isOwner = member.role === 'owner';
-      var name = member.full_name || member.email || 'Sin nombre';
-      var actionBtn = '';
-      if (!isOwner) {
-        var makingAdmin = member.role !== 'admin';
-        actionBtn = '<button type="button" class="team-role-btn" data-id="' + member.id + '" data-newrole="' +
-          (makingAdmin ? 'admin' : 'cliente') + '">' +
-          (makingAdmin ? 'Hacer administrador' : 'Quitar administrador') + '</button>';
-      }
-      return '' +
-        '<div class="team-row">' +
-          '<div><strong>' + escapeHtml(name) + (isSelf ? ' (tú)' : '') + '</strong><div style="font-size:.78rem;color:var(--muted);margin-top:3px">' + escapeHtml(member.email || '') + ' · ' + escapeHtml(ROLE_LABELS[member.role] || member.role) + '</div></div>' +
-          actionBtn +
-        '</div>';
-    }).join('');
+  function teamRowHtml(member, myId){
+    var isSelf = member.id === myId;
+    var isOwner = member.role === 'owner';
+    var name = member.full_name || member.email || 'Sin nombre';
+    var actionBtn = '';
+    if (!isOwner) {
+      var makingAdmin = member.role !== 'admin';
+      actionBtn = '<button type="button" class="team-role-btn" data-id="' + member.id + '" data-newrole="' +
+        (makingAdmin ? 'admin' : 'cliente') + '">' +
+        (makingAdmin ? 'Hacer administrador' : 'Quitar administrador') + '</button>';
+    }
+    return '' +
+      '<div class="team-row">' +
+        '<div><strong>' + escapeHtml(name) + (isSelf ? ' (tú)' : '') + '</strong><div style="font-size:.78rem;color:var(--muted);margin-top:3px">' + escapeHtml(member.email || '') + ' · ' + escapeHtml(ROLE_LABELS[member.role] || member.role) + '</div></div>' +
+        actionBtn +
+      '</div>';
+  }
 
-    list.querySelectorAll('.team-role-btn').forEach(function(btn){
+  function wireTeamRoleButtons(container, myId, afterChange){
+    container.querySelectorAll('.team-role-btn').forEach(function(btn){
       btn.addEventListener('click', async function(){
         btn.disabled = true;
         btn.textContent = 'Guardando...';
@@ -589,16 +596,47 @@
           alert('No se pudo actualizar: ' + res.error.message);
         }
         loadTeam(myId);
+        if (afterChange) afterChange();
       });
     });
+  }
+
+  function renderTeam(members, myId){
+    var list = document.getElementById('teamList');
+    if (!members.length) { list.innerHTML = '<p style="color:var(--muted);font-size:.86rem">Todavía no hay administradores aparte de ti.</p>'; return; }
+    list.innerHTML = members.map(function(member){ return teamRowHtml(member, myId); }).join('');
+    wireTeamRoleButtons(list, myId);
   }
 
   async function loadTeam(myId){
     var teamRes = await supabaseClient
       .from('profiles')
       .select('id, email, full_name, role')
-      .order('created_at', { ascending: true });
+      .in('role', ['admin', 'owner'])
+      .order('role', { ascending: true });
     renderTeam(teamRes.data || [], myId);
+  }
+
+  function setupTeamSearch(myId){
+    var input = document.getElementById('teamSearchInput');
+    var btn = document.getElementById('teamSearchBtn');
+    var resultsBox = document.getElementById('teamSearchResults');
+    async function doSearch(){
+      var q = input.value.trim().replace(/[,()]/g, '');
+      if (!q) { resultsBox.innerHTML = ''; return; }
+      resultsBox.innerHTML = '<p style="color:var(--muted);font-size:.86rem">Buscando...</p>';
+      var res = await supabaseClient
+        .from('profiles')
+        .select('id, email, full_name, role')
+        .or('full_name.ilike.%' + q + '%,email.ilike.%' + q + '%')
+        .limit(20);
+      var results = res.data || [];
+      if (!results.length) { resultsBox.innerHTML = '<p style="color:var(--muted);font-size:.86rem">Sin resultados para "' + escapeHtml(q) + '".</p>'; return; }
+      resultsBox.innerHTML = results.map(function(member){ return teamRowHtml(member, myId); }).join('');
+      wireTeamRoleButtons(resultsBox, myId, doSearch);
+    }
+    btn.addEventListener('click', doSearch);
+    input.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); doSearch(); } });
   }
 
   async function init(){
@@ -650,6 +688,7 @@
     if (profile && profile.role === 'owner') {
       document.getElementById('teamTabBtn').hidden = false;
       loadTeam(session.user.id);
+      setupTeamSearch(session.user.id);
     }
   }
 
