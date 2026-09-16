@@ -552,6 +552,62 @@ a:focus-visible {
 
 .team-row{ display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; border:1px solid var(--line); border-radius:16px; padding:16px 20px; background:#fff; transition:box-shadow .18s ease; }
 .team-row:hover{ box-shadow:0 10px 24px rgba(18,63,73,.08); }
+
+/* ---------- Portal: pestañas ---------- */
+.portal-tabbar{ display:flex; gap:6px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:5px; max-width:700px; overflow-x:auto; }
+.portal-tab{ flex:1; border:0; background:transparent; padding:11px 14px; border-radius:10px; font-size:.86rem; font-weight:700; color:var(--muted); cursor:pointer; font-family:inherit; white-space:nowrap; }
+.portal-tab .n{ display:inline-flex; align-items:center; justify-content:center; min-width:19px; height:19px; padding:0 5px; border-radius:999px; background:var(--soft); color:var(--muted); font-size:.68rem; margin-left:6px; }
+.portal-tab.active{ background:var(--petrol); color:#fff; }
+.portal-tab.active .n{ background:rgba(255,255,255,.2); color:#fff; }
+.portal-tab:not(.active):hover{ color:var(--petrol); }
+.portal-panel{ padding-top:26px; }
+
+/* ---------- Portal: detalle expandible del pedido/cotización ---------- */
+.order-detail-toggle{ margin-top:14px; background:transparent; border:0; color:var(--petrol-2); font-weight:700; font-size:.82rem; cursor:pointer; padding:0; }
+.order-detail-toggle:hover{ text-decoration:underline; }
+.order-detail{ margin-top:16px; padding-top:16px; border-top:1px solid var(--line); display:flex; flex-direction:column; gap:18px; }
+.order-detail-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; }
+.order-detail-field{ font-size:.82rem; }
+.order-detail-field span{ display:block; color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:3px; }
+.order-detail-subhead{ font-size:.8rem; font-weight:800; color:var(--ink); margin-bottom:8px; }
+
+.file-chip-list{ display:flex; flex-wrap:wrap; gap:8px; }
+.file-chip{ display:inline-flex; align-items:center; gap:7px; padding:8px 12px; border:1px solid var(--line); border-radius:10px; font-size:.8rem; color:var(--petrol); background:var(--soft); }
+.file-chip button{ border:0; background:transparent; color:var(--danger); cursor:pointer; font-size:.9rem; line-height:1; padding:0; }
+.file-upload-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
+.file-upload-row input[type=file]{ font-size:.8rem; }
+
+.timeline-list{ display:flex; flex-direction:column; gap:0; }
+.timeline-item{ display:flex; gap:12px; padding:8px 0; font-size:.82rem; }
+.timeline-dot{ width:9px; height:9px; border-radius:50%; background:var(--petrol-2); margin-top:5px; flex:0 0 auto; }
+.timeline-item strong{ display:block; }
+.timeline-item small{ color:var(--muted); }
+
+.payments-summary{ display:flex; gap:20px; flex-wrap:wrap; padding:14px 16px; background:var(--soft); border-radius:12px; font-size:.84rem; }
+.payments-summary b{ display:block; font-size:1.05rem; color:var(--petrol); margin-top:2px; }
+.payment-row{ display:flex; justify-content:space-between; font-size:.82rem; padding:7px 0; border-bottom:1px solid var(--line); }
+.payment-row:last-child{ border-bottom:0; }
+.payment-form-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.payment-form-row input{ padding:8px 10px; border-radius:8px; border:1px solid var(--line); font-size:.82rem; font-family:inherit; }
+.payment-form-row input[type=number]{ width:110px; }
+.payment-form-row input[type=text]{ flex:1; min-width:140px; }
+
+.quote-status-pill{ padding:5px 11px; border-radius:999px; font-size:.7rem; font-weight:700; }
+.quote-status-enviada{ background:#eef3f2; color:var(--petrol-2); }
+.quote-status-en_revision{ background:#f7ecd2; color:#8a6a12; }
+.quote-status-aceptada{ background:#e6f7ec; color:#1f7a43; }
+.quote-status-rechazada{ background:#fbeaea; color:var(--danger); }
+
+/* ---------- Cotizador paso a paso ---------- */
+.wizard-stepper{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:22px; }
+.wizard-step-dot{ width:26px; height:26px; border-radius:50%; background:var(--soft); color:var(--muted); display:flex; align-items:center; justify-content:center; font-size:.76rem; font-weight:800; flex:0 0 auto; }
+.wizard-step-dot.done{ background:var(--petrol-2); color:#fff; }
+.wizard-step-dot.current{ background:var(--gold); color:#3a2c05; }
+.wizard-step-line{ width:20px; height:2px; background:var(--line); flex:0 0 auto; }
+.wizard-step-label{ font-size:.8rem; color:var(--muted); font-weight:700; margin-left:4px; }
+.quote-step[data-wizard-step]{ display:none; }
+.quote-step[data-wizard-step].wizard-active{ display:block; }
+.wizard-nav{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:18px; }
 .team-role-btn{ background:transparent; border:1px solid var(--line); border-radius:999px; padding:9px 16px; font-size:.82rem; font-weight:700; color:var(--petrol); cursor:pointer; font-family:inherit; transition:background .18s ease,color .18s ease,border-color .18s ease; }
 .team-role-btn:hover{ background:var(--petrol); color:#fff; border-color:var(--petrol); }
 .team-role-btn:disabled{ opacity:.6; cursor:default; }

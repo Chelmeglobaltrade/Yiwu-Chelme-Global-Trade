@@ -9,7 +9,53 @@
 
 <section class="standalone-hero"><div class="container"><span class="eyebrow">Portal del cliente</span><h1>Hola, <span id="welcomeName">...</span></h1><p>Aquí puedes ver tus pedidos y cotizaciones. Cualquier duda, escríbenos por WhatsApp.</p><div style="margin-top:8px"><button type="button" id="logoutBtn" class="btn" style="background:transparent;border:1px solid var(--line)">Cerrar sesión</button></div></div></section>
 
-<section class="section section-soft" id="cotizar">
+<nav class="section" style="padding:26px 0 0"><div class="container">
+  <div class="portal-tabbar" id="portalTabbar">
+    <button class="portal-tab active" data-tab="orders">Mis pedidos <span class="n" id="ordersCount" hidden>0</span></button>
+    <button class="portal-tab" data-tab="quotes">Cotizaciones <span class="n" id="quotesCount" hidden>0</span></button>
+    <button class="portal-tab" data-tab="quote">Nueva cotización</button>
+    <button class="portal-tab" data-tab="profile">Mi perfil</button>
+    <button class="portal-tab" data-tab="team" id="teamTabBtn" hidden>Equipo</button>
+  </div>
+</div></nav>
+
+<section class="section" id="panel-orders">
+  <div class="container">
+    <div class="account-section-heading">
+      <h2 id="ordersTitle">Mis pedidos</h2>
+      <button type="button" id="toggleNewOrderBtn" class="btn" style="background:transparent;border:1px solid var(--line)" hidden>+ Agregar pedido</button>
+    </div>
+    <div id="ordersEmpty" style="margin-top:16px;color:var(--muted)" hidden>Todavía no tienes pedidos registrados. Cuando confirmemos una cotización contigo, la verás aquí.</div>
+    <div id="ordersList" style="margin-top:20px;display:flex;flex-direction:column;gap:16px"></div>
+
+    <div id="newOrderSection" hidden style="margin-top:28px;max-width:460px">
+      <h3 style="margin-bottom:4px">Nuevo pedido</h3>
+      <p style="color:var(--muted);font-size:.86rem;margin-bottom:16px">Para pedidos confirmados por WhatsApp u otro canal que no pasaron por el cotizador online.</p>
+      <div class="auth-card">
+        <form id="newOrderForm" class="auth-form">
+          <label class="auth-field">Cliente<select id="newOrderCustomer" required></select></label>
+          <label class="auth-field">Referencia<input type="text" id="newOrderReference" placeholder="Ej: Contenedor 20GP - Septiembre"></label>
+          <label class="auth-field">Estado inicial<select id="newOrderStatus"></select></label>
+          <label class="auth-field">Notas<textarea id="newOrderNotes" rows="3"></textarea></label>
+          <button type="submit" class="btn btn-gold" style="width:100%">Crear pedido</button>
+        </form>
+        <p id="newOrderMessage" class="auth-message" hidden></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-soft" id="panel-quotes" hidden>
+  <div class="container">
+    <div class="account-section-heading">
+      <h2 id="quotesTitle">Historial de cotizaciones</h2>
+    </div>
+    <div id="quotesEmpty" style="margin-top:16px;color:var(--muted)" hidden>Todavía no has enviado cotizaciones. Usa "Nueva cotización" para pedir la primera.</div>
+    <div id="quotesList" style="margin-top:20px;display:flex;flex-direction:column;gap:16px"></div>
+  </div>
+</section>
+
+<section class="section" id="panel-quote" hidden>
   <div class="container">
     <header class="section-heading">
       <span class="eyebrow dark">Cotización online</span>
@@ -37,8 +83,10 @@
           <strong id="quoteBadge">Estimación disponible</strong>
         </div>
 
+        <div class="wizard-stepper" id="wizardStepper"></div>
+
         <form id="quoteForm" novalidate>
-          <div class="quote-step">
+          <div class="quote-step" data-wizard-step="0">
             <div class="quote-step-head">
               <span class="quote-step-num">1</span>
               <div><h4>¿Qué información tienes del producto?</h4><span>Elige solo una opción. También puedes cambiarla después.</span></div>
@@ -52,7 +100,7 @@
             <div id="sourceFields"></div>
           </div>
 
-          <div class="quote-step">
+          <div class="quote-step" data-wizard-step="1">
             <div class="quote-step-head">
               <span class="quote-step-num">2</span>
               <div><h4>Tus datos de contacto</h4><span>Para enviarte la confirmación por WhatsApp o correo.</span></div>
@@ -65,7 +113,7 @@
             </div>
           </div>
 
-          <div class="quote-step">
+          <div class="quote-step" data-wizard-step="2">
             <div class="quote-step-head">
               <span class="quote-step-num">3</span>
               <div><h4>Detalles del servicio</h4><span>Completa lo que sepas; lo que falte lo revisamos contigo.</span></div>
@@ -74,7 +122,7 @@
             <label class="field"><span>Comentarios adicionales</span><textarea id="quoteNotes" rows="4" placeholder="Colores, modelos, calidad esperada, fecha, presupuesto u otra información."></textarea></label>
           </div>
 
-          <div class="quote-step quote-step-result">
+          <div class="quote-step quote-step-result" data-wizard-step="3">
             <div class="quote-step-head">
               <span class="quote-step-num">4</span>
               <div><h4>Tu estimación</h4><span>Se actualiza mientras completas el formulario.</span></div>
@@ -88,23 +136,28 @@
               <button class="btn btn-light" type="button" id="livePdfBtn"><svg><use href="#i-file"></use></svg> Descargar esta estimación en PDF</button>
               <small>No necesitas completar tus datos para descargar esta estimación.</small>
             </div>
+
+            <label class="payment-confirmation">
+              <input type="checkbox" id="paymentAcknowledgement" required>
+              <span>
+                <strong>Entiendo cómo funciona la cotización.</strong>
+                <small>Si mi carga ya está lista, la revisión de esta solicitud no tiene costo. La asesoría pagada aplica solo si pido búsqueda o cotización de productos.</small>
+              </span>
+            </label>
+
+            <div class="quote-actions">
+              <button class="btn btn-primary" type="submit" id="quoteSubmitBtn"><svg><use href="#i-check"></use></svg> <span id="quoteSubmitBtnText">Revisar solicitud</span></button>
+              <button class="btn btn-light" type="button" id="clearQuote">Limpiar</button>
+            </div>
+            <p class="form-help" id="photoSendHelp"></p>
           </div>
 
           <div class="form-alert hidden" id="quoteAlert"></div>
 
-          <label class="payment-confirmation">
-            <input type="checkbox" id="paymentAcknowledgement" required>
-            <span>
-              <strong>Entiendo cómo funciona la cotización.</strong>
-              <small>Si mi carga ya está lista, la revisión de esta solicitud no tiene costo. La asesoría pagada aplica solo si pido búsqueda o cotización de productos.</small>
-            </span>
-          </label>
-
-          <div class="quote-actions">
-            <button class="btn btn-primary" type="submit" id="quoteSubmitBtn"><svg><use href="#i-check"></use></svg> <span id="quoteSubmitBtnText">Revisar solicitud</span></button>
-            <button class="btn btn-light" type="button" id="clearQuote">Limpiar</button>
+          <div class="wizard-nav">
+            <button class="btn btn-light" type="button" id="wizardBack">Atrás</button>
+            <button class="btn btn-gold" type="button" id="wizardNext">Siguiente</button>
           </div>
-          <p class="form-help" id="photoSendHelp"></p>
         </form>
         <section class="quote-preview hidden" id="quotePreview" aria-live="polite">
           <div class="quote-preview-heading"><div><span>Resumen antes de enviar</span><h3>Revisa que la información esté correcta</h3></div><strong id="quoteReference"></strong></div>
@@ -117,7 +170,7 @@
   </div>
 </section>
 
-<section class="account-section"><div class="container" style="max-width:460px">
+<section class="section section-soft" id="panel-profile" hidden><div class="container" style="max-width:460px">
 
   <h2>Mi perfil</h2>
   <div class="auth-card" style="margin-top:20px">
@@ -131,33 +184,7 @@
 
 </div></section>
 
-<section class="account-section section-soft"><div class="container">
-
-  <div class="account-section-heading">
-    <h2 id="ordersTitle">Mis pedidos</h2>
-    <button type="button" id="toggleNewOrderBtn" class="btn" style="background:transparent;border:1px solid var(--line)" hidden>+ Agregar pedido</button>
-  </div>
-  <div id="ordersEmpty" style="margin-top:16px;color:var(--muted)" hidden>Todavía no tienes pedidos registrados. Cuando confirmemos una cotización contigo, la verás aquí.</div>
-  <div id="ordersList" style="margin-top:20px;display:flex;flex-direction:column;gap:16px"></div>
-
-  <div id="newOrderSection" hidden style="margin-top:28px;max-width:460px">
-    <h3 style="margin-bottom:4px">Nuevo pedido</h3>
-    <p style="color:var(--muted);font-size:.86rem;margin-bottom:16px">Para pedidos confirmados por WhatsApp u otro canal que no pasaron por el cotizador online.</p>
-    <div class="auth-card">
-      <form id="newOrderForm" class="auth-form">
-        <label class="auth-field">Cliente<select id="newOrderCustomer" required></select></label>
-        <label class="auth-field">Referencia<input type="text" id="newOrderReference" placeholder="Ej: Contenedor 20GP - Septiembre"></label>
-        <label class="auth-field">Estado inicial<select id="newOrderStatus"></select></label>
-        <label class="auth-field">Notas<textarea id="newOrderNotes" rows="3"></textarea></label>
-        <button type="submit" class="btn btn-gold" style="width:100%">Crear pedido</button>
-      </form>
-      <p id="newOrderMessage" class="auth-message" hidden></p>
-    </div>
-  </div>
-
-</div></section>
-
-<section class="account-section section-soft" id="teamSection" hidden><div class="container">
+<section class="section" id="panel-team" hidden><div class="container">
 
   <h2>Gestionar equipo</h2>
   <p style="color:var(--muted);margin-top:8px">Las personas que ya se registraron en la página. Puedes hacerlas administradoras para que vean todos los pedidos, o quitarles ese acceso.</p>
@@ -179,6 +206,108 @@
     });
   }
 
+  function moneyFmt(v){
+    return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(Number(v) || 0);
+  }
+
+  var TAB_PANELS = { orders: 'panel-orders', quotes: 'panel-quotes', quote: 'panel-quote', profile: 'panel-profile', team: 'panel-team' };
+  document.querySelectorAll('.portal-tab').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.portal-tab').forEach(function(b){ b.classList.toggle('active', b === btn); });
+      Object.keys(TAB_PANELS).forEach(function(key){
+        var panel = document.getElementById(TAB_PANELS[key]);
+        if (panel) panel.hidden = key !== btn.dataset.tab;
+      });
+    });
+  });
+
+  async function loadOrderFiles(kind, id, containerId, isStaff){
+    var prefix = kind + '/' + id;
+    var res = await supabaseClient.storage.from('order-files').list(prefix, { limit: 100 });
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    var files = (res.data || []).filter(function(f){ return f.id; });
+    if (!files.length) {
+      container.innerHTML = '<span style="color:var(--muted);font-size:.82rem">Sin archivos todavía.</span>';
+      return;
+    }
+    var chips = [];
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      var signed = await supabaseClient.storage.from('order-files').createSignedUrl(prefix + '/' + f.name, 3600);
+      var url = signed.data && signed.data.signedUrl;
+      chips.push('<span class="file-chip"><a href="' + (url || '#') + '" target="_blank" rel="noopener">' + escapeHtml(f.name.replace(/^\d+-/, '')) + '</a>' +
+        (isStaff ? '<button type="button" data-delpath="' + prefix + '/' + f.name + '" aria-label="Eliminar">&times;</button>' : '') + '</span>');
+    }
+    container.innerHTML = chips.join('');
+    if (isStaff) {
+      container.querySelectorAll('[data-delpath]').forEach(function(btn){
+        btn.addEventListener('click', async function(e){
+          e.preventDefault();
+          if (!confirm('¿Eliminar este archivo?')) return;
+          await supabaseClient.storage.from('order-files').remove([btn.dataset.delpath]);
+          loadOrderFiles(kind, id, containerId, isStaff);
+        });
+      });
+    }
+  }
+
+  function wireFileUpload(kind, id, containerId){
+    var input = document.getElementById('upload-' + kind + '-' + id);
+    if (!input || input.dataset.wired) return;
+    input.dataset.wired = '1';
+    input.addEventListener('change', async function(){
+      var files = Array.from(input.files || []);
+      for (var i = 0; i < files.length; i++) {
+        var f = files[i];
+        var path = kind + '/' + id + '/' + Date.now() + '-' + f.name;
+        var res = await supabaseClient.storage.from('order-files').upload(path, f);
+        if (res.error) alert('No se pudo subir ' + f.name + ': ' + res.error.message);
+      }
+      input.value = '';
+      loadOrderFiles(kind, id, containerId, true);
+    });
+  }
+
+  async function loadOrderPayments(orderId, containerId, isStaff, totalAmount){
+    var res = await supabaseClient.from('order_payments').select('*').eq('order_id', orderId).order('paid_at', { ascending: false });
+    var payments = res.data || [];
+    var paid = payments.reduce(function(sum, p){ return sum + Number(p.amount); }, 0);
+    var summary = '<div class="payments-summary">' +
+      (totalAmount ? '<div>Total<b>' + moneyFmt(totalAmount) + '</b></div>' : '') +
+      '<div>Pagado<b>' + moneyFmt(paid) + '</b></div>' +
+      (totalAmount ? '<div>Saldo<b>' + moneyFmt(totalAmount - paid) + '</b></div>' : '') +
+      '</div>';
+    var rows = payments.map(function(p){
+      return '<div class="payment-row"><span>' + new Date(p.paid_at).toLocaleDateString('es-CL') + (p.note ? (' · ' + escapeHtml(p.note)) : '') + '</span><strong>' + moneyFmt(p.amount) + '</strong></div>';
+    }).join('');
+    var formHtml = isStaff
+      ? '<div class="payment-form-row"><input type="number" min="0" placeholder="Monto USD" id="pay-amount-' + orderId + '"><input type="text" placeholder="Nota (opcional)" id="pay-note-' + orderId + '"><button type="button" class="btn btn-light" id="pay-btn-' + orderId + '">+ Registrar pago</button></div>'
+      : '';
+    document.getElementById(containerId).innerHTML = summary + rows + formHtml;
+    if (isStaff) {
+      document.getElementById('pay-btn-' + orderId).addEventListener('click', async function(){
+        var amount = Number(document.getElementById('pay-amount-' + orderId).value);
+        if (!amount || amount <= 0) { alert('Ingresa un monto válido.'); return; }
+        var note = document.getElementById('pay-note-' + orderId).value.trim() || null;
+        var sessionRes = await supabaseClient.auth.getSession();
+        var res2 = await supabaseClient.from('order_payments').insert({ order_id: orderId, amount: amount, note: note, recorded_by: sessionRes.data.session.user.id });
+        if (res2.error) { alert('No se pudo registrar: ' + res2.error.message); return; }
+        loadOrderPayments(orderId, containerId, isStaff, totalAmount);
+      });
+    }
+  }
+
+  async function loadOrderTimeline(orderId, containerId){
+    var res = await supabaseClient.from('order_status_history').select('*').eq('order_id', orderId).order('changed_at', { ascending: true });
+    var rows = (res.data || []).map(function(h){
+      var label = ORDER_STATUS_LABELS[h.status] || h.status;
+      var date = new Date(h.changed_at).toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' });
+      return '<div class="timeline-item"><div class="timeline-dot"></div><div><strong>' + escapeHtml(label) + '</strong><small>' + date + '</small></div></div>';
+    }).join('');
+    document.getElementById(containerId).innerHTML = rows || '<span style="color:var(--muted);font-size:.82rem">Sin historial.</span>';
+  }
+
   var STATUS_STYLES = {
     pedido_confirmado: { bg: '#eef3f2', fg: '#3c5b56' },
     produccion_yiwu: { bg: '#eef3f2', fg: '#3c5b56' },
@@ -190,7 +319,9 @@
   function renderOrders(orders, customersById, isStaff){
     var list = document.getElementById('ordersList');
     var empty = document.getElementById('ordersEmpty');
+    var countEl = document.getElementById('ordersCount');
     empty.hidden = true;
+    if (countEl) { countEl.hidden = false; countEl.textContent = orders.length; }
     if (!orders.length) { empty.hidden = false; list.innerHTML = ''; return; }
     list.innerHTML = orders.map(function(order){
       var label = ORDER_STATUS_LABELS[order.status] || order.status;
@@ -212,6 +343,16 @@
             }).join('') +
           '</select></div>'
         : '';
+      var structFields = [];
+      if (order.service) structFields.push(['Servicio', order.service]);
+      if (order.cbm) structFields.push(['CBM', order.cbm + ' m³']);
+      if (order.weight_kg) structFields.push(['Peso', order.weight_kg + ' kg']);
+      if (order.goods_value) structFields.push(['Valor mercancía', moneyFmt(order.goods_value) + ' ' + (order.goods_currency || '')]);
+      if (order.description) structFields.push(['Descripción', order.description]);
+      var structHtml = structFields.length
+        ? '<div class="order-detail-grid">' + structFields.map(function(f){ return '<div class="order-detail-field"><span>' + f[0] + '</span>' + escapeHtml(String(f[1])) + '</div>'; }).join('') + '</div>'
+        : '';
+      var uploadRow = isStaff ? '<div class="file-upload-row"><input type="file" id="upload-orders-' + order.id + '" multiple></div>' : '';
       return '' +
         '<div class="account-card">' +
           '<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
@@ -221,8 +362,18 @@
           '<div class="account-status-bar">' + segs + '</div>' +
           (order.notes ? '<p style="margin-top:12px;font-size:.86rem;color:var(--muted)">' + escapeHtml(order.notes) + '</p>' : '') +
           statusControl +
+          '<button type="button" class="order-detail-toggle" data-oid="' + order.id + '">Ver detalle &#9662;</button>' +
+          '<div class="order-detail" id="odetail-' + order.id + '" hidden>' +
+            structHtml +
+            '<div><div class="order-detail-subhead">Archivos</div><div class="file-chip-list" id="ofiles-' + order.id + '"></div>' + uploadRow + '</div>' +
+            '<div><div class="order-detail-subhead">Pagos</div><div id="opayments-' + order.id + '"></div></div>' +
+            '<div><div class="order-detail-subhead">Historial de estado</div><div class="timeline-list" id="otimeline-' + order.id + '"></div></div>' +
+          '</div>' +
         '</div>';
     }).join('');
+
+    var ordersById = {};
+    orders.forEach(function(o){ ordersById[o.id] = o; });
 
     if (isStaff) {
       list.querySelectorAll('.order-status-select').forEach(function(sel){
@@ -237,6 +388,24 @@
         });
       });
     }
+
+    list.querySelectorAll('.order-detail-toggle').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.dataset.oid;
+        var detail = document.getElementById('odetail-' + id);
+        var willShow = detail.hidden;
+        detail.hidden = !willShow;
+        btn.innerHTML = willShow ? 'Ocultar detalle &#9652;' : 'Ver detalle &#9662;';
+        if (willShow && !detail.dataset.loaded) {
+          detail.dataset.loaded = '1';
+          var order = ordersById[id];
+          loadOrderFiles('orders', id, 'ofiles-' + id, isStaff);
+          loadOrderPayments(id, 'opayments-' + id, isStaff, order.total_amount);
+          loadOrderTimeline(id, 'otimeline-' + id);
+          if (isStaff) wireFileUpload('orders', id, 'ofiles-' + id);
+        }
+      });
+    });
   }
 
   async function loadOrders(isStaff, customersById){
@@ -245,6 +414,103 @@
       .select('*')
       .order('created_at', { ascending: false });
     renderOrders(ordersRes.data || [], customersById, isStaff);
+  }
+
+  var QUOTE_STATUS_LABELS = { enviada: 'Enviada', en_revision: 'En revisión', aceptada: 'Aceptada', rechazada: 'Rechazada' };
+
+  function renderQuotes(quotes, customersById, isStaff){
+    var list = document.getElementById('quotesList');
+    var empty = document.getElementById('quotesEmpty');
+    var countEl = document.getElementById('quotesCount');
+    empty.hidden = true;
+    if (countEl) { countEl.hidden = false; countEl.textContent = quotes.length; }
+    if (!quotes.length) { empty.hidden = false; list.innerHTML = ''; return; }
+    var quotesById = {};
+    quotes.forEach(function(q){ quotesById[q.id] = q; });
+
+    list.innerHTML = quotes.map(function(q){
+      var date = new Date(q.created_at).toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' });
+      var customer = customersById && customersById[q.user_id];
+      var customerLine = customer
+        ? '<div style="font-size:.78rem;color:var(--muted)">Cliente: ' + escapeHtml(customer.full_name || customer.email || q.user_id) + '</div>'
+        : '';
+      var fields = [];
+      if (q.cbm) fields.push(['CBM', q.cbm + ' m³']);
+      if (q.weight_kg) fields.push(['Peso', q.weight_kg + ' kg']);
+      if (q.goods_value) fields.push(['Valor', moneyFmt(q.goods_value) + ' ' + (q.goods_currency || '')]);
+      if (q.description) fields.push(['Detalle', q.description]);
+      var fieldsHtml = fields.length
+        ? '<div class="order-detail-grid" style="margin-top:12px">' + fields.map(function(f){ return '<div class="order-detail-field"><span>' + f[0] + '</span>' + escapeHtml(String(f[1])) + '</div>'; }).join('') + '</div>'
+        : '';
+      var statusControl = isStaff
+        ? '<div class="order-status-row"><span>Estado:</span><select class="quote-status-select" data-id="' + q.id + '">' +
+            Object.keys(QUOTE_STATUS_LABELS).map(function(s){ return '<option value="' + s + '"' + (s === q.status ? ' selected' : '') + '>' + QUOTE_STATUS_LABELS[s] + '</option>'; }).join('') +
+          '</select></div>'
+        : '';
+      var convertBtn = isStaff ? '<button type="button" class="btn btn-light" style="margin-top:10px" data-convert="' + q.id + '">Convertir en pedido</button>' : '';
+      var uploadRow = isStaff ? '<div class="file-upload-row"><input type="file" id="upload-quotes-' + q.id + '" multiple></div>' : '';
+      return '' +
+        '<div class="account-card">' +
+          '<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
+            '<div><strong>' + escapeHtml(q.service || 'Cotización') + ' · ' + escapeHtml(q.reference || '') + '</strong><div style="font-size:.78rem;color:var(--muted);margin-top:3px">Enviada el ' + date + '</div>' + customerLine + '</div>' +
+            '<span class="quote-status-pill quote-status-' + q.status + '">' + (QUOTE_STATUS_LABELS[q.status] || q.status) + '</span>' +
+          '</div>' +
+          fieldsHtml +
+          (q.client_notes ? '<p style="margin-top:12px;font-size:.86rem;color:var(--muted)">' + escapeHtml(q.client_notes) + '</p>' : '') +
+          statusControl + convertBtn +
+          '<button type="button" class="order-detail-toggle" data-qid="' + q.id + '">Ver archivos &#9662;</button>' +
+          '<div class="order-detail" id="qdetail-' + q.id + '" hidden>' +
+            '<div><div class="order-detail-subhead">Archivos</div><div class="file-chip-list" id="qfiles-' + q.id + '"></div>' + uploadRow + '</div>' +
+          '</div>' +
+        '</div>';
+    }).join('');
+
+    if (isStaff) {
+      list.querySelectorAll('.quote-status-select').forEach(function(sel){
+        sel.addEventListener('change', async function(){
+          sel.disabled = true;
+          var res = await supabaseClient.from('quotes').update({ status: sel.value }).eq('id', sel.dataset.id);
+          if (res.error) alert('No se pudo actualizar: ' + res.error.message);
+          loadQuotes(isStaff, customersById);
+        });
+      });
+      list.querySelectorAll('[data-convert]').forEach(function(btn){
+        btn.addEventListener('click', async function(){
+          var q = quotesById[btn.dataset.convert];
+          if (!confirm('¿Crear un pedido a partir de esta cotización?')) return;
+          btn.disabled = true;
+          var res = await supabaseClient.from('orders').insert({
+            user_id: q.user_id, quote_id: q.id, service: q.service, description: q.description,
+            cbm: q.cbm, weight_kg: q.weight_kg, goods_value: q.goods_value, goods_currency: q.goods_currency,
+            reference: q.reference, notes: q.client_notes
+          });
+          if (res.error) { alert('No se pudo crear el pedido: ' + res.error.message); btn.disabled = false; return; }
+          await supabaseClient.from('quotes').update({ status: 'aceptada' }).eq('id', q.id);
+          alert('Pedido creado. Revisa la pestaña "Mis pedidos".');
+          loadQuotes(isStaff, customersById);
+        });
+      });
+    }
+
+    list.querySelectorAll('.order-detail-toggle[data-qid]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.dataset.qid;
+        var detail = document.getElementById('qdetail-' + id);
+        var willShow = detail.hidden;
+        detail.hidden = !willShow;
+        btn.innerHTML = willShow ? 'Ocultar archivos &#9652;' : 'Ver archivos &#9662;';
+        if (willShow && !detail.dataset.loaded) {
+          detail.dataset.loaded = '1';
+          loadOrderFiles('quotes', id, 'qfiles-' + id, isStaff);
+          if (isStaff) wireFileUpload('quotes', id, 'qfiles-' + id);
+        }
+      });
+    });
+  }
+
+  async function loadQuotes(isStaff, customersById){
+    var res = await supabaseClient.from('quotes').select('*').order('created_at', { ascending: false });
+    renderQuotes(res.data || [], customersById, isStaff);
   }
 
   function setupNewOrderForm(customersById){
@@ -364,6 +630,7 @@
     var customersById = null;
     if (isStaff) {
       document.getElementById('ordersTitle').textContent = 'Todos los pedidos';
+      document.getElementById('quotesTitle').textContent = 'Todas las cotizaciones';
       var customersRes = await supabaseClient.from('profiles').select('id, full_name, email');
       customersById = {};
       (customersRes.data || []).forEach(function(c){ customersById[c.id] = c; });
@@ -378,9 +645,10 @@
       });
     }
     await loadOrders(isStaff, customersById);
+    await loadQuotes(isStaff, customersById);
 
     if (profile && profile.role === 'owner') {
-      document.getElementById('teamSection').hidden = false;
+      document.getElementById('teamTabBtn').hidden = false;
       loadTeam(session.user.id);
     }
   }
