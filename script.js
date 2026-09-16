@@ -86,6 +86,7 @@ function setupBusinessLinks(){
     a.href = `https://wa.me/${wa}?text=${encodeURIComponent(message)}`;
   });
   document.querySelectorAll("[data-instagram-link]").forEach(a=>a.href=CONFIG.business.instagram);
+  document.querySelectorAll("[data-instagram-business-link]").forEach(a=>a.href=CONFIG.business.instagramBusiness);
   document.querySelectorAll("[data-tiktok-link]").forEach(a=>a.href=CONFIG.business.tiktok);
   document.querySelectorAll("[data-email-link]").forEach(a=>{
     a.href=`mailto:${CONFIG.business.email}`;
@@ -101,6 +102,7 @@ function setupBusinessLinks(){
   if($("transferAmount"))$("transferAmount").textContent=money(CONFIG.payment.amountUsd);
   if($("advisoryStartingPrice"))$("advisoryStartingPrice").textContent=`Desde ${money(CONFIG.advisory.startingPriceUsd)}`;
   document.querySelectorAll("[data-instagram-handle]").forEach(e=>e.textContent=CONFIG.business.instagramHandle);
+  document.querySelectorAll("[data-instagram-business-handle]").forEach(e=>e.textContent=CONFIG.business.instagramBusinessHandle);
   document.querySelectorAll("[data-tiktok-handle]").forEach(e=>e.textContent=CONFIG.business.tiktokHandle);
 }
 

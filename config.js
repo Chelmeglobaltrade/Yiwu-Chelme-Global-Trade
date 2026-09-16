@@ -7,6 +7,8 @@ window.CHELME_CONFIG = {
     instagramHandle: "@alanen.china",
     tiktok: "https://www.tiktok.com/@alanenchina",
     tiktokHandle: "@alanenchina",
+    instagramBusiness: "https://www.instagram.com/chelmeglobaltrade/",
+    instagramBusinessHandle: "@chelmeglobaltrade",
     city: "Yiwu, Zhejiang, China",
     address: "Room 718, Building A, Liandu Building, No. 3 Jinrong 3rd Street, Yiwu, China"
   },
