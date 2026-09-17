@@ -85,6 +85,23 @@
   outline: 3px solid rgba(215,170,40,.55);
   outline-offset: 2px;
 }
+/* Foco visible para botones sin clase .btn (tarjetas de galería, tabs del portal,
+   selector de servicio en el cotizador, etc.) — antes no tenían ningún indicador
+   al navegar con teclado. */
+button:focus-visible {
+  outline: 3px solid rgba(215,170,40,.55);
+  outline-offset: 2px;
+}
+.social-button {
+  transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+}
+.social-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 12px 26px rgba(0,0,0,.2);
+}
+.social-button:active { transform: translateY(0) scale(.98); }
+.social-button:focus-visible { outline-offset: 3px; }
 .btn-gold {
   background: linear-gradient(140deg, #e8bc39, #d7aa28 55%, #c99a1a);
   box-shadow: 0 12px 28px rgba(215,170,40,.32), inset 0 1px 0 rgba(255,255,255,.35);
