@@ -111,8 +111,9 @@ let visibleGalleryItems = [];
 let currentLightboxIndex = 0;
 
 function renderGallery(filter = activeGalleryFilter){
-  activeGalleryFilter = filter;
   const grid = $("galleryGrid");
+  if(!grid) return;
+  activeGalleryFilter = filter;
   visibleGalleryItems = CONFIG.gallery.filter(item => filter === "all" || item.category === filter);
 
   grid.innerHTML = visibleGalleryItems.map((item, index)=>`
@@ -172,18 +173,21 @@ function init(){
   document.querySelectorAll("[data-gallery-filter]").forEach(button => {
     button.addEventListener("click", () => setGalleryFilter(button.dataset.galleryFilter));
   });
-  $("lightboxClose").addEventListener("click", closeLightbox);
-  $("lightboxPrev").addEventListener("click", () => changeLightbox(-1));
-  $("lightboxNext").addEventListener("click", () => changeLightbox(1));
-  $("galleryLightbox").addEventListener("click", event => {
-    if (event.target === $("galleryLightbox")) closeLightbox();
-  });
-  document.addEventListener("keydown", event => {
-    if ($("galleryLightbox").classList.contains("hidden")) return;
-    if (event.key === "Escape") closeLightbox();
-    if (event.key === "ArrowLeft") changeLightbox(-1);
-    if (event.key === "ArrowRight") changeLightbox(1);
-  });
+  const lightbox = $("galleryLightbox");
+  if (lightbox) {
+    $("lightboxClose").addEventListener("click", closeLightbox);
+    $("lightboxPrev").addEventListener("click", () => changeLightbox(-1));
+    $("lightboxNext").addEventListener("click", () => changeLightbox(1));
+    lightbox.addEventListener("click", event => {
+      if (event.target === lightbox) closeLightbox();
+    });
+    document.addEventListener("keydown", event => {
+      if (lightbox.classList.contains("hidden")) return;
+      if (event.key === "Escape") closeLightbox();
+      if (event.key === "ArrowLeft") changeLightbox(-1);
+      if (event.key === "ArrowRight") changeLightbox(1);
+    });
+  }
 
   $("menuToggle").addEventListener("click",()=>$("mainNav").classList.toggle("open"));
   $("mainNav").querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>$("mainNav").classList.remove("open")));
