@@ -552,7 +552,7 @@ function renderWizardStep(){
     stepper.innerHTML=WIZARD_STEP_LABELS.map((label,i)=>{
       const cls=i<wizardStep?"done":i===wizardStep?"current":"";
       const dot=`<div class="wizard-step-dot ${cls}">${i<wizardStep?"&#10003;":i+1}</div>`;
-      const line=i<WIZARD_STEP_LABELS.length-1?'<div class="wizard-step-line"></div>':"";
+      const line=i<WIZARD_STEP_LABELS.length-1?`<div class="wizard-step-line${i<wizardStep?" done":""}"></div>`:"";
       return dot+line;
     }).join("")+`<span class="wizard-step-label">${WIZARD_STEP_LABELS[wizardStep]}</span>`;
   }
