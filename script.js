@@ -54,8 +54,8 @@ function updateMiniEstimate(){
     }
   }else if(miniService==="fcl"){
     const container=$("miniContainer")?.value||"40HQ";
-    text=`Desde ${money(CONFIG.fcl.chinaLocalCostsUsd)}`;
-    note=`Costos locales en China para un ${container}. El flete marítimo se confirma en tu cotización: varía según ruta y semana.`;
+    text="Se cotiza según tu contenedor";
+    note=`Costos locales en China y flete marítimo para un ${container}. Varían según tamaño, ruta y semana: te los confirmamos en tu cotización.`;
   }else if(miniService==="quality"){
     text="Se cotiza según tu carga";
     note="Depende de la cantidad de productos, ubicación y nivel de detalle requerido.";
