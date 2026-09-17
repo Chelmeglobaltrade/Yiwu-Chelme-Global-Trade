@@ -528,6 +528,23 @@ a:focus-visible {
 .quote-menu-item:hover{ transform:translateY(-2px); box-shadow:0 10px 22px rgba(18,63,73,.1); border-color:var(--petrol-2); }
 .quote-menu-item.active:hover{ transform:none; box-shadow:var(--shadow); }
 
+/* 11. CALCULADORA (mini-estimador): antes era una fila plana de íconos sin
+   color y una tarjeta blanca sin ningún acento visual — se sentía vacía. */
+.quote-menu-item{ border-left:3px solid transparent; }
+.quote-menu-item.active{ border-left-color:var(--gold); }
+.quote-menu-item svg{
+  flex-shrink:0; box-sizing:content-box; padding:8px; border-radius:12px;
+  background:var(--soft); color:var(--petrol-2);
+}
+.quote-menu-item.active svg{ background:rgba(255,255,255,.16); color:#fff; }
+.quote-card{ position:relative; overflow:hidden; }
+.quote-card::before{
+  content:""; position:absolute; inset:0 0 auto 0; height:4px;
+  background:linear-gradient(90deg,var(--gold),var(--gold-dark));
+}
+.estimate-box strong{ font-variant-numeric:tabular-nums; }
+.quote-menu-item.active small{ color:rgba(255,255,255,.8); }
+
 .source-tab{ transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease; }
 .source-tab:hover{ transform:translateY(-2px); box-shadow:0 10px 22px rgba(18,63,73,.08); border-color:var(--petrol-2); }
 .source-tab.active:hover{ transform:none; }
