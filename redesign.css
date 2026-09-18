@@ -1,8 +1,8 @@
 /* ============================================================
-   REDISEÑO index-v2.html — capa nueva sobre styles.css + polish.css.
+   REDISEÑO de la portada (index.html) — capa nueva sobre styles.css + polish.css.
    No modifica ni una regla de esos dos archivos: todo lo de aquí usa
    clases con prefijo rd- para no chocar con nada existente ni con
-   otras páginas del sitio (este archivo solo lo carga index-v2.html).
+   otras páginas del sitio (este archivo solo lo carga index.html).
    ============================================================ */
 
 .rd-body{ font-family:"Plus Jakarta Sans",Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
@@ -25,11 +25,10 @@
 .rd-brand img{ height:34px; display:block; }
 .rd-menu-toggle{ display:none; flex-direction:column; justify-content:center; gap:5px; width:38px; height:38px; border:0; background:transparent; cursor:pointer; }
 .rd-menu-toggle span{ display:block; width:22px; height:2px; background:var(--petrol); border-radius:2px; }
-.rd-nav{ display:flex; align-items:center; gap:26px; font-weight:600; font-size:.92rem; color:var(--petrol); }
-.rd-nav a:not(.rd-nav-cta){ color:var(--petrol); }
-.rd-nav a:not(.rd-nav-cta):hover{ color:var(--gold-dark); }
-.rd-nav-account{ color:var(--muted) !important; font-size:.88rem; }
-.rd-nav-cta{ padding:10px 20px; min-height:auto; }
+.rd-nav{ display:flex; align-items:center; gap:10px; font-weight:600; font-size:.92rem; color:var(--petrol); }
+.rd-nav a:not(.rd-nav-cta):not(.nav-services-menu a){ color:var(--petrol); padding:10px 6px; }
+.rd-nav a:not(.rd-nav-cta):not(.nav-services-menu a):hover{ color:var(--gold-dark); }
+.rd-nav-cta{ padding:10px 20px; min-height:auto; margin-left:6px; }
 
 @media (max-width:900px){
   .rd-menu-toggle{ display:flex; }
@@ -38,8 +37,11 @@
     gap:2px; background:white; border-bottom:1px solid var(--line); padding:10px 20px 18px;
     max-height:0; overflow:hidden; transition:max-height .25s ease;
   }
-  .rd-nav.open{ max-height:420px; }
+  .rd-nav.open{ max-height:2000px; }
   .rd-nav a{ padding:12px 4px; border-bottom:1px solid var(--soft); }
+  .rd-nav .nav-services{ border-bottom:1px solid var(--soft); }
+  .rd-nav .nav-services summary{ padding:12px 4px; border-radius:0; }
+  .rd-nav .nav-travel-dd summary{ border-radius:999px; margin:6px 4px; padding:10px 16px; }
   .rd-nav-cta{ margin-top:10px; text-align:center; }
 }
 
@@ -97,10 +99,16 @@
 
 /* ---------- Secciones genéricas ---------- */
 .rd-section{ padding:76px 0; }
-.rd-section-soft{ background:var(--soft); }
+.rd-section-soft{
+  background:
+    radial-gradient(520px 320px at 92% 0%, rgba(215,170,40,.07), transparent 60%),
+    radial-gradient(circle, rgba(18,63,73,.06) 1.4px, transparent 1.4px) 0 0/26px 26px,
+    var(--soft);
+}
 .rd-section-head{ max-width:640px; margin:0 auto 40px; text-align:center; }
 .rd-section-head h2{ margin:0 0 8px; color:var(--petrol); font-size:clamp(1.8rem,3.4vw,2.5rem); }
 .rd-section-head p{ margin:0; color:var(--muted); }
+.rd-section-head::before{ content:""; display:block; width:36px; height:3px; margin:0 auto 16px; border-radius:2px; background:var(--gold); }
 
 /* ---------- Soluciones ---------- */
 .rd-solutions{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
