@@ -1,584 +1,373 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Importaciones desde China: consolidado por m³, contenedores FCL, búsqueda de proveedores, control de calidad, traducción y acompañamiento comercial.">
-  <meta name="theme-color" content="#123f49">
-  <link rel="canonical" href="https://chelmeglobaltrade.com/">
-  <meta property="og:title" content="Chelme Global Trade | Tu enlace directo con China">
-  <meta property="og:description" content="Coordinamos tus compras, inspecciones y logística directamente desde China.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://chelmeglobaltrade.com/">
-  <meta property="og:image" content="https://chelmeglobaltrade.com/logo.png">
-  <meta property="og:locale" content="es_CL">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Chelme Global Trade | Tu enlace directo con China">
-  <meta name="twitter:description" content="Coordinamos tus compras, inspecciones y logística directamente desde China.">
-  <meta name="twitter:image" content="https://chelmeglobaltrade.com/logo.png">
-  <title>Chelme Global Trade | Importaciones desde China</title>
-  <link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="polish.css">
-  <script src="config.js"></script>
-  <script src="pricing-core.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "Chelme Global Trade",
-    "description": "Agente de Compras en China",
-    "url": "https://chelmeglobaltrade.com/",
-    "image": "https://chelmeglobaltrade.com/logo.png",
-    "telephone": "+8615257960742",
-    "email": "alanchelme11@gmail.com",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "Room 718, Building A, Liandu Building, No. 3 Jinrong 3rd Street",
-      "addressLocality": "Yiwu",
-      "addressRegion": "Zhejiang",
-      "addressCountry": "CN"
-    },
-    "sameAs": [
-      "https://www.instagram.com/alanen.china/",
-      "https://www.tiktok.com/@alanenchina"
-    ]
-  }
-  </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#123f49">
+<meta name="description" content="Chelme Global Trade coordina compras, inspecciones, consolidación y logística directamente desde China para empresas e importadores de Latinoamérica.">
+<link rel="canonical" href="https://chelmeglobaltrade.com/">
+<meta property="og:title" content="Chelme Global Trade | Tu equipo en China">
+<meta property="og:description" content="Coordinamos compras, inspecciones y logística directamente desde China para empresas e importadores de Latinoamérica.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://chelmeglobaltrade.com/">
+<meta property="og:image" content="https://chelmeglobaltrade.com/og-cover.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_CL">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Chelme Global Trade | Tu equipo en China">
+<meta name="twitter:description" content="Coordinamos compras, inspecciones y logística directamente desde China para empresas e importadores de Latinoamérica.">
+<meta name="twitter:image" content="https://chelmeglobaltrade.com/og-cover.jpg">
+<title>Chelme Global Trade | Tu equipo en China para importar con confianza</title>
+<link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="polish.css">
+<link rel="stylesheet" href="redesign.css">
+<script src="config.js"></script>
+<script src="pricing-core.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Chelme Global Trade",
+  "description": "Agente de Compras en China",
+  "url": "https://chelmeglobaltrade.com/",
+  "image": "https://chelmeglobaltrade.com/logo.png",
+  "telephone": "+8615257960742",
+  "email": "alanchelme11@gmail.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Room 718, Building A, Liandu Building, No. 3 Jinrong 3rd Street",
+    "addressLocality": "Yiwu",
+    "addressRegion": "Zhejiang",
+    "addressCountry": "CN"
+  },
+  "sameAs": [
+    "https://www.instagram.com/alanen.china/",
+    "https://www.instagram.com/chelmeglobaltrade/",
+    "https://www.tiktok.com/@alanenchina"
+  ]
+}
+</script>
 </head>
-<body>
-  <svg class="svg-sprite" aria-hidden="true">
-    <symbol id="i-boxes" viewBox="0 0 24 24"><path d="m4 7.5 8-4.5 8 4.5-8 4.5-8-4.5Z"/><path d="M4 7.5V16l8 5 8-5V7.5M12 12v9"/></symbol>
-    <symbol id="i-container" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="13" rx="2"/><path d="M7 5v13M12 5v13M17 5v13"/></symbol>
-    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol>
-    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5.2-3.4 8.4-8 10-4.6-1.6-8-4.8-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></symbol>
-    <symbol id="i-language" viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2M6 5c.5 4 2.7 6.8 6 8.5M11 5c-.5 4-2.7 6.8-6 8.5M14 20l4-9 4 9M15.5 17h5"/></symbol>
-    <symbol id="i-plane" viewBox="0 0 24 24"><path d="m22 2-8.5 20-3.2-8.3L2 10.5 22 2Z"/><path d="m10.3 13.7 4.7-4.7"/></symbol>
-    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 4h16v12H7l-3 3V4Z"/><path d="M8 8h8M8 12h5"/></symbol>
-    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-7 7L3 12Z"/><circle cx="7.5" cy="8.5" r="1"/></symbol>
-    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></symbol>
-    <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M20.5 11.6a8.5 8.5 0 0 1-12.6 7.5L3 20.5l1.4-4.7a8.5 8.5 0 1 1 16.1-4.2Z"/><path d="M8.2 7.7c.3-.7.6-.7.9-.7h.6l1 2.2c.1.3 0 .5-.2.8l-.8.9c-.2.2-.1.5.1.8.7 1.2 1.7 2.2 3 2.8.3.2.6.1.8-.1l1-1.2c.2-.3.5-.3.8-.2l2.1 1c.3.2.5.3.5.6 0 .4-.2 1.5-1 2.2-.7.7-1.8 1-3.1.6-1.6-.4-3.4-1.3-5.1-2.9-2-1.9-3.2-4.2-3.2-5.8 0-.8.3-1.5.6-2Z"/></symbol>
-    <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.7" r="1"/></symbol>
-    <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M14 4v10.2a4.7 4.7 0 1 1-4-4.6"/><path d="M14 4c1 3 3.1 4.5 6 4.7"/></symbol>
-    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></symbol>
-    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.2 1.2"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.2-1.2"/></symbol>
-    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 7h4l1.5-2h5L16 7h4v12H4V7Z"/><circle cx="12" cy="13" r="4"/></symbol>
-    <symbol id="i-pencil" viewBox="0 0 24 24"><path d="m4 20 4.5-1 10-10-3.5-3.5-10 10L4 20Z"/><path d="m13.5 7 3.5 3.5"/></symbol>
-    <symbol id="i-calculator" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h1M12 11h1M16 11h1M8 15h1M12 15h1M16 15h1M8 18h1M12 18h5"/></symbol>
-    <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6V3Z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></symbol>
-    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
-  </svg>
+<body class="rd-body">
+<svg class="svg-sprite" aria-hidden="true">
+  <symbol id="i-boxes" viewBox="0 0 24 24"><path d="m4 7.5 8-4.5 8 4.5-8 4.5-8-4.5Z"/><path d="M4 7.5V16l8 5 8-5V7.5M12 12v9"/></symbol>
+  <symbol id="i-container" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="13" rx="2"/><path d="M7 5v13M12 5v13M17 5v13"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5.2-3.4 8.4-8 10-4.6-1.6-8-4.8-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></symbol>
+  <symbol id="i-language" viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2M6 5c.5 4 2.7 6.8 6 8.5M11 5c-.5 4-2.7 6.8-6 8.5M14 20l4-9 4 9M15.5 17h5"/></symbol>
+  <symbol id="i-plane" viewBox="0 0 24 24"><path d="m22 2-8.5 20-3.2-8.3L2 10.5 22 2Z"/><path d="m10.3 13.7 4.7-4.7"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 4h16v12H7l-3 3V4Z"/><path d="M8 8h8M8 12h5"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-7 7L3 12Z"/><circle cx="7.5" cy="8.5" r="1"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></symbol>
+  <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M20.5 11.6a8.5 8.5 0 0 1-12.6 7.5L3 20.5l1.4-4.7a8.5 8.5 0 1 1 16.1-4.2Z"/><path d="M8.2 7.7c.3-.7.6-.7.9-.7h.6l1 2.2c.1.3 0 .5-.2.8l-.8.9c-.2.2-.1.5.1.8.7 1.2 1.7 2.2 3 2.8.3.2.6.1.8-.1l1-1.2c.2-.3.5-.3.8-.2l2.1 1c.3.2.5.3.5.6 0 .4-.2 1.5-1 2.2-.7.7-1.8 1-3.1.6-1.6-.4-3.4-1.3-5.1-2.9-2-1.9-3.2-4.2-3.2-5.8 0-.8.3-1.5.6-2Z"/></symbol>
+  <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.7" r="1"/></symbol>
+  <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M14 4v10.2a4.7 4.7 0 1 1-4-4.6"/><path d="M14 4c1 3 3.1 4.5 6 4.7"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+</svg>
 
-  <div class="topbar">
-    <div class="container topbar-inner">
-      <span>Operación directa desde Yiwu, China · Atención en español</span>
-      <div class="topbar-social">
-        <a data-instagram-link target="_blank" rel="noopener" aria-label="Instagram"><svg><use href="#i-instagram"></use></svg></a>
-        <a data-tiktok-link target="_blank" rel="noopener" aria-label="TikTok"><svg><use href="#i-tiktok"></use></svg></a>
-        <a data-email-link aria-label="Correo"><svg><use href="#i-mail"></use></svg></a>
-      </div>
-    </div>
+<header class="rd-header">
+  <div class="container rd-header-inner">
+    <a class="rd-brand" href="index-v2.html"><img src="logo-transparent.png" alt="Chelme Global Trade"></a>
+    <button class="rd-menu-toggle" id="menuToggle" type="button" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="rd-nav" id="mainNav">
+      <a href="#soluciones">Servicios</a>
+      <a href="como-funciona.html">Cómo funciona</a>
+      <a href="viajes-china.html">Viajes a China</a>
+      <a href="#alan">Sobre nosotros</a>
+      <a class="rd-nav-account" href="login.html">Mi cuenta</a>
+      <a class="btn btn-gold rd-nav-cta" href="#cotizar">Cotizar importación <svg><use href="#i-arrow"></use></svg></a>
+    </nav>
   </div>
+</header>
 
-  <header class="site-header">
-    <div class="container nav-wrap">
-      <a class="brand" href="#inicio"><img src="logo-transparent.png" alt="Chelme Global Trade"></a>
-      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menú">☰</button>
-      <nav class="main-nav" id="mainNav">
-        <details class="nav-services" id="navServices">
-          <summary>Servicios</summary>
-          <div class="nav-services-menu">
-            <div class="nav-services-group"><span class="nav-services-group-label">Envío de carga</span>
-              <a href="consolidado-lcl.html"><strong>Consolidado LCL</strong><small>Carga chica: compartes contenedor con otros</small></a>
-              <a href="contenedor-fcl.html"><strong>Contenedor FCL</strong><small>Carga grande: un contenedor solo para ti</small></a>
-            </div>
-            <div class="nav-services-group"><span class="nav-services-group-label">Antes de comprar</span>
-              <a href="busqueda-proveedor.html"><strong>Búsqueda de proveedor</strong><small>Te ayudamos a encontrar la fábrica</small></a>
-              <a href="control-calidad.html"><strong>Control de calidad</strong><small>Revisamos tu pedido antes de enviarlo</small></a>
-              <a href="traduccion.html"><strong>Traducción</strong><small>Te acompañamos en reuniones y compras</small></a>
-            </div>
-            <div class="nav-services-group"><span class="nav-services-group-label">Presencial y asesoría</span>
-              <a href="viajes-china.html"><strong>Viajes a China</strong><small>Viaja con nosotros a conocer fábricas</small></a>
-              <a href="asesoria.html"><strong>Asesoría</strong><small>Te orientamos antes de decidir</small></a>
-            </div>
-          </div>
-        </details>
-        <details class="nav-services nav-travel-dd">
-          <summary>Viajes a China</summary>
-          <div class="nav-services-menu">
-            <div class="nav-services-group">
-              <a href="viajes-china.html#ruta-proveedores"><strong>Ruta de Proveedores</strong><small>5 días · mercados y fábricas</small></a>
-              <a href="viajes-china.html#mision-comercial"><strong>Misión Comercial China</strong><small>7–10 días · varias ciudades</small></a>
-              <a href="viajes-china.html#viaje-insignia"><strong>Viaje Insignia a Yiwu</strong><small>12 días · el más completo</small></a>
-              <a href="viajes-china.html"><strong>Ver todos los viajes</strong><small>Paquetes y agenda</small></a>
-            </div>
-          </div>
-        </details>
-        <a href="#cotizar">Cotizar online</a>
-        <details class="nav-services">
-          <summary>Mi cuenta</summary>
-          <div class="nav-services-menu">
-            <div class="nav-services-group">
-              <a href="login.html"><strong>Iniciar sesión</strong><small>Ya tengo cuenta</small></a>
-              <a href="login.html?tab=signup"><strong>Crear cuenta</strong><small>Registrarme</small></a>
-              <a href="mi-cuenta.html"><strong>Ver mis pedidos</strong><small>Seguimiento de importación</small></a>
-            </div>
-          </div>
-        </details>
-        <a class="nav-whatsapp" data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener">
-          <svg><use href="#i-whatsapp"></use></svg> WhatsApp
-        </a>
-      </nav>
+<main>
+
+  <!-- 1. HERO -->
+  <section class="rd-hero">
+    <div class="container rd-hero-grid">
+      <div class="rd-hero-copy">
+        <span class="rd-eyebrow">Operación directa desde China</span>
+        <h1>Tu equipo en China para comprar, inspeccionar y enviar con confianza</h1>
+        <p>Coordinamos proveedores, compras, control de calidad y logística directamente desde China para empresas e importadores de Latinoamérica.</p>
+        <div class="rd-hero-actions">
+          <a class="btn btn-gold" href="#cotizar">Cotizar mi importación <svg><use href="#i-arrow"></use></svg></a>
+          <a class="btn btn-light" data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> Hablar por WhatsApp</a>
+        </div>
+        <ul class="rd-hero-indicators">
+          <li>Atención en español</li>
+          <li>Operación en Yiwu</li>
+          <li>LCL y FCL</li>
+          <li>Control en terreno</li>
+        </ul>
+      </div>
+      <div class="rd-hero-media">
+        <img src="hero-fabrica-industrial.webp" alt="Alan Chelme revisando producción en fábrica en China" width="960" height="1200">
+        <div class="rd-hero-tag">
+          <svg><use href="#i-pin"></use></svg>
+          <div><strong>Alan Chelme</strong><span>En terreno · Yiwu, China</span></div>
+        </div>
+      </div>
     </div>
-  </header>
+  </section>
 
-  <main>
-    <section class="hero" id="inicio">
-      <div class="container hero-grid">
-        <div class="hero-copy">
-          <span class="eyebrow">Tu enlace directo con China</span>
-          <h1>Importa con un equipo que trabaja <span>directamente en China</span></h1>
-          <p>
-            Coordinamos proveedores, compras, control de calidad, carga consolidada,
-            contenedores completos, traducción y acompañamiento comercial.
-          </p>
-          <div class="hero-actions">
-            <a class="btn btn-gold" href="#cotizar">Cotizar ahora</a>
-            <a class="btn btn-ghost" href="#servicios">Conocer servicios</a>
-          </div>
-          <div class="hero-points">
-            <span><svg><use href="#i-check"></use></svg> Atención en español</span>
-            <span><svg><use href="#i-check"></use></svg> Operación en Yiwu</span>
-            <span><svg><use href="#i-check"></use></svg> LCL, FCL e inspecciones</span>
-            <span><svg><use href="#i-check"></use></svg> ¿Carga lista? Cotiza gratis en minutos</span>
-          </div>
-        </div>
-        <div class="hero-person">
-          <img src="alan.jpg" alt="Alan Chelme trabajando en China">
-          <div class="hero-person-card">
-            <strong>Coordinación real en terreno</strong>
-            <span>Proveedores, bodega, inspecciones y carga</span>
-          </div>
-        </div>
-      </div>
-    </section>
+  <!-- 2. FRANJA DE CONFIANZA -->
+  <section class="rd-trust">
+    <div class="container rd-trust-grid">
+      <div><svg><use href="#i-pin"></use></svg><span>Operación directa desde Yiwu</span></div>
+      <div><svg><use href="#i-language"></use></svg><span>Atención en español</span></div>
+      <div><svg><use href="#i-boxes"></use></svg><span>Coordinación en distintas ciudades de China</span></div>
+      <div><svg><use href="#i-tag"></use></svg><span>Consolidado LCL</span></div>
+      <div><svg><use href="#i-container"></use></svg><span>Contenedores FCL</span></div>
+      <div><svg><use href="#i-shield"></use></svg><span>Inspección y control en terreno</span></div>
+    </div>
+  </section>
 
-    <section class="quick-strip">
-      <div class="container quick-grid">
-        <a href="#quoteShell" data-service-button="lcl"><svg><use href="#i-boxes"></use></svg><span><strong>Consolidado LCL</strong><small>Paga por el espacio utilizado</small></span></a>
-        <a href="#quoteShell" data-service-button="fcl"><svg><use href="#i-container"></use></svg><span><strong>Contenedor FCL</strong><small>Carga grande: un contenedor solo para ti</small></span></a>
-        <a href="#quoteShell" data-service-button="quality"><svg><use href="#i-shield"></use></svg><span><strong>Control de calidad</strong><small>Inspección presencial</small></span></a>
-        <a href="viajes-china.html"><svg><use href="#i-plane"></use></svg><span><strong>Viaja a China</strong><small>Guía y acompañamiento</small></span></a>
-      </div>
-    </section>
-
-    <section class="section section-dark" id="china">
-      <div class="container china-grid">
-        <div>
-          <span class="eyebrow">Viajes comerciales</span>
-          <h2>Ven a China con una agenda preparada</h2>
-          <p>Organizamos visitas a mercados, ferias, fábricas y proveedores con traducción y acompañamiento.</p>
-          <div class="china-points">
-            <span>Planificación de ciudades y rutas</span>
-            <span>Agenda con proveedores y fábricas</span>
-            <span>Traducción y negociación</span>
-            <span>Seguimiento después de las visitas</span>
-          </div>
-          <a class="btn btn-gold" href="viajes-china.html">Ver paquetes y rutas</a>
-        </div>
-        <img class="china-feature-image" src="china-shanghai-crop.webp" alt="Acompañamiento comercial en China">
-      </div>
-    </section>
-
-    <section class="journey-section">
-      <div class="container">
-        <header class="section-heading">
-          <span class="eyebrow dark">Así de simple</span>
-          <h2>Tu importación en 5 pasos</h2>
-        </header>
-        <div class="journey-track">
-          <a class="journey-step" href="#cotizar"><span class="journey-dot">1</span><span class="journey-copy"><strong>Cotiza</strong><small>Calcula tu carga gratis o pide asesoría</small></span></a>
-          <a class="journey-step" href="como-funciona.html"><span class="journey-dot">2</span><span class="journey-copy"><strong>Compra</strong><small>Negociamos con proveedores en chino</small></span></a>
-          <a class="journey-step" href="como-funciona.html"><span class="journey-dot">3</span><span class="journey-copy"><strong>Bodega Yiwu</strong><small>Recibimos, revisamos y consolidamos</small></span></a>
-          <a class="journey-step" href="como-funciona.html"><span class="journey-dot">4</span><span class="journey-copy"><strong>Embarque</strong><small>Tu carga zarpa con documentación lista</small></span></a>
-          <a class="journey-step" href="como-funciona.html"><span class="journey-dot">5</span><span class="journey-copy"><strong>Llegada</strong><small>Pagas impuestos y recibes tu carga</small></span></a>
-        </div>
-        <div class="journey-more"><a class="btn btn-light" href="como-funciona.html">Ver el proceso completo con plazos</a></div>
-      </div>
-    </section>
-
-    <section class="departure-banner">
-      <div class="container departure-banner-inner">
-        <div class="departure-banner-copy">
-          <svg><use href="#i-container"></use></svg>
-          <div>
-            <span>Próximo consolidado Chelme</span>
-            <strong id="departureText">Consultar próxima salida</strong>
-          </div>
-        </div>
-        <a class="btn btn-gold" href="#quoteShell" data-service-button="lcl">Reservar mi espacio</a>
-      </div>
-    </section>
-
-    <section class="section" id="servicios">
-      <div class="container">
-        <header class="section-heading">
-          <span class="eyebrow dark">Servicios</span>
-          <h2>Soluciones para comprar e importar desde China</h2>
-          <p>Contrata un servicio específico o delega la coordinación completa de tu operación.</p>
-        </header>
-
-        <div class="main-services">
-          <article class="feature-service feature-service-lcl">
-            <div class="service-icon"><svg><use href="#i-boxes"></use></svg></div>
-            <span class="service-label">Carga compartida</span>
-            <h3>Consolidado Chelme Global</h3>
-            <p>Reúne productos de distintos proveedores y paga según los metros cúbicos utilizados.</p>
+  <!-- 3. SOLUCIONES PRINCIPALES -->
+  <section class="rd-section" id="soluciones">
+    <div class="container">
+      <header class="rd-section-head">
+        <h2>Tres soluciones, una sola operación</h2>
+        <p>Cada servicio puntual se agrupa en el frente que realmente resuelve.</p>
+      </header>
+      <div class="rd-solutions">
+        <article class="rd-solution">
+          <img src="reunion-muestras-proveedor.webp" alt="Reunión con proveedor revisando muestras" loading="lazy" width="900" height="1200">
+          <div class="rd-solution-body">
+            <h3>Compras y proveedores</h3>
+            <p>Búsqueda, validación, comparación y negociación con proveedores reales, con seguimiento hasta que tu pedido esté listo.</p>
             <ul>
-              <li>Recepción de mercancía en China</li>
-              <li>Consolidación de varios proveedores</li>
-              <li>Documentación y coordinación logística</li>
-              <li>Tarifa ajustable cuando baja el flete</li>
-            </ul>
-            <div class="service-buttons">
-              <a class="service-button service-button-primary" href="#quoteShell" data-service-button="lcl">Cotizar consolidado <svg><use href="#i-arrow"></use></svg></a>
-              <a class="service-button service-button-secondary" data-whatsapp-message="Hola, quiero cotizar una carga consolidada con Chelme Global." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> Consultar</a>
-            </div>
-          </article>
-
-          <article class="feature-service feature-service-fcl">
-            <div class="service-icon"><svg><use href="#i-container"></use></svg></div>
-            <span class="service-label">Carga exclusiva</span>
-            <h3>Contenedor completo FCL</h3>
-            <p>Gestionamos proveedores, producción, recepción y carga de contenedores completos.</p>
-            <ul>
-              <li>20GP, 40GP y 40HQ</li>
+              <li>Búsqueda y validación de proveedores</li>
+              <li>Comparación de fábricas, precios y MOQ</li>
+              <li>Negociación directa en chino</li>
               <li>Seguimiento de producción</li>
-              <li>Supervisión de carga</li>
-              <li>Documentación de exportación</li>
             </ul>
-            <div class="service-buttons">
-              <a class="service-button service-button-light" href="#quoteShell" data-service-button="fcl">Cotizar contenedor <svg><use href="#i-arrow"></use></svg></a>
-              <a class="service-button service-button-outline" data-whatsapp-message="Hola, quiero cotizar un contenedor completo FCL con Chelme Global." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> Consultar</a>
-            </div>
-          </article>
-        </div>
-
-        <div class="service-grid">
-          <article class="service-card">
-            <div class="service-card-icon"><svg><use href="#i-search"></use></svg></div>
-            <span>Sourcing</span><h3>Búsqueda de proveedores</h3>
-            <p>Localizamos fábricas, comparamos precios, MOQ, calidad y condiciones comerciales.</p>
-            <a href="#quoteShell" data-service-button="sourcing">Cotizar servicio <svg><use href="#i-arrow"></use></svg></a>
-          </article>
-          <article class="service-card">
-            <div class="service-card-icon"><svg><use href="#i-shield"></use></svg></div>
-            <span>Inspección</span><h3>Control de calidad</h3>
-            <p>Conteo, revisión visual, medidas, empaque, etiquetas, pruebas y supervisión de carga.</p>
-            <a href="#quoteShell" data-service-button="quality">Cotizar inspección <svg><use href="#i-arrow"></use></svg></a>
-          </article>
-          <article class="service-card">
-            <div class="service-card-icon"><svg><use href="#i-language"></use></svg></div>
-            <span>Comunicación</span><h3>Traducción y negociación</h3>
-            <p>Apoyo remoto o presencial con proveedores, fábricas y reuniones comerciales.</p>
-            <a href="#quoteShell" data-service-button="translation">Cotizar traducción <svg><use href="#i-arrow"></use></svg></a>
-          </article>
-          <article class="service-card">
-            <div class="service-card-icon"><svg><use href="#i-tag"></use></svg></div>
-            <span>Marca propia</span><h3>Etiquetado y marca privada</h3>
-            <p>Aplicamos tu logo, etiquetas, código de barras o empaque personalizado a tu producto antes de enviarlo.</p>
-            <a class="whatsapp-link-action" data-whatsapp-message="Hola, quiero información sobre etiquetado y marca privada con Chelme Global Trade." target="_blank" rel="noopener">Consultar servicio <svg><use href="#i-arrow"></use></svg></a>
-          </article>
-          <article class="service-card">
-            <div class="service-card-icon"><svg><use href="#i-plane"></use></svg></div>
-            <span>China presencial</span><h3>Viajes y acompañamiento</h3>
-            <p>Agenda, mercados, ferias, fábricas, traducción y apoyo comercial durante tu viaje.</p>
-            <a class="page-link-action" href="viajes-china.html">Ver paquetes de viaje <svg><use href="#i-arrow"></use></svg></a>
-          </article>
-          <article class="service-card">
-            <div class="service-card-icon"><svg><use href="#i-chat"></use></svg></div>
-            <span>Planificación</span><h3>Asesoría para importar</h3>
-            <p>Evaluamos producto, presupuesto, cantidades, costos y modalidad recomendada.</p>
-            <a class="advisory-link-action" href="asesoria.html">Ver asesoría y reservar <svg><use href="#i-arrow"></use></svg></a>
-          </article>
-          <article class="service-card">
-            <div class="service-card-icon"><svg><use href="#i-boxes"></use></svg></div>
-            <span>Operación China</span><h3>Recepción, etiquetado y documentación</h3>
-            <p>Coordinamos recepción en bodega, shipping marks, etiquetas y documentos después de confirmar la operación.</p>
-            <a class="whatsapp-link-action" data-whatsapp-message="Hola, necesito información sobre recepción, etiquetado y documentación en China." target="_blank" rel="noopener">Consultar servicio <svg><use href="#i-arrow"></use></svg></a>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section proof-section" id="experiencia">
-      <div class="container">
-        <header class="section-heading">
-          <span class="eyebrow dark">Experiencia en terreno</span>
-          <h2>Más que una cotización: presencia real en cada etapa</h2>
-          <p>
-            Estas fotografías muestran el tipo de trabajo que realizamos en China y durante
-            el seguimiento de las operaciones: visitas técnicas, coordinación de cargas y
-            acompañamiento comercial.
-          </p>
-        </header>
-
-        <div class="proof-grid">
-          <article class="proof-card proof-card-large">
-            <img src="operacion-contenedor-chile.webp" alt="Contenedor coordinado por Chelme Global Trade en destino" loading="lazy">
-            <div class="proof-overlay">
-              <span>Logística</span>
-              <h3>Seguimiento de cargas y contenedores</h3>
-              <p>Coordinación desde la recepción en China hasta la salida y seguimiento a destino.</p>
-            </div>
-          </article>
-
-          <article class="proof-card">
-            <img src="hero-fabrica-industrial.webp" alt="Visita técnica a fábrica industrial en China" loading="lazy">
-            <div class="proof-overlay">
-              <span>Fábricas</span>
-              <h3>Visitas técnicas y evaluación</h3>
-              <p>Revisión de productos, procesos, materiales y capacidad productiva.</p>
-            </div>
-          </article>
-
-          <article class="proof-card">
-            <img src="clientes-shanghai.webp" alt="Acompañamiento de clientes durante un viaje comercial en China" loading="lazy">
-            <div class="proof-overlay">
-              <span>Acompañamiento</span>
-              <h3>Clientes atendidos en China</h3>
-              <p>Agenda comercial, traducción, traslados y apoyo durante las visitas.</p>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-soft" id="cotizar">
-      <div class="container">
-        <header class="section-heading">
-          <span class="eyebrow dark">Cotización online</span>
-          <h2>Cotiza tu importación</h2>
-          <p>
-            Elige tu servicio y mira un <strong>estimado aproximado al instante, sin costo</strong>.
-            Crea tu cuenta para agregar el valor de tu mercancía, enviar fotos o un enlace, y recibir
-            el desglose exacto guardado en tus pedidos.
-          </p>
-        </header>
-
-        <div class="quote-shell mini-estimator" id="quoteShell">
-          <aside class="quote-menu">
-            <button class="quote-menu-item active" data-mini-service="lcl"><svg><use href="#i-boxes"></use></svg><span><strong>Consolidado LCL</strong><small>Carga por m³</small></span></button>
-            <button class="quote-menu-item" data-mini-service="fcl"><svg><use href="#i-container"></use></svg><span><strong>Contenedor FCL</strong><small>Carga completa</small></span></button>
-            <button class="quote-menu-item" data-mini-service="quality"><svg><use href="#i-shield"></use></svg><span><strong>Control de calidad</strong><small>Revisamos tu pedido antes de enviarlo</small></span></button>
-            <button class="quote-menu-item" data-mini-service="sourcing"><svg><use href="#i-search"></use></svg><span><strong>Buscar proveedor</strong><small>Sourcing</small></span></button>
-            <button class="quote-menu-item" data-mini-service="translation"><svg><use href="#i-language"></use></svg><span><strong>Traducción</strong><small>Te acompañamos en reuniones y compras</small></span></button>
-            <button class="quote-menu-item" data-mini-service="advisory"><svg><use href="#i-chat"></use></svg><span><strong>Asesoría</strong><small>Evaluar proyecto</small></span></button>
-          </aside>
-
-          <section class="quote-card">
-            <div class="quote-title-row">
-              <div><span>Estimado rápido</span><h3 id="miniTitle">Consolidado LCL</h3></div>
-              <strong id="miniBadge">Estimación aproximada</strong>
-            </div>
-
-            <div id="miniFields" class="form-grid"></div>
-
-            <div class="estimate-box">
-              <div><span>Estimado aproximado</span><strong id="miniEstimate">Desde US$250/m³</strong></div>
-              <p id="miniEstimateNote">Ingresa el volumen para ver un estimado de flete.</p>
-            </div>
-
-            <div class="mini-estimator-cta">
-              <a class="btn btn-gold" id="miniSignupLink" href="login.html?tab=signup&service=lcl">Crea tu cuenta para tu cotización completa</a>
-              <p>Con tu cuenta agregas el valor de tu mercancía, envías fotos o un enlace del producto, y recibes el desglose exacto — guardado en tus pedidos para seguir tu importación.</p>
-            </div>
-          </section>
-        </div>
-      </div>
-    </section>
-
-    <section class="section consolidated-explainer" id="como-se-paga">
-      <div class="container">
-        <header class="section-heading">
-          <span class="eyebrow dark">Consolidado explicado claramente</span>
-          <h2>¿Qué paga el cliente en una importación consolidada?</h2>
-          <p>
-            La carga consolidada se cobra por el espacio facturable utilizado. El mínimo es 1 m³.
-            Los impuestos y gastos de destino se pagan al llegar, según la mercancía y la operación.
-          </p>
-        </header>
-
-        <div class="payment-steps">
-          <article><span>01</span><h3>Productos</h3><p>Valor de la mercancía comprada a proveedores en China.</p></article>
-          <article><span>02</span><h3>Gestión Chelme</h3><p>Coordinación de compras, proveedores, recepción y seguimiento.</p></article>
-          <article><span>03</span><h3>Espacio facturable</h3><p>Se cobra por CBM. Menos de 1 m³ se factura como mínimo 1 m³.</p></article>
-          <article><span>04</span><h3>Impuestos y destino</h3><p>Se pagan al llegar según CIF, aduana, puerto y entrega.</p></article>
-        </div>
-
-        <div class="included-not-included">
-          <div>
-            <strong>La estimación puede incluir</strong>
-            <ul>
-              <li>Valor de productos ingresado</li>
-              <li>Gestión Chelme</li>
-              <li>Tarifa por m³ utilizado</li>
-              <li>Servicios adicionales seleccionados</li>
-            </ul>
+            <a class="rd-link" href="busqueda-proveedor.html">Conocer más <svg><use href="#i-arrow"></use></svg></a>
           </div>
-          <div class="warning-panel">
-            <strong>Se cobra o confirma por separado</strong>
+        </article>
+        <article class="rd-solution">
+          <img src="carga-contenedor-verde.webp" alt="Carga consolidada dentro de contenedor" loading="lazy" width="900" height="1200">
+          <div class="rd-solution-body">
+            <h3>Control y logística</h3>
+            <p>Inspeccionamos, consolidamos y coordinamos el envío de tu carga, sea consolidado o contenedor completo.</p>
             <ul>
-              <li>Asesoría y cotización inicial</li>
-              <li>Búsqueda de proveedores</li>
               <li>Inspección y control de calidad</li>
-              <li>Impuestos y gastos en destino</li>
+              <li>Recepción y consolidación</li>
+              <li>Documentación de exportación</li>
+              <li>Consolidado LCL y contenedor FCL</li>
             </ul>
+            <a class="rd-link" href="consolidado-lcl.html">Conocer más <svg><use href="#i-arrow"></use></svg></a>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="operaciones">
-      <div class="container">
-        <header class="section-heading">
-          <span class="eyebrow dark">Operaciones reales</span>
-          <h2>Así trabajamos en China</h2>
-          <p>
-            Cargas, fábricas, reuniones y acompañamiento comercial. Seleccionamos fotografías
-            que explican el servicio y generan confianza, evitando llenar la página con imágenes repetidas.
-          </p>
-        </header>
-
-        <div class="gallery-filters" id="galleryFilters" aria-label="Filtrar fotografías">
-          <button class="gallery-filter active" type="button" data-gallery-filter="all">Todas</button>
-          <button class="gallery-filter" type="button" data-gallery-filter="cargas">Cargas</button>
-          <button class="gallery-filter" type="button" data-gallery-filter="fabricas">Fábricas</button>
-          <button class="gallery-filter" type="button" data-gallery-filter="clientes">Clientes</button>
-          <button class="gallery-filter" type="button" data-gallery-filter="china">China</button>
-        </div>
-
-        <div class="gallery-grid" id="galleryGrid"></div>
-        <p class="gallery-privacy-note">
-          Las fotografías con clientes o proveedores deben publicarse únicamente cuando exista autorización para su uso.
-        </p>
-      </div>
-    </section>
-
-    <section class="videos-section" id="videos">
-      <div class="container videos-card">
-        <div>
-          <span class="eyebrow dark">En terreno, todos los días</span>
-          <h2>Mira cómo trabajamos en China</h2>
-          <p>
-            Mercados, fábricas, inspecciones y cargas reales grabadas por Alan desde Yiwu.
-            Ninguna agencia te muestra su operación así, en vivo y sin filtro.
-          </p>
-          <div class="hero-actions">
-            <a class="btn btn-primary" data-tiktok-link target="_blank" rel="noopener">Ver más en TikTok</a>
-            <a class="btn btn-light" data-instagram-link target="_blank" rel="noopener">Seguir en Instagram</a>
+        </article>
+        <article class="rd-solution">
+          <img src="clientes-shanghai.webp" alt="Acompañamiento comercial a cliente en China" loading="lazy" width="900" height="1200">
+          <div class="rd-solution-body">
+            <h3>Viajes y representación comercial</h3>
+            <p>Te acompañamos en mercados, ferias y fábricas, con traducción y agenda comercial preparada.</p>
+            <ul>
+              <li>Planificación de rutas y ciudades</li>
+              <li>Traducción y negociación en terreno</li>
+              <li>Visitas a mercados y fábricas</li>
+              <li>Acompañamiento comercial completo</li>
+            </ul>
+            <a class="rd-link" href="viajes-china.html">Conocer más <svg><use href="#i-arrow"></use></svg></a>
           </div>
-        </div>
-        <div class="videos-embed">
-          <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@alanenchina" data-unique-id="alanenchina" data-embed-type="creator" style="max-width:340px;min-width:288px;">
-            <section><a target="_blank" rel="noopener" href="https://www.tiktok.com/@alanenchina">@alanenchina</a></section>
-          </blockquote>
-        </div>
-      </div>
-    </section>
-
-    <section class="social-section">
-      <div class="container social-card">
-        <div>
-          <span class="eyebrow">Contenido desde China</span>
-          <h2>Sigue nuestras operaciones y visitas</h2>
-          <p>Proveedores, mercados, fábricas, ferias, inspecciones y cargas reales.</p>
-        </div>
-        <div class="social-buttons">
-          <a class="social-button instagram" data-instagram-link target="_blank" rel="noopener"><svg><use href="#i-instagram"></use></svg><span><strong>Instagram personal</strong><small data-instagram-handle></small></span></a>
-          <a class="social-button instagram" data-instagram-business-link target="_blank" rel="noopener"><svg><use href="#i-instagram"></use></svg><span><strong>Instagram negocio</strong><small data-instagram-business-handle></small></span></a>
-          <a class="social-button tiktok" data-tiktok-link target="_blank" rel="noopener"><svg><use href="#i-tiktok"></use></svg><span><strong>TikTok</strong><small data-tiktok-handle></small></span></a>
-          <a class="social-button whatsapp" data-whatsapp-message="Hola, vi la página de Chelme Global Trade y quiero información." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg><span><strong>WhatsApp</strong><small>Respuesta directa</small></span></a>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-soft" id="faq">
-      <div class="container faq-wrap">
-        <header class="section-heading">
-          <span class="eyebrow dark">Preguntas frecuentes</span>
-          <h2>Antes de cotizar</h2>
-        </header>
-        <details><summary>¿Puedo cotizar solamente con fotografías?</summary><p>Sí. Si ya sabes qué producto es y solo quieres cotizar el flete, envía las fotos por la calculadora y la cotización es sin costo. La asesoría pagada solo aplica si necesitas que evaluemos o busquemos el producto por ti.</p></details>
-        <details><summary>¿La cotización es gratuita?</summary><p>Si ya tienes tu carga o proveedor listo, sí: usa la calculadora, envíanos tu solicitud y la confirmamos sin costo. La asesoría pagada aplica solo cuando necesitas que revisemos, busquemos o cotizemos productos por ti.</p></details>
-        <details><summary>¿Cuándo se paga la asesoría?</summary><p>Solo cuando contratas el servicio de revisión y búsqueda de productos: evaluar tu idea, revisar enlaces o fotos, comparar proveedores y preparar una cotización preliminar. Ese trabajo de nuestro equipo en Yiwu parte con la asesoría de USD 200 ($190.000 CLP). Cotizar el flete de una carga que ya tienes lista no tiene costo.</p></details>
-        <details><summary>¿Qué incluye la asesoría inicial?</summary><p>Incluye revisión del proyecto, producto, cantidades, presupuesto, enlaces o fotos, estimación inicial de costos, recomendación LCL o FCL y próximos pasos.</p></details>
-        <details><summary>¿La búsqueda de proveedores está incluida?</summary><p>No. Si necesitas que evaluemos y encontremos un producto desde cero, ese servicio parte con la asesoría inicial. Si ya tienes tu carga lista y solo necesitas ayuda para conseguir un proveedor puntual, ese cargo se agrega directo en tu cotización de consolidado o contenedor, sin asesoría previa.</p></details>
-        <details><summary>¿Las fotografías se envían automáticamente por WhatsApp?</summary><p>En celulares compatibles se abrirá el menú para compartirlas. En otros equipos se abrirá WhatsApp con el mensaje preparado y deberás adjuntar las fotos desde tu galería.</p></details>
-        <details><summary>¿El precio del consolidado puede cambiar?</summary><p>Sí, según el volumen, el tipo de carga y el tipo de cambio del día. La tarifa final siempre se confirma antes de que pagues.</p></details>
-        <details><summary>¿Qué incluye un control de calidad?</summary><p>El alcance puede incluir conteo, revisión visual, medidas, empaque, etiquetas, pruebas simples, fotografías y supervisión de carga.</p></details>
-        <details><summary>¿Trabajan con réplicas?</summary><p>No. No trabajamos con falsificaciones ni marcas registradas sin autorización.</p></details>
-      </div>
-    </section>
-
-    <section class="section" id="contacto-yiwu">
-      <div class="container yiwu-contact-grid">
-        <div>
-          <span class="eyebrow dark">Presencia en China</span>
-          <h2>Operación directa desde Yiwu, China</h2>
-          <p>Coordinamos directamente desde Yiwu la búsqueda de proveedores, compras, inspecciones, consolidación y logística internacional para clientes de Chile y Latinoamérica.</p>
-          <a class="btn btn-gold" data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener">Hablar por WhatsApp</a>
-        </div>
-        <div class="yiwu-contact-card">
-          <span class="yiwu-contact-item"><strong>Agente de Compras en China</strong></span>
-          <span class="yiwu-contact-item">Yiwu, Zhejiang, China</span>
-          <a class="yiwu-contact-item" data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener">WhatsApp: +86 152 5796 0742</a>
-          <a class="yiwu-contact-item" data-email-link></a>
-          <span class="yiwu-contact-item">Room 718, Building A, Liandu Building, No. 3 Jinrong 3rd Street, Yiwu, Zhejiang, China</span>
-          <span class="yiwu-contact-note">Visitas y reuniones únicamente con coordinación previa.</span>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <div class="gallery-lightbox hidden" id="galleryLightbox" role="dialog" aria-modal="true" aria-label="Fotografía ampliada">
-    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Cerrar">×</button>
-    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" type="button" aria-label="Fotografía anterior">‹</button>
-    <figure>
-      <img id="lightboxImage" src="" alt="">
-      <figcaption>
-        <span id="lightboxCategory"></span>
-        <h3 id="lightboxTitle"></h3>
-        <p id="lightboxText"></p>
-      </figcaption>
-    </figure>
-    <button class="lightbox-nav lightbox-next" id="lightboxNext" type="button" aria-label="Fotografía siguiente">›</button>
-  </div>
-
-  <footer>
-    <div class="container footer-grid">
-      <img src="logo-light.png" alt="Chelme Global Trade">
-      <div><strong>Importaciones y servicios comerciales desde China</strong><p><span data-business-city></span> · <a data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener">WhatsApp</a> · <a data-email-link></a> · <a href="index.html#contacto-yiwu">Contacto</a></p><p style="font-size:.78rem;margin-top:8px"><a href="como-funciona.html">Cómo funciona</a> · <a href="terminos-y-condiciones.html">Términos y condiciones</a> · <a href="politica-privacidad.html">Privacidad</a> · <a href="mercancias-restringidas.html">Mercancías restringidas</a></p></div>
-      <div class="footer-social">
-        <a data-instagram-link target="_blank" rel="noopener"><svg><use href="#i-instagram"></use></svg></a>
-        <a data-tiktok-link target="_blank" rel="noopener"><svg><use href="#i-tiktok"></use></svg></a>
-        <a data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg></a>
+        </article>
       </div>
     </div>
-  </footer>
+  </section>
 
-  <div class="sticky-cta-bar"><a class="sticky-cta-btn sticky-cta-quote" href="#cotizar">Cotizar ahora</a><a class="sticky-cta-btn sticky-cta-whatsapp" data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> WhatsApp</a></div>
+  <!-- 4. PROCESO EN 4 PASOS -->
+  <section class="rd-section rd-section-soft">
+    <div class="container">
+      <header class="rd-section-head">
+        <h2>Así funciona tu operación</h2>
+      </header>
+      <div class="rd-process">
+        <div class="rd-process-step"><span>1</span><h3>Cuéntanos qué necesitas</h3><p>Producto, cantidad, presupuesto y destino.</p></div>
+        <div class="rd-process-step"><span>2</span><h3>Buscamos y negociamos</h3><p>Comparamos proveedores y condiciones en tu nombre.</p></div>
+        <div class="rd-process-step"><span>3</span><h3>Revisamos y consolidamos</h3><p>Control de calidad y preparación de la carga.</p></div>
+        <div class="rd-process-step"><span>4</span><h3>Coordinamos el embarque</h3><p>Documentación, envío y seguimiento hasta destino.</p></div>
+      </div>
+    </div>
+  </section>
 
-  <script src="script.js"></script>
-  <script>
-    // V9: banner de próxima salida, editable desde config.js (lcl.nextDepartureText)
-    (function(){
-      var el = document.getElementById("departureText");
-      var cfg = window.CHELME_CONFIG;
-      if (el && cfg && cfg.lcl && cfg.lcl.nextDepartureText) el.textContent = cfg.lcl.nextDepartureText;
-    })();
-  </script>
-  <script async src="https://www.tiktok.com/embed.js"></script>
+  <!-- 5. OPERACIONES REALES -->
+  <section class="rd-section" id="operaciones">
+    <div class="container">
+      <header class="rd-section-head">
+        <h2>Operaciones reales en China</h2>
+      </header>
+      <div class="rd-operations">
+        <figure><img src="fabrica-neumaticos.webp" alt="Evaluación de capacidad productiva en fábrica" loading="lazy" width="1125" height="1500"><figcaption>Evaluación de capacidad productiva</figcaption></figure>
+        <figure><img src="control-produccion-textil.webp" alt="Control de calidad durante la producción" loading="lazy" width="1125" height="1500"><figcaption>Control durante la producción</figcaption></figure>
+        <figure><img src="carga-herramientas.webp" alt="Carga y acomodo de mercancía en contenedor" loading="lazy" width="1125" height="1500"><figcaption>Carga y acomodo de mercancía</figcaption></figure>
+        <figure><img src="operacion-contenedor-chile.webp" alt="Seguimiento de contenedor hacia destino" loading="lazy" width="1125" height="1500"><figcaption>Seguimiento a destino</figcaption></figure>
+        <figure><img src="visita-equipo-fabrica.webp" alt="Acompañamiento en visita a fábrica" loading="lazy" width="1125" height="1500"><figcaption>Acompañamiento en fábrica</figcaption></figure>
+        <figure><img src="fabrica-revestimientos.webp" alt="Revisión de materiales y acabados" loading="lazy" width="1125" height="1500"><figcaption>Revisión de materiales</figcaption></figure>
+      </div>
+      <div style="text-align:center;margin-top:28px">
+        <a class="rd-link" href="galeria.html" style="display:inline-flex">Ver galería completa <svg><use href="#i-arrow"></use></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. PRESENCIA PERSONAL EN CHINA -->
+  <section class="rd-alan" id="alan">
+    <div class="container rd-alan-grid">
+      <img src="alan-portrait.jpg" alt="Alan Chelme, agente de compras en China" loading="lazy" width="900" height="1200">
+      <div>
+        <span class="rd-eyebrow">Presencia personal en China</span>
+        <h2>Alan Chelme</h2>
+        <p>Soy Alan Chelme, agente de compras chileno establecido en Yiwu, China. Coordino directamente proveedores, inspecciones, consolidación y operaciones comerciales para clientes de Latinoamérica.</p>
+        <ul class="rd-alan-points">
+          <li><svg><use href="#i-check"></use></svg><span>Reviso personalmente cada cotización antes de enviarla.</span></li>
+          <li><svg><use href="#i-check"></use></svg><span>Visito fábricas y verifico proveedores en terreno en distintas ciudades de China.</span></li>
+          <li><svg><use href="#i-check"></use></svg><span>Coordino inspección, consolidación y envío hasta que tu carga sale rumbo a destino.</span></li>
+        </ul>
+        <a class="rd-link" data-whatsapp-message="Hola, quiero conversar directamente con Alan sobre mi importación." target="_blank" rel="noopener">Escríbeme por WhatsApp <svg><use href="#i-arrow"></use></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. COTIZACIÓN -->
+  <section class="rd-section rd-section-soft" id="cotizar">
+    <div class="container">
+      <header class="rd-section-head">
+        <h2>Cotiza tu importación</h2>
+        <p>Un estimado aproximado en el momento, sin costo. Crea tu cuenta después, si decides avanzar, para agregar el valor de tu mercancía y recibir el desglose exacto.</p>
+      </header>
+      <div class="rd-quote-explain">
+        <div><svg><use href="#i-boxes"></use></svg><div><strong>Qué puedes cotizar</strong><span>Consolidado LCL, contenedor FCL, control de calidad, búsqueda de proveedor, traducción o asesoría.</span></div></div>
+        <div><svg><use href="#i-file"></use></svg><div><strong>Qué necesitas</strong><span>Producto, volumen o cantidad aproximada, y destino.</span></div></div>
+        <div><svg><use href="#i-check"></use></svg><div><strong>Qué recibes</strong><span>Un estimado aproximado al instante, sin compromiso.</span></div></div>
+        <div><svg><use href="#i-arrow"></use></svg><div><strong>Siguiente paso</strong><span>Si te sirve, creas tu cuenta para el desglose exacto y el seguimiento.</span></div></div>
+      </div>
+
+      <div class="quote-shell mini-estimator" id="quoteShell">
+        <aside class="quote-menu">
+          <button class="quote-menu-item active" data-mini-service="lcl"><svg><use href="#i-boxes"></use></svg><span><strong>Consolidado LCL</strong><small>Carga por m³</small></span></button>
+          <button class="quote-menu-item" data-mini-service="fcl"><svg><use href="#i-container"></use></svg><span><strong>Contenedor FCL</strong><small>Carga completa</small></span></button>
+          <button class="quote-menu-item" data-mini-service="quality"><svg><use href="#i-shield"></use></svg><span><strong>Control de calidad</strong><small>Revisamos tu pedido antes de enviarlo</small></span></button>
+          <button class="quote-menu-item" data-mini-service="sourcing"><svg><use href="#i-search"></use></svg><span><strong>Buscar proveedor</strong><small>Te ayudamos a encontrar la fábrica</small></span></button>
+          <button class="quote-menu-item" data-mini-service="translation"><svg><use href="#i-language"></use></svg><span><strong>Traducción</strong><small>Te acompañamos en reuniones y compras</small></span></button>
+          <button class="quote-menu-item" data-mini-service="advisory"><svg><use href="#i-chat"></use></svg><span><strong>Asesoría</strong><small>Te orientamos antes de decidir</small></span></button>
+        </aside>
+
+        <section class="quote-card">
+          <div class="quote-title-row">
+            <div><span>Estimado rápido</span><h3 id="miniTitle">Consolidado LCL</h3></div>
+            <strong id="miniBadge">Estimación aproximada</strong>
+          </div>
+          <div id="miniFields" class="form-grid"></div>
+          <div class="estimate-box">
+            <div><span>Estimado aproximado</span><strong id="miniEstimate">Desde US$250/m³</strong></div>
+            <p id="miniEstimateNote">Ingresa el volumen para ver un estimado de flete.</p>
+          </div>
+          <div class="mini-estimator-cta">
+            <a class="btn btn-gold" id="miniSignupLink" href="login.html?tab=signup&service=lcl">Crea tu cuenta para tu cotización completa</a>
+            <p>Con tu cuenta agregas el valor de tu mercancía, envías fotos o un enlace del producto, y recibes el desglose exacto — guardado en tus pedidos para seguir tu importación.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. TESTIMONIOS — desactivado hasta contar con casos reales autorizados por el
+       propietario. Para activar: reemplazar el contenido de .rd-testimonials-empty
+       por tarjetas .rd-testimonial reales (nombre, empresa si corresponde, cita
+       breve) y quitar el atributo hidden de la sección.
+  <section class="rd-section rd-section-soft" id="testimonios" hidden>
+    <div class="container">
+      <header class="rd-section-head"><h2>Lo que dicen nuestros clientes</h2></header>
+      <div class="rd-testimonials"></div>
+    </div>
+  </section>
+  -->
+
+  <!-- 9. PREGUNTAS FRECUENTES -->
+  <section class="rd-section rd-section-soft" id="faq">
+    <div class="container faq-wrap">
+      <header class="rd-section-head">
+        <h2>Antes de cotizar</h2>
+      </header>
+      <details><summary>¿Cuál es la cantidad mínima para importar?</summary><p>No exigimos un mínimo fijo. Trabajamos tanto cargas consolidadas pequeñas (LCL) como contenedores completos (FCL); te recomendamos el formato según tu producto y presupuesto.</p></details>
+      <details><summary>¿Puedo cotizar con fotografías o enlaces?</summary><p>Sí. Puedes enviarnos fotos, un enlace del producto o una descripción para preparar tu cotización.</p></details>
+      <details><summary>¿Trabajan con proveedores de toda China?</summary><p>Sí. Nuestra base de operación está en Yiwu, pero coordinamos compras e inspecciones con proveedores en distintas ciudades de China según el producto.</p></details>
+      <details><summary>¿Qué incluye la búsqueda de proveedores?</summary><p>Localizamos fábricas, comparamos precios, MOQ, calidad y condiciones comerciales antes de que decidas con quién comprar.</p></details>
+      <details><summary>¿Qué incluye una inspección?</summary><p>Puede incluir conteo, revisión visual, medidas, empaque, etiquetas, pruebas básicas y supervisión de carga, según lo que definamos contigo.</p></details>
+      <details><summary>¿Cómo funciona el consolidado LCL?</summary><p>Reunimos tu carga con la de otros clientes en un mismo contenedor y se cobra según el volumen (m³) que realmente ocupa.</p></details>
+      <details><summary>¿Trabajan con productos de marcas registradas?</summary><p>No trabajamos con falsificaciones ni productos que infrinjan marcas registradas sin autorización.</p></details>
+    </div>
+  </section>
+
+  <!-- 10. CTA FINAL -->
+  <section class="rd-cta-final">
+    <div class="container">
+      <h2>Cuéntanos qué necesitas importar</h2>
+      <p>Revisaremos tu producto, cantidades, destino y modalidad recomendada para comenzar correctamente tu operación desde China.</p>
+      <div class="rd-hero-actions">
+        <a class="btn btn-gold" href="#cotizar">Solicitar cotización <svg><use href="#i-arrow"></use></svg></a>
+        <a class="btn btn-light" data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> Hablar por WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- 11. FOOTER -->
+<footer class="rd-footer">
+  <div class="container rd-footer-grid">
+    <div class="rd-footer-brand">
+      <img src="logo-light.png" alt="Chelme Global Trade">
+      <p>Coordinamos compras, inspecciones y logística directamente desde China para empresas e importadores de Latinoamérica.</p>
+      <div class="footer-social">
+        <a data-instagram-link target="_blank" rel="noopener" aria-label="Instagram personal"><svg><use href="#i-instagram"></use></svg></a>
+        <a data-instagram-business-link target="_blank" rel="noopener" aria-label="Instagram del negocio"><svg><use href="#i-instagram"></use></svg></a>
+        <a data-tiktok-link target="_blank" rel="noopener" aria-label="TikTok"><svg><use href="#i-tiktok"></use></svg></a>
+        <a data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener" aria-label="WhatsApp"><svg><use href="#i-whatsapp"></use></svg></a>
+      </div>
+    </div>
+    <div>
+      <strong>Servicios</strong>
+      <a href="consolidado-lcl.html">Consolidado LCL</a>
+      <a href="contenedor-fcl.html">Contenedor FCL</a>
+      <a href="busqueda-proveedor.html">Búsqueda de proveedor</a>
+      <a href="control-calidad.html">Control de calidad</a>
+      <a href="traduccion.html">Traducción</a>
+      <a href="asesoria.html">Asesoría</a>
+    </div>
+    <div>
+      <strong>Páginas</strong>
+      <a href="como-funciona.html">Cómo funciona</a>
+      <a href="viajes-china.html">Viajes a China</a>
+      <a href="galeria.html">Galería</a>
+      <a href="login.html">Mi cuenta</a>
+      <a href="terminos-y-condiciones.html">Términos y condiciones</a>
+      <a href="politica-privacidad.html">Privacidad</a>
+      <a href="mercancias-restringidas.html">Mercancías restringidas</a>
+    </div>
+    <div>
+      <strong>Contacto</strong>
+      <span data-business-city></span>
+      <a data-email-link></a>
+      <!-- PENDIENTE: activar contacto@chelmeglobaltrade.com cuando esa cuenta
+           de correo esté configurada. No se cambia el mailto: real todavía. -->
+      <a data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+  </div>
+</footer>
+
+<div class="sticky-cta-bar"><a class="sticky-cta-btn sticky-cta-quote" href="#cotizar">Cotizar ahora</a><a class="sticky-cta-btn sticky-cta-whatsapp" data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> WhatsApp</a></div>
+
+<script src="script.js"></script>
 </body>
 </html>
