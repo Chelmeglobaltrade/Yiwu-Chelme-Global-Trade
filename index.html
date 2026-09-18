@@ -25,6 +25,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="polish.css">
+<link rel="stylesheet" href="site-header.css">
 <link rel="stylesheet" href="redesign.css">
 <script src="config.js"></script>
 <script src="pricing-core.js"></script>
@@ -74,16 +75,16 @@
 
 <header class="rd-header">
   <div class="container rd-header-inner">
-    <a class="rd-brand" href="index-v2.html"><img src="logo-transparent.png" alt="Chelme Global Trade"></a>
+    <a class="rd-brand" href="index.html"><img src="logo-transparent.png" alt="Chelme Global Trade"></a>
     <button class="rd-menu-toggle" id="menuToggle" type="button" aria-label="Abrir menú" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
     <nav class="rd-nav" id="mainNav">
-      <a href="#soluciones">Servicios</a>
+      <details class="nav-services" id="navServices"><summary>Servicios</summary><div class="nav-services-menu"><div class="nav-services-group"><span class="nav-services-group-label">Envío de carga</span><a href="consolidado-lcl.html"><strong>Consolidado LCL</strong><small>Carga chica: compartes contenedor con otros</small></a><a href="contenedor-fcl.html"><strong>Contenedor FCL</strong><small>Carga grande: un contenedor solo para ti</small></a></div><div class="nav-services-group"><span class="nav-services-group-label">Antes de comprar</span><a href="busqueda-proveedor.html"><strong>Búsqueda de proveedor</strong><small>Te ayudamos a encontrar la fábrica</small></a><a href="control-calidad.html"><strong>Control de calidad</strong><small>Revisamos tu pedido antes de enviarlo</small></a><a href="traduccion.html"><strong>Traducción</strong><small>Te acompañamos en reuniones y compras</small></a></div><div class="nav-services-group"><span class="nav-services-group-label">Presencial y asesoría</span><a href="viajes-china.html"><strong>Viajes a China</strong><small>Viaja con nosotros a conocer fábricas</small></a><a href="asesoria.html"><strong>Asesoría</strong><small>Te orientamos antes de decidir</small></a></div></div></details>
       <a href="como-funciona.html">Cómo funciona</a>
-      <a href="viajes-china.html">Viajes a China</a>
+      <details class="nav-services nav-travel-dd"><summary>Viajes a China</summary><div class="nav-services-menu"><div class="nav-services-group"><a href="viajes-china.html#ruta-proveedores"><strong>Ruta de Proveedores</strong><small>5 días · mercados y fábricas</small></a><a href="viajes-china.html#mision-comercial"><strong>Misión Comercial China</strong><small>7–10 días · varias ciudades</small></a><a href="viajes-china.html#viaje-insignia"><strong>Viaje Insignia a Yiwu</strong><small>12 días · el más completo</small></a><a href="viajes-china.html"><strong>Ver todos los viajes</strong><small>Paquetes y agenda</small></a></div></div></details>
       <a href="#alan">Sobre nosotros</a>
-      <a class="rd-nav-account" href="login.html">Mi cuenta</a>
+      <details class="nav-services"><summary>Mi cuenta</summary><div class="nav-services-menu"><div class="nav-services-group"><a href="login.html"><strong>Iniciar sesión</strong><small>Ya tengo cuenta</small></a><a href="login.html?tab=signup"><strong>Crear cuenta</strong><small>Registrarme</small></a><a href="mi-cuenta.html"><strong>Ver mis pedidos</strong><small>Seguimiento de importación</small></a></div></div></details>
       <a class="btn btn-gold rd-nav-cta" href="#cotizar">Cotizar importación <svg><use href="#i-arrow"></use></svg></a>
     </nav>
   </div>
@@ -201,7 +202,7 @@
   </section>
 
   <!-- 5. OPERACIONES REALES -->
-  <section class="rd-section" id="operaciones">
+  <section class="rd-section rd-section-soft" id="operaciones">
     <div class="container">
       <header class="rd-section-head">
         <h2>Operaciones reales en China</h2>
