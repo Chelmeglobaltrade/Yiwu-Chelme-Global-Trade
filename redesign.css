@@ -135,7 +135,11 @@
 .rd-alan-grid{ display:grid; grid-template-columns:.6fr 1fr; gap:44px; align-items:center; }
 .rd-alan-grid img{ width:100%; height:100%; max-height:420px; object-fit:cover; object-position:center top; border-radius:16px; }
 .rd-alan-grid h2{ margin:6px 0 14px; color:var(--petrol); font-size:clamp(1.7rem,3vw,2.2rem); }
-.rd-alan-grid p{ margin:0 0 8px; color:var(--muted); max-width:56ch; }
+.rd-alan-grid p{ margin:0 0 20px; color:var(--muted); max-width:56ch; }
+.rd-alan-points{ list-style:none; margin:0 0 24px; padding:0; display:grid; gap:12px; max-width:48ch; }
+.rd-alan-points li{ display:flex; align-items:flex-start; gap:10px; }
+.rd-alan-points svg{ width:18px; height:18px; margin-top:2px; color:#fff; background:var(--petrol-2); border-radius:50%; padding:3px; box-sizing:border-box; flex-shrink:0; }
+.rd-alan-points span{ color:var(--ink); font-size:.92rem; }
 @media (max-width:900px){ .rd-alan-grid{ grid-template-columns:1fr; } .rd-alan-grid img{ max-height:280px; } }
 
 /* ---------- Explicación de la cotización ---------- */
