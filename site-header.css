@@ -45,3 +45,15 @@
 @media (prefers-reduced-motion:reduce){
   .rd-nav{ transition:none !important; }
 }
+
+/* ---------- Botones de las páginas internas (mismo look que la portada) ---------- */
+.standalone-page .btn{ min-height:52px; padding:14px 26px; font-weight:800; }
+.standalone-page .btn-gold{
+  background:#f2b91f; color:#14282d; border:0;
+  box-shadow:0 10px 24px rgba(242,185,31,.38);
+}
+.standalone-page .btn-gold:hover{ background:#ffc934; box-shadow:0 14px 30px rgba(242,185,31,.5); }
+.standalone-page .btn-light{ border-color:#cfe4dd; }
+.standalone-page .btn-light:hover{ border-color:#25d366; background:#eefaf3; }
+.standalone-page .btn-whatsapp-green{ background:#25d366; border-color:#25d366; }
+.standalone-page .rd-nav-cta{ min-height:44px; padding:10px 20px; }
