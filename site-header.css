@@ -57,3 +57,13 @@
 .standalone-page .btn-light:hover{ border-color:#25d366; background:#eefaf3; }
 .standalone-page .btn-whatsapp-green{ background:#25d366; border-color:#25d366; }
 .standalone-page .rd-nav-cta{ min-height:44px; padding:10px 20px; }
+
+/* Pantallas medianas (laptops chicas / tablets horizontales): menú en una sola línea */
+@media (min-width:901px) and (max-width:1180px){
+  .rd-nav{ gap:2px; font-size:.86rem; }
+  .rd-nav > a, .rd-nav summary{ white-space:nowrap; }
+  .rd-nav a:not(.rd-nav-cta):not(.nav-services-menu a){ padding:10px 6px; }
+  .rd-nav .nav-services summary{ padding:10px 8px; font-size:.86rem; }
+  .rd-nav-cta{ white-space:nowrap; padding:10px 14px !important; margin-left:2px; font-size:.86rem !important; }
+  .rd-nav-cta svg{ display:none; }
+}
