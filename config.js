@@ -215,6 +215,41 @@ window.CHELME_CONFIG = {
       label: "China",
       title: "Conexión con centros comerciales",
       text: "Presencia en ciudades estratégicas para proveedores, ferias y negocios internacionales."
+    },
+    {
+      src: "bodega-ropa-clasificacion.webp",
+      category: "fabricas",
+      label: "Fábricas",
+      title: "Clasificación de mercancía en bodega",
+      text: "Bodega industrial con clasificación y selección de producto antes de su despacho."
+    },
+    {
+      src: "guangzhou-canton-tower.webp",
+      category: "china",
+      label: "China",
+      title: "Guangzhou de noche",
+      text: "Torre de Cantón, en una de las ciudades comerciales donde coordinamos compras y visitas."
+    },
+    {
+      src: "shanghai-bund-skyline.webp",
+      category: "china",
+      label: "China",
+      title: "Shanghái, el Bund y Pudong",
+      text: "Shanghái, uno de los centros de negocios de China que visitamos con nuestros clientes."
+    },
+    {
+      src: "contenedor-carga-mixta-almacen.webp",
+      category: "cargas",
+      label: "Cargas",
+      title: "Contenedor cargado y ordenado",
+      text: "Carga mixta acomodada dentro del contenedor, lista para cerrar y embarcar."
+    },
+    {
+      src: "yuyuan-shanghai-noche.webp",
+      category: "china",
+      label: "China",
+      title: "Jardín Yuyuan, Shanghái",
+      text: "Zona comercial e histórica de Shanghái, parte de las rutas de viaje comercial."
     }
   ]
 };
