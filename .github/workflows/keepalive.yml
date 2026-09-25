@@ -1,0 +1,17 @@
+name: Supabase keepalive
+on:
+  schedule:
+    - cron: "17 9 */2 * *"
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        env:
+          URL: https://pvivlnljgpldtlblyvxo.supabase.co
+          KEY: sb_publishable_krvbtoyK0RSsBA3g1dspgA_Bkh55PEh
+        run: |
+          set -e
+          curl -fsS --retry 3 "$URL/auth/v1/health" -H "apikey: $KEY"
+          curl -fsS --retry 3 "$URL/rest/v1/quotes?select=id&limit=1" -H "apikey: $KEY" -H "Authorization: Bearer $KEY"
