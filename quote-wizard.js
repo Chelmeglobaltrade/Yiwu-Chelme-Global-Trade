@@ -501,12 +501,20 @@ async function saveQuoteAsQuote(){
       staff_notes:state.preparedQuoteText,
       ...fields
     }).select().single();
-    if(res.error){console.warn("No se pudo guardar la cotización:",res.error);return null;}
+    if(res.error){console.warn("No se pudo guardar la cotización:",res.error);notifyQuoteSaveFailed();return null;}
     return res.data;
   }catch(error){
     console.warn("No se pudo guardar la cotización:",error);
+    notifyQuoteSaveFailed();
     return null;
   }
+}
+
+function notifyQuoteSaveFailed(){
+  const alertBox=$("quoteAlert");
+  if(!alertBox)return;
+  alertBox.textContent="No pudimos guardar tu solicitud en tu cuenta, pero tu mensaje sí se envía por WhatsApp. Si no te respondemos pronto, escríbenos directamente.";
+  alertBox.classList.remove("hidden");
 }
 
 async function sendPreparedQuote(){
