@@ -20,3 +20,47 @@
 .quote-next-steps{ margin-top:18px; padding:16px 18px; border-radius:12px; background:#f3f8f8; border:1px solid var(--line); }
 .quote-next-steps strong{ display:block; color:var(--petrol); margin-bottom:8px; }
 .quote-next-steps ol{ margin:0; padding-left:20px; display:grid; gap:6px; color:var(--muted); font-size:.86rem; }
+
+/* ---- Cuenta: formulario más claro, pantalla de éxito y barra de usuario ---- */
+.auth-card .auth-tabs{ background:var(--soft); padding:4px; gap:4px; border-radius:14px; }
+.auth-card .auth-tab-btn{ border-radius:10px; background:transparent; }
+.auth-card .auth-tab-btn.is-active{ background:var(--petrol); box-shadow:0 4px 12px rgba(18,63,73,.22); }
+.auth-field .opt{ font-style:normal; font-weight:500; font-size:.76rem; color:var(--muted); }
+.pw-wrap{ position:relative; display:block; }
+.pw-wrap input{ width:100%; box-sizing:border-box; padding-right:96px; }
+.pw-toggle{ position:absolute; right:6px; top:50%; transform:translateY(-50%); border:0; background:transparent; color:var(--petrol-2); font:inherit; font-size:.8rem; font-weight:700; padding:8px 10px; border-radius:8px; cursor:pointer; }
+.pw-toggle:hover{ background:var(--soft); }
+.auth-submit{ width:100%; padding:15px 18px; font-size:1rem; }
+.auth-submit:disabled{ opacity:.65; cursor:wait; }
+.auth-alt,.auth-switch{ margin:0; text-align:center; font-size:.86rem; color:var(--muted); }
+.auth-alt a{ color:var(--muted); }
+.auth-switch a{ color:var(--petrol); font-weight:700; }
+.auth-success{ text-align:center; padding:6px 0 2px; }
+.auth-success-icon{ width:64px; height:64px; margin:0 auto 14px; border-radius:50%; background:#e7f4ee; display:grid; place-items:center; }
+.auth-success-icon svg{ width:32px; height:32px; color:#1f8a5b; stroke:currentColor; fill:none; stroke-width:2.4; }
+.auth-success h2{ margin:0 0 8px; color:var(--petrol); font-size:1.55rem; }
+.auth-success p{ margin:0; color:var(--muted); font-size:.95rem; overflow-wrap:anywhere; }
+.auth-success-steps{ text-align:left; margin:20px 0; padding:16px 18px 16px 38px; background:var(--soft); border-radius:12px; display:grid; gap:9px; font-size:.9rem; color:var(--ink); }
+.auth-success-actions{ display:grid; gap:10px; }
+.auth-success-actions .btn{ width:100%; justify-content:center; text-align:center; }
+.auth-success-help{ margin-top:14px !important; font-size:.82rem !important; }
+
+/* Barra de usuario en Mi cuenta */
+.acct-bar{ display:flex; align-items:center; gap:14px; margin-top:22px; flex-wrap:wrap; }
+.acct-chip{ display:flex; align-items:center; gap:12px; padding:8px 16px 8px 8px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); color:#fff; min-width:0; }
+.acct-avatar{ width:42px; height:42px; border-radius:50%; background:#f2b91f; color:#123f49; font-weight:800; display:grid; place-items:center; flex-shrink:0; }
+.acct-chip strong{ display:block; font-size:.95rem; line-height:1.2; }
+.acct-chip small{ display:block; font-size:.78rem; color:rgba(255,255,255,.75); overflow-wrap:anywhere; }
+.acct-bar .btn{ padding:11px 18px; font-size:.88rem; }
+.acct-bar .btn-ghost{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,.4); }
+.acct-bar .btn-ghost:hover{ background:rgba(255,255,255,.12); }
+.acct-welcome{ margin:0 0 18px; padding:20px 22px; border-radius:16px; background:#fff; border:1px solid var(--line); border-left:4px solid #f2b91f; box-shadow:var(--shadow); }
+.acct-welcome h3{ margin:0 0 6px; color:var(--petrol); }
+.acct-welcome p{ margin:0 0 14px; color:var(--muted); font-size:.92rem; }
+.acct-welcome .acts{ display:flex; gap:10px; flex-wrap:wrap; }
+.profile-summary{ display:flex; align-items:center; gap:14px; margin-bottom:22px; padding-bottom:20px; border-bottom:1px solid var(--line); }
+.profile-summary .acct-avatar{ width:54px; height:54px; font-size:1.15rem; }
+.profile-summary strong{ display:block; color:var(--petrol); }
+.profile-summary span{ color:var(--muted); font-size:.86rem; overflow-wrap:anywhere; }
+@media (max-width:600px){ .acct-chip{ width:100%; box-sizing:border-box; } .acct-bar .btn{ flex:1; justify-content:center; } }
+.auth-tabs[hidden],.auth-success[hidden],.acct-welcome[hidden]{ display:none !important; }
