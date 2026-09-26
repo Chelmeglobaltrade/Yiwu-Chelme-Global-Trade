@@ -52,7 +52,8 @@ const services = {
       qzScreen("¿Cuánto volumen ocupa tu carga?","Con el volumen (CBM) calculamos el flete al instante. Si no lo sabes, usa la calculadora de abajo.",qzGrid(`
         <label class="field"><span>Volumen real, si lo conoces (m³)</span><input id="qCbm" type="number" min="0" step="0.01" placeholder="0" inputmode="decimal"></label>
         <label class="field"><span>Cantidad aproximada</span><input id="qQuantity" type="number" min="1" placeholder="0" inputmode="numeric"></label>
-        <label class="field"><span>Cantidad de proveedores</span><input id="qSuppliers" type="number" min="1" value="1" inputmode="numeric"></label>`)+CBM_HELPER)+
+        <label class="field"><span>Cantidad de proveedores</span><input id="qSuppliers" type="number" min="1" value="1" inputmode="numeric"></label>
+        <label class="field"><span>Peso total aproximado (kg)</span><input id="qWeight" type="number" min="0" placeholder="0" inputmode="decimal"></label>`)+`<p class="form-help hidden" id="qWeightNotice" role="status"></p>`+CBM_HELPER)+
       qzScreen("¿Necesitas ayuda con la compra?","Es opcional. Si ya tienes proveedor, sigue sin marcar.",SOURCING_OPTION)
   },
   fcl: {
@@ -371,8 +372,18 @@ function originalGoodsText(amount,currency){
     : money(amount);
 }
 
+const LCL_MAX_KG_PER_CBM=500;
+function lclWeightNotice(){
+  const kg=val("qWeight"),cbm=val("qCbm");
+  if(kg<=0||cbm<=0)return "";
+  const billable=Math.max(cbm,Number(CONFIG.lcl.minimumBillableCbm)||0);
+  return kg>LCL_MAX_KG_PER_CBM*billable?`Tu carga pesa más de ${LCL_MAX_KG_PER_CBM} kg por m³ (${fmt(kg/billable,0)} kg/m³). Puede aplicar un cobro extra por peso; lo confirmamos en la cotización final.`:"";
+}
+
 function updateEstimate(){
   const service=state.quoteService;
+  const wn=$("qWeightNotice");
+  if(wn){const msg=lclWeightNotice();wn.textContent=msg;wn.classList.toggle("hidden",!msg);}
   let totalText="Cotización personalizada";
   let note="Enviaremos la información para revisión y confirmación.";
   const rows=[];
@@ -403,6 +414,7 @@ function updateEstimate(){
       if(result.smallCargo){
         rows.push({label:`Cargo operativo por carga bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ (fijo)`,value:money(result.smallCargoExtra)});
       }
+      if(lclWeightNotice())rows.push({label:"Aviso de peso",value:"Posible cobro extra",pending:true});
       rows.push({
         label:`Búsqueda y gestión de compra (${CONFIG.lcl.sourcingPercent}%)`,
         value:includeSourcing
@@ -518,6 +530,7 @@ function buildQuoteFieldsPayload(){
     payload.goods_value=val("qGoods")||null;
     payload.goods_currency=$("qCurrency")?.value||"USD";
     payload.cbm=val("qCbm")||null;
+    if(service==="lcl")payload.weight_kg=val("qWeight")||null;
     payload.include_sourcing=Boolean($("qIncludeSourcing")?.checked);
     if(service==="fcl")description=`Contenedor ${$("qContainer")?.value||""}`.trim();
   }else if(service==="quality"){
@@ -570,12 +583,38 @@ function notifyQuoteSaveFailed(){
 }
 
 async function sendPreparedQuote(){
-  saveQuoteAsQuote();
   const text=state.preparedQuoteText,files=state.preparedQuoteFiles;
-  if(files.length&&navigator.share&&navigator.canShare){
-    try{const data={title:"Solicitud Chelme Global Trade",text,files};if(navigator.canShare(data)){await navigator.share(data);return;}}catch(error){if(error.name==="AbortError")return;}
+  const btn=$("confirmQuoteWhatsapp"),btnHtml=btn.innerHTML;
+  const waUrl=(t)=>`https://wa.me/${CONFIG.business.whatsapp}?text=${encodeURIComponent(t)}`;
+  // Se abre la pestaña de WhatsApp ya, dentro del clic, para que el navegador no la bloquee.
+  const win=window.open("about:blank","_blank");
+  btn.disabled=true;btn.textContent="Preparando tu cotización...";
+  let quote=null,pdf=null,pdfUrl="";
+  try{
+    quote=await saveQuoteAsQuote();
+    if(window.ChelmePdf)pdf=await Promise.race([window.ChelmePdf.fromPreview(),new Promise(r=>setTimeout(()=>r(null),15000))]);
+    if(pdf&&pdf.blob&&quote&&quote.id){
+      const path=`quotes/${quote.id}/${pdf.filename}`;
+      const up=await supabaseClient.storage.from("order-files").upload(path,pdf.blob,{contentType:"application/pdf",upsert:false});
+      if(!up.error){
+        const signed=await supabaseClient.storage.from("order-files").createSignedUrl(path,31536000);
+        if(!signed.error)pdfUrl=signed.data.signedUrl;
+      }else console.warn("No se pudo subir el PDF:",up.error);
+    }
+  }catch(error){console.warn("Preparación del envío:",error);}
+  btn.disabled=false;btn.innerHTML=btnHtml;
+
+  // En celulares, compartir el PDF (y los archivos elegidos) directo a WhatsApp.
+  const isPhone=window.matchMedia&&window.matchMedia("(pointer: coarse)").matches;
+  if(isPhone&&navigator.share&&navigator.canShare){
+    const shareFiles=[...(pdf&&pdf.blob?[new File([pdf.blob],pdf.filename,{type:"application/pdf"})]:[]),...files];
+    try{
+      const data={title:"Solicitud Chelme Global Trade",text:pdfUrl?`${text}\n\nPDF de la cotización: ${pdfUrl}`:text,files:shareFiles};
+      if(shareFiles.length&&navigator.canShare(data)){await navigator.share(data);if(win)win.close();return;}
+    }catch(error){if(error.name==="AbortError"){if(win)win.close();return;}}
   }
-  window.open(`https://wa.me/${CONFIG.business.whatsapp}?text=${encodeURIComponent(text)}`,"_blank","noopener");
+  const finalText=pdfUrl?`${text}\n\nPDF de la cotización: ${pdfUrl}`:text;
+  if(win&&!win.closed)win.location.href=waUrl(finalText);else window.open(waUrl(finalText),"_blank","noopener");
   if(files.length){$("quoteAlert").textContent="WhatsApp está abierto. Adjunta los archivos seleccionados antes de enviar.";$("quoteAlert").classList.remove("hidden");}
 }
 
@@ -597,7 +636,7 @@ async function submitQuote(event){
   state.preparedQuoteReference=createQuoteReference();state.preparedQuoteFiles=[...state.quoteFiles];
   const concise=[...sourceLines.slice(0,4),...serviceLines.slice(0,5)];
   const requiresAdvisory=["sourcing","advisory"].includes(state.quoteService);
-  state.preparedQuoteText=["SOLICITUD CHELME GLOBAL TRADE",`Referencia: ${state.preparedQuoteReference}`,`Servicio: ${serviceTitle}`,`Cliente: ${name}`,`Destino: ${destination}`,`WhatsApp cliente: ${phone}`,`Información disponible: ${infoLabel}`,`Proveedor / búsqueda: ${sourcingStatus}`,...concise,`Resultado mostrado: ${result}`,state.quoteFiles.length?`Archivos para adjuntar: ${state.quoteFiles.length}`:"",$("quoteNotes").value.trim()?`Comentarios: ${$("quoteNotes").value.trim()}`:"","",requiresAdvisory?`Asesoría inicial: ${money(CONFIG.advisory.startingPriceUsd)}`:"Esta cotización no tiene costo.",requiresAdvisory?"La revisión comienza después de confirmar la asesoría.":"Quedamos atentos para confirmar por WhatsApp.","Impuestos y gastos de destino se confirman por separado."].filter(Boolean).join("\n");
+  state.preparedQuoteText=["SOLICITUD CHELME GLOBAL TRADE",`Referencia: ${state.preparedQuoteReference}`,`Servicio: ${serviceTitle}`,`Cliente: ${name}`,`Destino: ${destination}`,`WhatsApp cliente: ${phone}`,`Información disponible: ${infoLabel}`,`Proveedor / búsqueda: ${sourcingStatus}`,...concise,`Resultado mostrado: ${result}`,state.quoteFiles.length?`Archivos para adjuntar: ${state.quoteFiles.length}`:"",$("quoteNotes").value.trim()?`Comentarios: ${$("quoteNotes").value.trim()}`:"","",requiresAdvisory?`Asesoría inicial: ${money(CONFIG.advisory.startingPriceUsd)}`:"Esta cotización no tiene costo.",requiresAdvisory?"La revisión comienza después de confirmar la asesoría.":"Quedamos atentos para confirmar por WhatsApp.",(state.quoteService==="lcl"&&lclWeightNotice())?`Aviso: ${lclWeightNotice()}`:"","Impuestos y gastos de destino se confirman por separado.",(state.quoteService==="lcl"||state.quoteService==="fcl")?"La carga llega a Santiago. Envío a regiones se cotiza aparte o retiro en bodega.":""].filter(Boolean).join("\n");
   renderQuotePreview([["Referencia",state.preparedQuoteReference],["Servicio",serviceTitle],["Cliente",name],["Destino",destination],["Información",infoLabel],["Búsqueda",sourcingStatus],["Resultado mostrado",result],[requiresAdvisory?"Asesoría inicial":"Costo de esta cotización",requiresAdvisory?money(CONFIG.advisory.startingPriceUsd):"Sin costo"]]);
 }
 
