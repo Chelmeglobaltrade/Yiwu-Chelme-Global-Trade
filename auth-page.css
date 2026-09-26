@@ -103,3 +103,39 @@
 .next-action.is-client strong{ color:var(--petrol); }
 .next-action-row{ display:flex; gap:8px; }
 .next-action-input{ flex:1; min-width:0; padding:10px 12px; border:1px solid var(--line); border-radius:10px; font:inherit; font-size:.88rem; }
+
+/* Cobros, costos y caja */
+.charge-badge{ margin-top:12px; padding:10px 14px; border-radius:10px; font-size:.84rem; font-weight:700; }
+.charge-badge.is-due{ background:#fff8e1; color:#8a6a12; border:1px solid #f2d56a; }
+.charge-badge.is-late{ background:#fbeaea; color:var(--danger); border:1px solid #f0b4b4; }
+.charge-badge.is-ok{ background:#e6f7ec; color:#1f7a43; }
+.charge-row{ display:grid; grid-template-columns:1fr auto auto; gap:6px 12px; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); }
+.charge-main strong{ display:block; color:var(--petrol); font-size:.9rem; }
+.charge-main small{ color:var(--muted); font-size:.76rem; }
+.charge-amt{ font-weight:800; color:var(--petrol); font-variant-numeric:tabular-nums; }
+.charge-pill{ padding:4px 10px; border-radius:999px; font-size:.72rem; font-weight:800; background:#fff8e1; color:#8a6a12; }
+.charge-pill.st-en_revision{ background:#e8f1f4; color:#1d5b66; }
+.charge-pill.st-pagado{ background:#e6f7ec; color:#1f7a43; }
+.charge-pill.is-late{ background:#fbeaea; color:var(--danger); }
+.charge-actions{ grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:8px; }
+.charge-upload{ cursor:pointer; }
+.charge-note{ grid-column:1 / -1; font-size:.82rem; color:var(--muted); }
+.charge-note.is-loss{ margin:10px 0; padding:10px 12px; border-radius:10px; background:#fbeaea; color:var(--danger); font-weight:700; }
+.charge-form{ margin-top:16px; padding:14px; border-radius:12px; background:var(--soft); }
+.charge-form-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; margin-top:8px; align-items:center; }
+.charge-form-grid input,.charge-form-grid select{ padding:9px 10px; border:1px solid var(--line); border-radius:9px; font:inherit; font-size:.86rem; min-width:0; }
+.charge-hint{ font-size:.76rem; color:var(--muted); }
+.margin-box{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:12px; border-radius:12px; background:var(--soft); font-size:.78rem; color:var(--muted); }
+.margin-box b{ display:block; color:var(--petrol); font-size:1rem; }
+.margin-box.is-loss{ background:#fbeaea; } .margin-box.is-loss b{ color:var(--danger); }
+.margin-box.is-gain b:last-child{ color:#1f7a43; }
+.cost-del{ border:0; background:transparent; color:var(--danger); font-size:1.1rem; cursor:pointer; }
+.cash-tiles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; }
+.cash-tiles div{ padding:16px; border-radius:14px; background:#fff; border:1px solid var(--line); }
+.cash-tiles span{ display:block; font-size:.76rem; color:var(--muted); font-weight:700; }
+.cash-tiles b{ display:block; margin-top:4px; font-size:1.25rem; color:var(--petrol); }
+.cash-tiles .is-late b{ color:var(--danger); } .cash-tiles .is-ok b{ color:#1f7a43; } .cash-tiles .is-alert{ border-color:#f2b91f; background:#fff8e1; }
+.cash-row{ display:grid; grid-template-columns:1fr auto auto; gap:12px; align-items:center; padding:12px 14px; margin-bottom:8px; border-radius:12px; background:#fff; border:1px solid var(--line); }
+.cash-row strong{ display:block; color:var(--petrol); font-size:.9rem; } .cash-row small{ color:var(--muted); font-size:.78rem; }
+.cash-row.is-loss{ border-color:#f0b4b4; background:#fff6f6; }
+@media (max-width:560px){ .charge-row,.cash-row{ grid-template-columns:1fr auto; } .charge-pill{ grid-column:1; justify-self:start; } .margin-box{ grid-template-columns:1fr; } }

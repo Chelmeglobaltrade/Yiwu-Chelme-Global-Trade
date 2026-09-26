@@ -37,6 +37,7 @@
     <button class="portal-tab" data-tab="quotes">Cotizaciones <span class="n" id="quotesCount" hidden>0</span></button>
     <button class="portal-tab" data-tab="quote">Nueva cotización</button>
     <button class="portal-tab" data-tab="profile">Mi perfil</button>
+    <button class="portal-tab" data-tab="cash" id="cashTabBtn" hidden>Cobros</button>
     <button class="portal-tab" data-tab="team" id="teamTabBtn" hidden>Equipo</button>
   </div>
 </div></nav>
@@ -269,6 +270,8 @@
 
 </div></section>
 
+<section class="section section-soft" id="panel-cash" hidden><div class="container" style="max-width:920px"><h2>Cobros y caja</h2><p class="orders-sub">Lo que falta por cobrar, comprobantes por revisar y pedidos que hoy no dejan ganancia.</p><div id="cashContent" style="margin-top:18px"></div></div></section>
+
 <section class="section" id="panel-team" hidden><div class="container">
 
   <h2>Gestionar equipo</h2>
@@ -354,7 +357,7 @@
     document.getElementById('profileAvatar').textContent = initials(shown);
   }
 
-  var TAB_PANELS = { orders: 'panel-orders', quotes: 'panel-quotes', quote: 'panel-quote', profile: 'panel-profile', team: 'panel-team' };
+  var TAB_PANELS = { orders: 'panel-orders', quotes: 'panel-quotes', quote: 'panel-quote', profile: 'panel-profile', cash: 'panel-cash', team: 'panel-team' };
   document.querySelectorAll('.portal-tab').forEach(function(btn){
     btn.addEventListener('click', function(){
       document.querySelectorAll('.portal-tab').forEach(function(b){ b.classList.toggle('active', b === btn); });
@@ -411,6 +414,233 @@
       input.value = '';
       loadOrderFiles(kind, id, containerId, true);
     });
+  }
+
+  /* ---------- Cobros por pedido, costos internos y caja ---------- */
+  var chargesCache = [], ordersCache = [], costsCache = [], customersCache = null;
+  var CHARGE_CATS = { flete: 'Flete', servicio: 'Servicio', iva: 'IVA aduanero', arancel: 'Arancel', gastos_destino: 'Gastos de destino', otro: 'Otro' };
+  var CHARGE_STATUS = { pendiente: 'Pendiente', en_revision: 'En revisión', pagado: 'Pagado' };
+  var PASS_THROUGH = ['iva', 'arancel'];
+
+  function fmtCharge(c){
+    return c.currency === 'CLP'
+      ? 'CLP ' + new Intl.NumberFormat('es-CL', { maximumFractionDigits: 0 }).format(c.amount)
+      : moneyFmt(c.amount);
+  }
+  function todayIso(){ return new Date().toISOString().slice(0, 10); }
+  function chargesOf(orderId){ return chargesCache.filter(function(c){ return c.order_id === orderId; }); }
+  function unpaidOf(orderId){ return chargesOf(orderId).filter(function(c){ return c.status !== 'pagado'; }); }
+  function isOverdue(c){ return c.status === 'pendiente' && c.due_date && c.due_date < todayIso(); }
+  function sumByCurrency(list){
+    var s = {};
+    list.forEach(function(c){ s[c.currency] = (s[c.currency] || 0) + Number(c.amount); });
+    return Object.keys(s).map(function(cur){ return fmtCharge({ amount: s[cur], currency: cur }); }).join(' + ') || '—';
+  }
+  function chargeBadge(orderId){
+    var all = chargesOf(orderId);
+    if (!all.length) return '';
+    var pend = all.filter(function(c){ return c.status !== 'pagado'; });
+    if (!pend.length) return '<div class="charge-badge is-ok">Todos los pagos al día</div>';
+    var late = pend.some(isOverdue);
+    return '<div class="charge-badge ' + (late ? 'is-late' : 'is-due') + '">Por pagar: ' + sumByCurrency(pend) + (late ? ' · vencido' : '') + ' · La entrega se libera cuando estén pagados</div>';
+  }
+  function marginOf(orderId){
+    var rev = chargesOf(orderId).filter(function(c){ return c.currency === 'USD' && PASS_THROUGH.indexOf(c.category) < 0; })
+      .reduce(function(s, c){ return s + Number(c.amount); }, 0);
+    var cost = costsCache.filter(function(c){ return c.order_id === orderId; }).reduce(function(s, c){ return s + Number(c.amount_usd); }, 0);
+    return { rev: rev, cost: cost, margin: rev - cost, pct: rev > 0 ? (rev - cost) / rev : null };
+  }
+  function refreshChargeViews(orderId, isStaff){
+    var slot = document.getElementById('cbadge-' + orderId);
+    if (slot) slot.innerHTML = chargeBadge(orderId);
+    renderOrderCharges(orderId, isStaff);
+    if (isStaff) { renderOrderCosts(orderId); renderCash(); }
+  }
+  async function reloadCharges(){
+    var r = await supabaseClient.from('order_charges').select('*').order('due_date', { ascending: true });
+    chargesCache = r.data || [];
+  }
+
+  function chargeRowHtml(c, isStaff){
+    var due = c.due_date ? new Date(c.due_date + 'T12:00:00').toLocaleDateString('es-CL', { day: 'numeric', month: 'short' }) : 'sin fecha';
+    var pill = '<span class="charge-pill st-' + c.status + (isOverdue(c) ? ' is-late' : '') + '">' + (isOverdue(c) ? 'Vencido' : CHARGE_STATUS[c.status]) + '</span>';
+    var stage = c.stage === 'anticipo' ? ' · Anticipo' : c.stage === 'saldo' ? ' · Saldo' : '';
+    var action = '';
+    if (isStaff) {
+      action = '<div class="charge-actions">' +
+        (c.proof_path ? '<button type="button" class="btn btn-light btn-sm" data-act="proof" data-path="' + escapeHtml(c.proof_path) + '">Ver comprobante</button>' : '') +
+        (c.status !== 'pagado' ? '<button type="button" class="btn btn-gold btn-sm" data-act="paid" data-id="' + c.id + '">' + (c.status === 'en_revision' ? 'Confirmar pago' : 'Marcar pagado') + '</button>' : '<button type="button" class="btn btn-light btn-sm" data-act="unpaid" data-id="' + c.id + '">Reabrir</button>') +
+        '<button type="button" class="btn btn-light btn-sm" data-act="del" data-id="' + c.id + '">Eliminar</button></div>';
+    } else if (c.status === 'pendiente') {
+      action = '<div class="charge-actions"><button type="button" class="btn btn-light btn-sm" data-act="ask" data-id="' + c.id + '">Pedir datos de pago</button>' +
+        '<label class="btn btn-gold btn-sm charge-upload">Ya pagué: subir comprobante<input type="file" accept="image/*,application/pdf" data-act="upload" data-id="' + c.id + '" hidden></label></div>';
+    } else if (c.status === 'en_revision') {
+      action = '<div class="charge-note">Recibimos tu comprobante y lo estamos revisando.</div>';
+    }
+    return '<div class="charge-row"><div class="charge-main"><strong>' + escapeHtml(c.concept) + '</strong><small>' + CHARGE_CATS[c.category] + stage + ' · vence ' + due + '</small></div>' +
+      '<div class="charge-amt">' + fmtCharge(c) + '</div>' + pill + action + '</div>';
+  }
+
+  async function renderOrderCharges(orderId, isStaff){
+    var box = document.getElementById('ocharges-' + orderId);
+    if (!box) return;
+    var list = chargesOf(orderId);
+    var html = list.length ? list.map(function(c){ return chargeRowHtml(c, isStaff); }).join('') : '<span style="color:var(--muted);font-size:.82rem">' + (isStaff ? 'Aún no hay cobros. Agrega el primero abajo.' : 'Todavía no hay cobros para este pedido.') + '</span>';
+    if (isStaff) {
+      html += '<div class="charge-form"><b>Nuevo cobro</b><div class="charge-form-grid">' +
+        '<input type="text" id="chg-concept-' + orderId + '" placeholder="Concepto (ej.: Flete consolidado 3,5 m³)">' +
+        '<select id="chg-cat-' + orderId + '">' + Object.keys(CHARGE_CATS).map(function(k){ return '<option value="' + k + '">' + CHARGE_CATS[k] + '</option>'; }).join('') + '</select>' +
+        '<input type="number" min="0" step="0.01" id="chg-amount-' + orderId + '" placeholder="Monto">' +
+        '<select id="chg-cur-' + orderId + '"><option>USD</option><option>CLP</option></select>' +
+        '<input type="date" id="chg-due-' + orderId + '">' +
+        '<button type="button" class="btn btn-gold btn-sm" data-act="add">Agregar cobro</button></div>' +
+        '<b style="margin-top:14px;display:block">Plan anticipo + saldo</b><div class="charge-form-grid">' +
+        '<input type="text" id="plan-concept-' + orderId + '" placeholder="Concepto (ej.: Servicio consolidado)">' +
+        '<input type="number" min="0" step="0.01" id="plan-total-' + orderId + '" placeholder="Total USD">' +
+        '<input type="number" min="1" max="99" id="plan-pct-' + orderId + '" value="50" title="% de anticipo">' +
+        '<span class="charge-hint">% anticipo (hoy)</span>' +
+        '<input type="date" id="plan-due-' + orderId + '" title="Fecha del saldo">' +
+        '<button type="button" class="btn btn-light btn-sm" data-act="plan">Crear plan</button></div></div>';
+    }
+    box.innerHTML = html;
+    if (box.dataset.wired) return;
+    box.dataset.wired = '1';
+
+    box.addEventListener('click', async function(e){
+      var el = e.target.closest('[data-act]');
+      if (!el || el.tagName === 'INPUT') return;
+      var act = el.dataset.act, id = el.dataset.id;
+      var session = (await supabaseClient.auth.getSession()).data.session;
+      if (act === 'proof') {
+        var s = await supabaseClient.storage.from('order-files').createSignedUrl(el.dataset.path, 600);
+        if (s.data) window.open(s.data.signedUrl, '_blank', 'noopener'); else alert('No se pudo abrir el comprobante.');
+        return;
+      }
+      if (act === 'ask') {
+        var ch = chargesCache.filter(function(c){ return c.id === id; })[0];
+        var order = ordersCache.filter(function(o){ return o.id === orderId; })[0] || {};
+        var msg = 'Hola, quiero pagar "' + ch.concept + '" (' + fmtCharge(ch) + ') del pedido ' + (order.reference || orderId.slice(0, 8)) + '. ¿Me envías los datos de transferencia?';
+        window.open('https://wa.me/' + CHELME_CONFIG.business.whatsapp + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+        return;
+      }
+      if (act === 'del') {
+        if (!confirm('¿Eliminar este cobro?')) return;
+        var d = await supabaseClient.from('order_charges').delete().eq('id', id);
+        if (d.error) { alert('No se pudo eliminar: ' + d.error.message); return; }
+      } else if (act === 'paid' || act === 'unpaid') {
+        var upd = act === 'paid' ? { status: 'pagado', paid_at: new Date().toISOString() } : { status: 'pendiente', paid_at: null };
+        var u = await supabaseClient.from('order_charges').update(upd).eq('id', id);
+        if (u.error) { alert('No se pudo actualizar: ' + u.error.message); return; }
+      } else if (act === 'add') {
+        var concept = document.getElementById('chg-concept-' + orderId).value.trim();
+        var amount = Number(document.getElementById('chg-amount-' + orderId).value);
+        if (!concept || !(amount >= 0) || document.getElementById('chg-amount-' + orderId).value === '') { alert('Escribe el concepto y el monto.'); return; }
+        var a = await supabaseClient.from('order_charges').insert({
+          order_id: orderId, concept: concept, amount: amount,
+          category: document.getElementById('chg-cat-' + orderId).value,
+          currency: document.getElementById('chg-cur-' + orderId).value,
+          due_date: document.getElementById('chg-due-' + orderId).value || null,
+          created_by: session.user.id
+        });
+        if (a.error) { alert('No se pudo crear: ' + a.error.message); return; }
+      } else if (act === 'plan') {
+        var pc = document.getElementById('plan-concept-' + orderId).value.trim() || 'Servicio';
+        var total = Number(document.getElementById('plan-total-' + orderId).value);
+        var pct = Number(document.getElementById('plan-pct-' + orderId).value);
+        var saldoDue = document.getElementById('plan-due-' + orderId).value || null;
+        if (!(total > 0) || !(pct > 0 && pct < 100)) { alert('Indica el total y un % de anticipo entre 1 y 99.'); return; }
+        var adv = Math.round(total * pct) / 100;
+        var p = await supabaseClient.from('order_charges').insert([
+          { order_id: orderId, concept: pc + ' (anticipo ' + pct + '%)', category: 'servicio', stage: 'anticipo', amount: adv, currency: 'USD', due_date: todayIso(), created_by: session.user.id },
+          { order_id: orderId, concept: pc + ' (saldo)', category: 'servicio', stage: 'saldo', amount: Math.round((total - adv) * 100) / 100, currency: 'USD', due_date: saldoDue, created_by: session.user.id }
+        ]);
+        if (p.error) { alert('No se pudo crear el plan: ' + p.error.message); return; }
+      } else { return; }
+      await reloadCharges();
+      refreshChargeViews(orderId, isStaff);
+    });
+
+    box.addEventListener('change', async function(e){
+      var inp = e.target;
+      if (inp.dataset.act !== 'upload' || !inp.files.length) return;
+      var file = inp.files[0];
+      if (file.size > 10 * 1024 * 1024) { alert('El archivo pesa más de 10 MB.'); return; }
+      var safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      var path = 'orders/' + orderId + '/comprobantes/' + Date.now() + '-' + safe;
+      var up = await supabaseClient.storage.from('order-files').upload(path, file);
+      if (up.error) { alert('No se pudo subir el comprobante: ' + up.error.message); return; }
+      var r = await supabaseClient.rpc('submit_charge_proof', { p_charge_id: inp.dataset.id, p_path: path });
+      if (r.error) { alert('No se pudo registrar el comprobante: ' + r.error.message); return; }
+      await reloadCharges();
+      refreshChargeViews(orderId, isStaff);
+    });
+  }
+
+  function renderOrderCosts(orderId){
+    var box = document.getElementById('ocosts-' + orderId);
+    if (!box) return;
+    var costs = costsCache.filter(function(c){ return c.order_id === orderId; });
+    var m = marginOf(orderId);
+    var loss = m.rev > 0 && m.margin < 0;
+    var rows = costs.map(function(c){
+      return '<div class="payment-row"><span>' + escapeHtml(c.concept) + '</span><span><strong>' + moneyFmt(c.amount_usd) + '</strong> <button type="button" class="cost-del" data-cid="' + c.id + '" aria-label="Eliminar">×</button></span></div>';
+    }).join('');
+    box.innerHTML =
+      '<div class="margin-box ' + (loss ? 'is-loss' : (m.rev > 0 ? 'is-gain' : '')) + '">' +
+        '<div>Ingresos (sin IVA ni arancel)<b>' + moneyFmt(m.rev) + '</b></div><div>Costos<b>' + moneyFmt(m.cost) + '</b></div>' +
+        '<div>Ganancia<b>' + moneyFmt(m.margin) + (m.pct !== null ? ' · ' + Math.round(m.pct * 100) + '%' : '') + '</b></div></div>' +
+      (loss ? '<div class="charge-note is-loss">Este pedido está perdiendo plata: los costos superan lo cobrado. Revisa el precio o agrega el cobro que falta.</div>' : '') +
+      rows +
+      '<div class="payment-form-row"><input type="text" id="cost-concept-' + orderId + '" placeholder="Costo (ej.: flete naviera, agente, traslado)"><input type="number" min="0" step="0.01" id="cost-amount-' + orderId + '" placeholder="USD"><button type="button" class="btn btn-light btn-sm" id="cost-add-' + orderId + '">+ Agregar costo</button></div>';
+    document.getElementById('cost-add-' + orderId).addEventListener('click', async function(){
+      var concept = document.getElementById('cost-concept-' + orderId).value.trim();
+      var amount = Number(document.getElementById('cost-amount-' + orderId).value);
+      if (!concept || !(amount > 0)) { alert('Escribe el concepto y un monto en USD.'); return; }
+      var session = (await supabaseClient.auth.getSession()).data.session;
+      var r = await supabaseClient.from('order_costs').insert({ order_id: orderId, concept: concept, amount_usd: amount, created_by: session.user.id });
+      if (r.error) { alert('No se pudo guardar: ' + r.error.message); return; }
+      var all = await supabaseClient.from('order_costs').select('*');
+      costsCache = all.data || [];
+      refreshChargeViews(orderId, true);
+    });
+    box.querySelectorAll('.cost-del').forEach(function(b){
+      b.addEventListener('click', async function(){
+        await supabaseClient.from('order_costs').delete().eq('id', b.dataset.cid);
+        var all = await supabaseClient.from('order_costs').select('*');
+        costsCache = all.data || [];
+        refreshChargeViews(orderId, true);
+      });
+    });
+  }
+
+  function renderCash(){
+    var box = document.getElementById('cashContent');
+    if (!box) return;
+    var byStatus = function(st){ return chargesCache.filter(function(c){ return c.status === st; }); };
+    var overdue = chargesCache.filter(isOverdue);
+    var unpaid = chargesCache.filter(function(c){ return c.status !== 'pagado'; }).sort(function(a, b){ return (a.due_date || '9999') < (b.due_date || '9999') ? -1 : 1; });
+    var orderInfo = function(id){
+      var o = ordersCache.filter(function(x){ return x.id === id; })[0] || {};
+      var cu = customersCache && customersCache[o.user_id];
+      return { ref: o.reference || 'Pedido', client: cu ? (cu.full_name || cu.email) : '' };
+    };
+    var tiles = '<div class="cash-tiles">' +
+      '<div><span>Por cobrar</span><b>' + sumByCurrency(byStatus('pendiente')) + '</b></div>' +
+      '<div class="' + (byStatus('en_revision').length ? 'is-alert' : '') + '"><span>Comprobantes por revisar</span><b>' + byStatus('en_revision').length + '</b></div>' +
+      '<div class="' + (overdue.length ? 'is-late' : '') + '"><span>Vencido</span><b>' + sumByCurrency(overdue) + '</b></div>' +
+      '<div class="is-ok"><span>Cobrado</span><b>' + sumByCurrency(byStatus('pagado')) + '</b></div></div>';
+    var rows = unpaid.map(function(c){
+      var oi = orderInfo(c.order_id);
+      return '<div class="cash-row"><div><strong>' + escapeHtml(oi.client || 'Cliente') + '</strong><small>' + escapeHtml(oi.ref) + ' · ' + escapeHtml(c.concept) + '</small></div>' +
+        '<div class="charge-amt">' + fmtCharge(c) + '</div><span class="charge-pill st-' + c.status + (isOverdue(c) ? ' is-late' : '') + '">' + (isOverdue(c) ? 'Vencido' : CHARGE_STATUS[c.status]) + '</span></div>';
+    }).join('') || '<span style="color:var(--muted)">No hay cobros pendientes.</span>';
+    var losing = ordersCache.map(function(o){ return { o: o, m: marginOf(o.id) }; }).filter(function(x){ return x.m.rev > 0 && x.m.margin < 0; });
+    var lossHtml = losing.length
+      ? '<h3 style="margin:26px 0 10px">Pedidos que hoy pierden plata</h3>' + losing.map(function(x){
+          var oi = orderInfo(x.o.id);
+          return '<div class="cash-row is-loss"><div><strong>' + escapeHtml(oi.client || 'Cliente') + '</strong><small>' + escapeHtml(oi.ref) + '</small></div><div class="charge-amt">' + moneyFmt(x.m.margin) + '</div></div>';
+        }).join('') : '';
+    box.innerHTML = tiles + '<h3 style="margin:22px 0 10px">Pendiente de cobro</h3>' + rows + lossHtml;
   }
 
   async function loadOrderPayments(orderId, containerId, isStaff, totalAmount){
@@ -512,13 +742,16 @@
           '<div class="account-status-bar">' + segs + '</div>' +
           '<div class="order-stage-labels"><span>Confirmado</span><span>Yiwu</span><span>Tránsito</span><span>Aduana</span><span>Entregado</span></div>' +
           nextActionHtml +
+          '<div id="cbadge-' + order.id + '">' + chargeBadge(order.id) + '</div>' +
           (order.notes ? '<p style="margin-top:12px;font-size:.86rem;color:var(--muted)">' + escapeHtml(order.notes) + '</p>' : '') +
           statusControl +
           '<button type="button" class="order-detail-toggle" data-oid="' + order.id + '">Ver detalle &#9662;</button>' +
           '<div class="order-detail" id="odetail-' + order.id + '" hidden>' +
             structHtml +
             '<div><div class="order-detail-subhead">Archivos</div><div class="file-chip-list" id="ofiles-' + order.id + '"></div>' + uploadRow + '</div>' +
-            '<div><div class="order-detail-subhead">Pagos</div><div id="opayments-' + order.id + '"></div></div>' +
+            '<div><div class="order-detail-subhead">Cobros</div><div id="ocharges-' + order.id + '"></div></div>' +
+            (isStaff ? '<div><div class="order-detail-subhead">Costos y ganancia (solo equipo)</div><div id="ocosts-' + order.id + '"></div></div>' : '') +
+            '<div><div class="order-detail-subhead">Pagos registrados</div><div id="opayments-' + order.id + '"></div></div>' +
             '<div><div class="order-detail-subhead">Historial de estado</div><div class="timeline-list" id="otimeline-' + order.id + '"></div></div>' +
           '</div>' +
         '</div>';
@@ -541,6 +774,7 @@
       list.querySelectorAll('.order-status-select').forEach(function(sel){
         sel.addEventListener('change', async function(){
           var newStatus = sel.value;
+          if (newStatus === 'entregado' && unpaidOf(sel.dataset.id).length && !confirm('Este pedido tiene cobros pendientes (' + sumByCurrency(unpaidOf(sel.dataset.id)) + '). ¿Marcarlo como entregado de todos modos?')) { loadOrders(true, customersById); return; }
           sel.disabled = true;
           var res = await supabaseClient.from('orders').update({ status: newStatus }).eq('id', sel.dataset.id);
           if (res.error) {
@@ -562,6 +796,8 @@
           detail.dataset.loaded = '1';
           var order = ordersById[id];
           loadOrderFiles('orders', id, 'ofiles-' + id, isStaff);
+          renderOrderCharges(id, isStaff);
+          if (isStaff) renderOrderCosts(id);
           loadOrderPayments(id, 'opayments-' + id, isStaff, order.total_amount);
           loadOrderTimeline(id, 'otimeline-' + id);
           if (isStaff) wireFileUpload('orders', id, 'ofiles-' + id);
@@ -575,7 +811,15 @@
       .from('orders')
       .select('*')
       .order('created_at', { ascending: false });
-    renderOrders(ordersRes.data || [], customersById, isStaff);
+    ordersCache = ordersRes.data || [];
+    customersCache = customersById;
+    await reloadCharges();
+    if (isStaff) {
+      var costsRes = await supabaseClient.from('order_costs').select('*');
+      costsCache = costsRes.data || [];
+    }
+    renderOrders(ordersCache, customersById, isStaff);
+    if (isStaff) renderCash();
   }
 
   var QUOTE_STATUS_LABELS = { enviada: 'Enviada', en_revision: 'En revisión', aceptada: 'Aceptada', rechazada: 'Rechazada' };
@@ -843,6 +1087,7 @@
       var customersRes = await supabaseClient.from('profiles').select('id, full_name, email');
       customersById = {};
       (customersRes.data || []).forEach(function(c){ customersById[c.id] = c; });
+      document.getElementById('cashTabBtn').hidden = false;
       setupNewOrderForm(customersById);
       var toggleBtn = document.getElementById('toggleNewOrderBtn');
       toggleBtn.hidden = false;
