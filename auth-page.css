@@ -90,3 +90,16 @@
 .chip.is-on{ background:var(--petrol); border-color:var(--petrol); color:#fff; }
 .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
 @media (max-width:560px){ .two-col{ grid-template-columns:1fr; } }
+
+/* Perfil ampliado y pedidos */
+.profile-progress{ margin-bottom:20px; }
+.profile-progress-bar{ height:8px; border-radius:6px; background:var(--line); overflow:hidden; }
+.profile-progress-bar i{ display:block; height:100%; width:0; background:linear-gradient(90deg,#f2b91f,#1f8a5b); transition:width .3s ease; }
+.profile-progress span{ display:block; margin-top:8px; font-size:.82rem; color:var(--muted); }
+.order-stage-labels{ display:flex; justify-content:space-between; margin-top:6px; font-size:.68rem; color:var(--muted); }
+.next-action{ margin-top:14px; padding:12px 14px; border-radius:12px; background:var(--soft); }
+.next-action > span{ display:block; font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:6px; }
+.next-action.is-client{ background:#fff8e1; border:1px solid #f2d56a; }
+.next-action.is-client strong{ color:var(--petrol); }
+.next-action-row{ display:flex; gap:8px; }
+.next-action-input{ flex:1; min-width:0; padding:10px 12px; border:1px solid var(--line); border-radius:10px; font:inherit; font-size:.88rem; }
