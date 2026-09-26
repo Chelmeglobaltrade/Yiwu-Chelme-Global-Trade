@@ -64,3 +64,29 @@
 .profile-summary span{ color:var(--muted); font-size:.86rem; overflow-wrap:anywhere; }
 @media (max-width:600px){ .acct-chip{ width:100%; box-sizing:border-box; } .acct-bar .btn{ flex:1; justify-content:center; } }
 .auth-tabs[hidden],.auth-success[hidden],.acct-welcome[hidden]{ display:none !important; }
+
+/* Los atributos hidden deben ganar sobre display de .btn, .n, etc. (el botón de staff se veía para clientes) */
+[hidden]{ display:none !important; }
+
+/* Mis pedidos: encabezado, estado vacío y ventana de nuevo pedido */
+.orders-sub{ margin:4px 0 0; color:var(--muted); font-size:.92rem; }
+.btn-sm{ padding:10px 16px; font-size:.86rem; }
+.orders-empty{ margin-top:20px; padding:24px; border:1px dashed #c9d8da; border-radius:18px; background:#f7fbfb; }
+.orders-empty-head strong{ display:block; color:var(--petrol); font-size:1.1rem; margin-bottom:4px; }
+.orders-empty-head span{ color:var(--muted); font-size:.92rem; }
+.svc-start{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px; margin-top:18px; }
+.svc-start button{ display:grid; grid-template-columns:40px 1fr; grid-template-rows:auto auto; column-gap:12px; align-items:center; text-align:left; padding:14px; border:1px solid var(--line); border-radius:14px; background:#fff; cursor:pointer; font-family:inherit; transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease; }
+.svc-start button:hover{ transform:translateY(-2px); border-color:#f2b91f; box-shadow:0 8px 20px rgba(18,63,73,.1); }
+.svc-start svg{ grid-row:1 / span 2; width:40px; height:40px; padding:9px; box-sizing:border-box; border-radius:11px; background:#e7f0f1; color:var(--petrol); stroke:currentColor; fill:none; stroke-width:1.8; }
+.svc-start strong{ color:var(--petrol); font-size:.92rem; align-self:end; }
+.svc-start small{ color:var(--muted); font-size:.78rem; align-self:start; }
+.modal-back{ position:fixed; inset:0; z-index:200; display:grid; place-items:center; padding:16px; background:rgba(9,45,53,.55); backdrop-filter:blur(3px); }
+.modal-card{ position:relative; width:100%; max-width:520px; max-height:calc(100vh - 32px); overflow:auto; padding:28px; border-radius:20px; background:#fff; box-shadow:0 24px 60px rgba(0,0,0,.3); }
+.modal-card h3{ margin:0 0 4px; color:var(--petrol); font-size:1.35rem; }
+.modal-sub{ margin:0 0 18px; color:var(--muted); font-size:.86rem; }
+.modal-close{ position:absolute; top:14px; right:14px; width:36px; height:36px; border:0; border-radius:50%; background:var(--soft); color:var(--petrol); font-size:1.4rem; line-height:1; cursor:pointer; }
+.chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
+.chip{ padding:9px 14px; border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--petrol); font:inherit; font-size:.84rem; font-weight:700; cursor:pointer; }
+.chip.is-on{ background:var(--petrol); border-color:var(--petrol); color:#fff; }
+.two-col{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media (max-width:560px){ .two-col{ grid-template-columns:1fr; } }

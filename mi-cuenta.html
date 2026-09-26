@@ -44,22 +44,45 @@
 <section class="section" id="panel-orders">
   <div class="container">
     <div class="account-section-heading">
-      <h2 id="ordersTitle">Mis pedidos</h2>
-      <button type="button" id="toggleNewOrderBtn" class="btn" style="background:transparent;border:1px solid var(--line)" hidden>+ Agregar pedido</button>
+      <div><h2 id="ordersTitle">Mis pedidos</h2><p class="orders-sub" id="ordersSub">Aquí sigues cada importación: estado, pagos y archivos.</p></div>
+      <button type="button" id="toggleNewOrderBtn" class="btn btn-gold btn-sm" hidden>+ Agregar pedido</button>
     </div>
-    <div id="ordersEmpty" style="margin-top:16px;color:var(--muted)" hidden>Todavía no tienes pedidos registrados. Cuando confirmemos una cotización contigo, la verás aquí.</div>
+    <div id="ordersEmpty" class="orders-empty" hidden>
+      <div class="orders-empty-head"><strong>Todavía no tienes pedidos</strong><span>Un pedido aparece aquí cuando confirmamos una cotización contigo. Empieza eligiendo qué necesitas:</span></div>
+      <div class="svc-start">
+        <button type="button" data-start="lcl"><svg><use href="#i-boxes"></use></svg><strong>Carga consolidada</strong><small>Poca carga, pagas por m³</small></button>
+        <button type="button" data-start="fcl"><svg><use href="#i-container"></use></svg><strong>Contenedor completo</strong><small>Carga grande, solo tuya</small></button>
+        <button type="button" data-start="sourcing"><svg><use href="#i-search"></use></svg><strong>Buscar proveedor</strong><small>Encontramos la fábrica</small></button>
+        <button type="button" data-start="quality"><svg><use href="#i-shield"></use></svg><strong>Control de calidad</strong><small>Revisamos antes de enviar</small></button>
+        <button type="button" data-start="translation"><svg><use href="#i-language"></use></svg><strong>Traducción</strong><small>Te acompañamos en China</small></button>
+        <button type="button" data-start="advisory"><svg><use href="#i-chat"></use></svg><strong>Asesoría</strong><small>Te orientamos primero</small></button>
+      </div>
+    </div>
     <div id="ordersList" style="margin-top:20px;display:flex;flex-direction:column;gap:16px"></div>
 
-    <div id="newOrderSection" hidden style="margin-top:28px;max-width:460px">
-      <h3 style="margin-bottom:4px">Nuevo pedido</h3>
-      <p style="color:var(--muted);font-size:.86rem;margin-bottom:16px">Para pedidos confirmados por WhatsApp u otro canal que no pasaron por el cotizador online.</p>
-      <div class="auth-card">
+    <div id="newOrderSection" class="modal-back" hidden role="dialog" aria-modal="true" aria-labelledby="newOrderTitle">
+      <div class="modal-card">
+        <button type="button" class="modal-close" id="newOrderClose" aria-label="Cerrar">×</button>
+        <h3 id="newOrderTitle">Nuevo pedido</h3>
+        <p class="modal-sub">Para pedidos confirmados por WhatsApp u otro canal que no pasaron por el cotizador online.</p>
         <form id="newOrderForm" class="auth-form">
+          <div class="auth-field">Servicio
+            <div class="chip-row" id="newOrderServiceChips">
+              <button type="button" class="chip is-on" data-svc="lcl">Consolidado LCL</button>
+              <button type="button" class="chip" data-svc="fcl">Contenedor FCL</button>
+              <button type="button" class="chip" data-svc="sourcing">Proveedor</button>
+              <button type="button" class="chip" data-svc="quality">Calidad</button>
+              <button type="button" class="chip" data-svc="translation">Traducción</button>
+              <button type="button" class="chip" data-svc="advisory">Asesoría</button>
+            </div>
+          </div>
           <label class="auth-field">Cliente<select id="newOrderCustomer" required></select></label>
-          <label class="auth-field">Referencia<input type="text" id="newOrderReference" placeholder="Ej: Contenedor 20GP - Septiembre"></label>
-          <label class="auth-field">Estado inicial<select id="newOrderStatus"></select></label>
+          <div class="two-col">
+            <label class="auth-field">Referencia<input type="text" id="newOrderReference" placeholder="Ej: Contenedor 20GP - Septiembre"></label>
+            <label class="auth-field">Estado inicial<select id="newOrderStatus"></select></label>
+          </div>
           <label class="auth-field">Notas<textarea id="newOrderNotes" rows="3"></textarea></label>
-          <button type="submit" class="btn btn-gold" style="width:100%">Crear pedido</button>
+          <button type="submit" class="btn btn-gold auth-submit">Crear pedido</button>
         </form>
         <p id="newOrderMessage" class="auth-message" hidden></p>
       </div>
@@ -598,6 +621,7 @@
       msg.classList.remove('is-error');
       var res = await supabaseClient.from('orders').insert({
         user_id: customerSelect.value,
+        service: (document.querySelector('#newOrderServiceChips .chip.is-on') || {}).dataset.svc || null,
         status: statusSelect.value,
         reference: document.getElementById('newOrderReference').value.trim() || null,
         notes: document.getElementById('newOrderNotes').value.trim() || null
@@ -612,7 +636,6 @@
       loadOrders(true, customersById);
       setTimeout(function(){
         document.getElementById('newOrderSection').hidden = true;
-        document.getElementById('toggleNewOrderBtn').textContent = '+ Agregar pedido';
         msg.hidden = true;
       }, 1200);
     });
@@ -729,11 +752,15 @@
       setupNewOrderForm(customersById);
       var toggleBtn = document.getElementById('toggleNewOrderBtn');
       toggleBtn.hidden = false;
-      toggleBtn.addEventListener('click', function(){
-        var panel = document.getElementById('newOrderSection');
-        panel.hidden = !panel.hidden;
-        toggleBtn.textContent = panel.hidden ? '+ Agregar pedido' : 'Cerrar';
-        if (!panel.hidden) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      var orderModal = document.getElementById('newOrderSection');
+      toggleBtn.addEventListener('click', function(){ orderModal.hidden = false; });
+      document.getElementById('newOrderClose').addEventListener('click', function(){ orderModal.hidden = true; });
+      orderModal.addEventListener('click', function(e){ if (e.target === orderModal) orderModal.hidden = true; });
+      document.addEventListener('keydown', function(e){ if (e.key === 'Escape') orderModal.hidden = true; });
+      document.querySelectorAll('#newOrderServiceChips .chip').forEach(function(c){
+        c.addEventListener('click', function(){
+          document.querySelectorAll('#newOrderServiceChips .chip').forEach(function(x){ x.classList.toggle('is-on', x === c); });
+        });
       });
     }
     await loadOrders(isStaff, customersById);
@@ -753,6 +780,14 @@
     }
   }
 
+  document.querySelectorAll('[data-start]').forEach(function(b){
+    b.addEventListener('click', function(){
+      showTab('quote');
+      var pick = document.querySelector('[data-quote-service="' + b.dataset.start + '"]');
+      if (pick) pick.click();
+      document.getElementById('panel-quote').scrollIntoView({ behavior: 'smooth' });
+    });
+  });
   document.getElementById('openProfileBtn').addEventListener('click', function(){
     showTab('profile');
     document.getElementById('panel-profile').scrollIntoView({ behavior: 'smooth', block: 'start' });
