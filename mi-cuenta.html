@@ -44,22 +44,45 @@
 <section class="section" id="panel-orders">
   <div class="container">
     <div class="account-section-heading">
-      <h2 id="ordersTitle">Mis pedidos</h2>
-      <button type="button" id="toggleNewOrderBtn" class="btn" style="background:transparent;border:1px solid var(--line)" hidden>+ Agregar pedido</button>
+      <div><h2 id="ordersTitle">Mis pedidos</h2><p class="orders-sub" id="ordersSub">Aquí sigues cada importación: estado, pagos y archivos.</p></div>
+      <button type="button" id="toggleNewOrderBtn" class="btn btn-gold btn-sm" hidden>+ Agregar pedido</button>
     </div>
-    <div id="ordersEmpty" style="margin-top:16px;color:var(--muted)" hidden>Todavía no tienes pedidos registrados. Cuando confirmemos una cotización contigo, la verás aquí.</div>
+    <div id="ordersEmpty" class="orders-empty" hidden>
+      <div class="orders-empty-head"><strong>Todavía no tienes pedidos</strong><span>Un pedido aparece aquí cuando confirmamos una cotización contigo. Empieza eligiendo qué necesitas:</span></div>
+      <div class="svc-start">
+        <button type="button" data-start="lcl"><svg><use href="#i-boxes"></use></svg><strong>Carga consolidada</strong><small>Poca carga, pagas por m³</small></button>
+        <button type="button" data-start="fcl"><svg><use href="#i-container"></use></svg><strong>Contenedor completo</strong><small>Carga grande, solo tuya</small></button>
+        <button type="button" data-start="sourcing"><svg><use href="#i-search"></use></svg><strong>Buscar proveedor</strong><small>Encontramos la fábrica</small></button>
+        <button type="button" data-start="quality"><svg><use href="#i-shield"></use></svg><strong>Control de calidad</strong><small>Revisamos antes de enviar</small></button>
+        <button type="button" data-start="translation"><svg><use href="#i-language"></use></svg><strong>Traducción</strong><small>Te acompañamos en China</small></button>
+        <button type="button" data-start="advisory"><svg><use href="#i-chat"></use></svg><strong>Asesoría</strong><small>Te orientamos primero</small></button>
+      </div>
+    </div>
     <div id="ordersList" style="margin-top:20px;display:flex;flex-direction:column;gap:16px"></div>
 
-    <div id="newOrderSection" hidden style="margin-top:28px;max-width:460px">
-      <h3 style="margin-bottom:4px">Nuevo pedido</h3>
-      <p style="color:var(--muted);font-size:.86rem;margin-bottom:16px">Para pedidos confirmados por WhatsApp u otro canal que no pasaron por el cotizador online.</p>
-      <div class="auth-card">
+    <div id="newOrderSection" class="modal-back" hidden role="dialog" aria-modal="true" aria-labelledby="newOrderTitle">
+      <div class="modal-card">
+        <button type="button" class="modal-close" id="newOrderClose" aria-label="Cerrar">×</button>
+        <h3 id="newOrderTitle">Nuevo pedido</h3>
+        <p class="modal-sub">Para pedidos confirmados por WhatsApp u otro canal que no pasaron por el cotizador online.</p>
         <form id="newOrderForm" class="auth-form">
+          <div class="auth-field">Servicio
+            <div class="chip-row" id="newOrderServiceChips">
+              <button type="button" class="chip is-on" data-svc="lcl">Consolidado LCL</button>
+              <button type="button" class="chip" data-svc="fcl">Contenedor FCL</button>
+              <button type="button" class="chip" data-svc="sourcing">Proveedor</button>
+              <button type="button" class="chip" data-svc="quality">Calidad</button>
+              <button type="button" class="chip" data-svc="translation">Traducción</button>
+              <button type="button" class="chip" data-svc="advisory">Asesoría</button>
+            </div>
+          </div>
           <label class="auth-field">Cliente<select id="newOrderCustomer" required></select></label>
-          <label class="auth-field">Referencia<input type="text" id="newOrderReference" placeholder="Ej: Contenedor 20GP - Septiembre"></label>
-          <label class="auth-field">Estado inicial<select id="newOrderStatus"></select></label>
+          <div class="two-col">
+            <label class="auth-field">Referencia<input type="text" id="newOrderReference" placeholder="Ej: Contenedor 20GP - Septiembre"></label>
+            <label class="auth-field">Estado inicial<select id="newOrderStatus"></select></label>
+          </div>
           <label class="auth-field">Notas<textarea id="newOrderNotes" rows="3"></textarea></label>
-          <button type="submit" class="btn btn-gold" style="width:100%">Crear pedido</button>
+          <button type="submit" class="btn btn-gold auth-submit">Crear pedido</button>
         </form>
         <p id="newOrderMessage" class="auth-message" hidden></p>
       </div>
@@ -193,15 +216,36 @@
   </div>
 </section>
 
-<section class="section section-soft" id="panel-profile" hidden><div class="container" style="max-width:460px">
+<section class="section section-soft" id="panel-profile" hidden><div class="container" style="max-width:640px">
 
   <h2>Mi perfil</h2>
   <div class="auth-card" style="margin-top:20px">
     <div class="profile-summary"><span class="acct-avatar" id="profileAvatar">·</span><div><strong id="profileHeadName">Tu cuenta</strong><span id="profileHeadEmail"></span></div></div>
+    <div class="profile-progress"><div class="profile-progress-bar"><i id="profileProgressFill"></i></div><span id="profileProgressText">Perfil 0% completo</span></div>
     <form id="profileForm" class="auth-form">
+      <div class="auth-field">Soy
+        <div class="chip-row" id="profileTypeChips">
+          <button type="button" class="chip" data-type="persona">Persona</button>
+          <button type="button" class="chip" data-type="empresa">Empresa</button>
+        </div>
+      </div>
       <label class="auth-field">Nombre completo<input type="text" id="profileName" autocomplete="name"></label>
       <label class="auth-field">WhatsApp<input type="tel" id="profilePhone" placeholder="+56 9 1234 5678" autocomplete="tel"></label>
-      <button type="submit" class="btn btn-gold" style="width:100%">Guardar cambios</button>
+      <div class="two-col" id="profileCompanyRow" hidden>
+        <label class="auth-field">Razón social<input type="text" id="profileCompany" autocomplete="organization"></label>
+        <label class="auth-field">RUT / ID tributario<input type="text" id="profileTaxId" placeholder="Ej.: 12.345.678-9"></label>
+      </div>
+      <div class="two-col">
+        <label class="auth-field">País de destino<input type="text" id="profileCountry" placeholder="Ej.: Chile"></label>
+        <label class="auth-field">Ciudad de destino<input type="text" id="profileCity" placeholder="Ej.: Santiago"></label>
+      </div>
+      <label class="auth-field">Dirección de entrega <em class="opt">(opcional, la pedimos al aceptar tu cotización)</em><input type="text" id="profileAddress" autocomplete="street-address"></label>
+      <div class="two-col">
+        <label class="auth-field">¿Has importado antes?<select id="profileExperience"><option value="">Elige una opción</option><option value="primera_vez">Es mi primera vez</option><option value="ocasional">He importado algunas veces</option><option value="frecuente">Importo frecuentemente</option></select></label>
+        <label class="auth-field">Prefiero que me contacten por<select id="profileContactPref"><option value="">Elige una opción</option><option value="whatsapp">WhatsApp</option><option value="correo">Correo</option></select></label>
+      </div>
+      <label class="auth-field">¿Cómo nos conociste?<select id="profileHowFound"><option value="">Elige una opción</option><option>Instagram</option><option>TikTok</option><option>Google</option><option>Recomendación</option><option>Otro</option></select></label>
+      <button type="submit" class="btn btn-gold auth-submit">Guardar cambios</button>
     </form>
     <p id="profileMessage" class="auth-message" hidden></p>
   </div>
@@ -241,6 +285,38 @@
   function moneyFmt(v){
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(Number(v) || 0);
   }
+
+  var PROFILE_FIELDS = { company_name: 'profileCompany', tax_id: 'profileTaxId', dest_country: 'profileCountry', dest_city: 'profileCity', delivery_address: 'profileAddress', import_experience: 'profileExperience', contact_pref: 'profileContactPref', how_found: 'profileHowFound' };
+  var profileType = '';
+  function setProfileType(t){
+    profileType = t || '';
+    document.querySelectorAll('#profileTypeChips .chip').forEach(function(c){ c.classList.toggle('is-on', c.dataset.type === profileType); });
+    document.getElementById('profileCompanyRow').hidden = profileType !== 'empresa';
+    updateProfileProgress();
+  }
+  function fillProfile(p){
+    Object.keys(PROFILE_FIELDS).forEach(function(k){ document.getElementById(PROFILE_FIELDS[k]).value = p[k] || ''; });
+    setProfileType(p.customer_type || '');
+  }
+  function updateProfileProgress(){
+    var checks = [
+      document.getElementById('profileName').value.trim(),
+      document.getElementById('profilePhone').value.trim(),
+      profileType,
+      document.getElementById('profileCountry').value.trim(),
+      document.getElementById('profileCity').value.trim(),
+      document.getElementById('profileExperience').value,
+      document.getElementById('profileContactPref').value
+    ];
+    var done = checks.filter(Boolean).length;
+    var pct = Math.round(done / checks.length * 100);
+    document.getElementById('profileProgressFill').style.width = pct + '%';
+    document.getElementById('profileProgressText').textContent = pct === 100 ? 'Perfil completo. Tus cotizaciones saldrán con tus datos.' : 'Perfil ' + pct + '% completo · con más datos cotizamos más rápido';
+  }
+  document.querySelectorAll('#profileTypeChips .chip').forEach(function(c){
+    c.addEventListener('click', function(){ setProfileType(c.dataset.type === profileType ? '' : c.dataset.type); });
+  });
+  document.getElementById('profileForm').addEventListener('input', updateProfileProgress);
 
   function showTab(name){
     var btn = document.querySelector('.portal-tab[data-tab="' + name + '"]');
@@ -367,6 +443,8 @@
     entregado: { bg: '#e6f7ec', fg: '#1f7a43' }
   };
 
+  var SERVICE_LABELS = { lcl: 'Consolidado LCL', fcl: 'Contenedor FCL', quality: 'Control de calidad', sourcing: 'Búsqueda de proveedor', translation: 'Traducción', advisory: 'Asesoría', trip: 'Viaje a China' };
+
   function renderOrders(orders, customersById, isStaff){
     var list = document.getElementById('ordersList');
     var empty = document.getElementById('ordersEmpty');
@@ -395,7 +473,8 @@
           '</select></div>'
         : '';
       var structFields = [];
-      if (order.service) structFields.push(['Servicio', order.service]);
+      if (order.service) structFields.push(['Servicio', SERVICE_LABELS[order.service] || order.service]);
+      if (order.tracking_number) structFields.push(['Seguimiento', order.tracking_number]);
       if (order.cbm) structFields.push(['CBM', order.cbm + ' m³']);
       if (order.weight_kg) structFields.push(['Peso', order.weight_kg + ' kg']);
       if (order.goods_value) structFields.push(['Valor mercancía', moneyFmt(order.goods_value) + ' ' + (order.goods_currency || '')]);
@@ -403,6 +482,9 @@
       var structHtml = structFields.length
         ? '<div class="order-detail-grid">' + structFields.map(function(f){ return '<div class="order-detail-field"><span>' + f[0] + '</span>' + escapeHtml(String(f[1])) + '</div>'; }).join('') + '</div>'
         : '';
+      var nextActionHtml = isStaff
+        ? '<div class="next-action"><span>Próximo paso para el cliente</span><div class="next-action-row"><input type="text" class="next-action-input" data-id="' + order.id + '" value="' + escapeHtml(order.next_action || '') + '" placeholder="Ej.: Subir factura del proveedor"><button type="button" class="btn btn-light btn-sm next-action-save" data-id="' + order.id + '">Guardar</button></div></div>'
+        : (order.next_action ? '<div class="next-action is-client"><span>Próximo paso</span><strong>' + escapeHtml(order.next_action) + '</strong></div>' : '');
       var uploadRow = isStaff ? '<div class="file-upload-row"><input type="file" id="upload-orders-' + order.id + '" multiple></div>' : '';
       return '' +
         '<div class="account-card">' +
@@ -411,6 +493,8 @@
             '<span class="account-pill" style="background:' + style.bg + ';color:' + style.fg + '">' + label + '</span>' +
           '</div>' +
           '<div class="account-status-bar">' + segs + '</div>' +
+          '<div class="order-stage-labels"><span>Confirmado</span><span>Yiwu</span><span>Tránsito</span><span>Aduana</span><span>Entregado</span></div>' +
+          nextActionHtml +
           (order.notes ? '<p style="margin-top:12px;font-size:.86rem;color:var(--muted)">' + escapeHtml(order.notes) + '</p>' : '') +
           statusControl +
           '<button type="button" class="order-detail-toggle" data-oid="' + order.id + '">Ver detalle &#9662;</button>' +
@@ -427,6 +511,16 @@
     orders.forEach(function(o){ ordersById[o.id] = o; });
 
     if (isStaff) {
+      list.querySelectorAll('.next-action-save').forEach(function(btn){
+        btn.addEventListener('click', async function(){
+          var input = list.querySelector('.next-action-input[data-id="' + btn.dataset.id + '"]');
+          btn.disabled = true;
+          var r = await supabaseClient.from('orders').update({ next_action: input.value.trim() || null }).eq('id', btn.dataset.id);
+          btn.disabled = false;
+          btn.textContent = r.error ? 'Error' : 'Guardado';
+          setTimeout(function(){ btn.textContent = 'Guardar'; }, 1600);
+        });
+      });
       list.querySelectorAll('.order-status-select').forEach(function(sel){
         sel.addEventListener('change', async function(){
           var newStatus = sel.value;
@@ -598,6 +692,7 @@
       msg.classList.remove('is-error');
       var res = await supabaseClient.from('orders').insert({
         user_id: customerSelect.value,
+        service: (document.querySelector('#newOrderServiceChips .chip.is-on') || {}).dataset.svc || null,
         status: statusSelect.value,
         reference: document.getElementById('newOrderReference').value.trim() || null,
         notes: document.getElementById('newOrderNotes').value.trim() || null
@@ -612,7 +707,6 @@
       loadOrders(true, customersById);
       setTimeout(function(){
         document.getElementById('newOrderSection').hidden = true;
-        document.getElementById('toggleNewOrderBtn').textContent = '+ Agregar pedido';
         msg.hidden = true;
       }, 1200);
     });
@@ -704,7 +798,7 @@
 
     var profileRes = await supabaseClient
       .from('profiles')
-      .select('full_name, phone, role')
+      .select('full_name, phone, role, customer_type, company_name, tax_id, dest_country, dest_city, delivery_address, import_experience, contact_pref, how_found')
       .eq('id', session.user.id)
       .single();
     var profile = profileRes.data;
@@ -712,12 +806,18 @@
     paintUser((profile && profile.full_name) || '', session.user.email);
     document.getElementById('profileName').value = (profile && profile.full_name) || '';
     document.getElementById('profilePhone').value = (profile && profile.phone) || '';
+    fillProfile(profile || {});
 
     initQuoteWizard({
       name: (profile && profile.full_name) || '',
       email: session.user.email || '',
       phone: (profile && profile.phone) || ''
     });
+
+    var qDest = document.getElementById('quoteDestination');
+    if (qDest && !qDest.value && profile && (profile.dest_city || profile.dest_country)) {
+      qDest.value = [profile.dest_city, profile.dest_country].filter(Boolean).join(', ');
+    }
 
     var customersById = null;
     if (isStaff) {
@@ -729,11 +829,15 @@
       setupNewOrderForm(customersById);
       var toggleBtn = document.getElementById('toggleNewOrderBtn');
       toggleBtn.hidden = false;
-      toggleBtn.addEventListener('click', function(){
-        var panel = document.getElementById('newOrderSection');
-        panel.hidden = !panel.hidden;
-        toggleBtn.textContent = panel.hidden ? '+ Agregar pedido' : 'Cerrar';
-        if (!panel.hidden) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      var orderModal = document.getElementById('newOrderSection');
+      toggleBtn.addEventListener('click', function(){ orderModal.hidden = false; });
+      document.getElementById('newOrderClose').addEventListener('click', function(){ orderModal.hidden = true; });
+      orderModal.addEventListener('click', function(e){ if (e.target === orderModal) orderModal.hidden = true; });
+      document.addEventListener('keydown', function(e){ if (e.key === 'Escape') orderModal.hidden = true; });
+      document.querySelectorAll('#newOrderServiceChips .chip').forEach(function(c){
+        c.addEventListener('click', function(){
+          document.querySelectorAll('#newOrderServiceChips .chip').forEach(function(x){ x.classList.toggle('is-on', x === c); });
+        });
       });
     }
     await loadOrders(isStaff, customersById);
@@ -753,6 +857,14 @@
     }
   }
 
+  document.querySelectorAll('[data-start]').forEach(function(b){
+    b.addEventListener('click', function(){
+      showTab('quote');
+      var pick = document.querySelector('[data-quote-service="' + b.dataset.start + '"]');
+      if (pick) pick.click();
+      document.getElementById('panel-quote').scrollIntoView({ behavior: 'smooth' });
+    });
+  });
   document.getElementById('openProfileBtn').addEventListener('click', function(){
     showTab('profile');
     document.getElementById('panel-profile').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -776,7 +888,12 @@
     var session = sessionRes.data.session;
     var res = await supabaseClient
       .from('profiles')
-      .update({ full_name: name, phone: phone })
+      .update((function(){
+        var upd = { full_name: name, phone: phone, customer_type: profileType || null };
+        Object.keys(PROFILE_FIELDS).forEach(function(k){ upd[k] = document.getElementById(PROFILE_FIELDS[k]).value.trim() || null; });
+        if (profileType !== 'empresa') { upd.company_name = null; upd.tax_id = null; }
+        return upd;
+      })())
       .eq('id', session.user.id);
     if (res.error) {
       msg.textContent = 'No se pudo guardar: ' + res.error.message;
