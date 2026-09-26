@@ -148,7 +148,7 @@
     doc.text((biz.instagramHandle ? "IG " + biz.instagramHandle + "   ·   " : "") + SITE_URL, W / 2, fy + 41, { align: "center" });
   }
 
-  async function buildPdf(data) {
+  async function buildPdf(data, opts) {
     if (!window.jspdf || !window.jspdf.jsPDF) {
       alert("El generador de PDF aún está cargando. Intenta de nuevo en unos segundos.");
       return;
@@ -271,6 +271,7 @@
     var conditionItems = [
       "Estimación referencial: no constituye una cotización final. Precio, MOQ, peso, embalaje, CBM, disponibilidad y restricciones deben confirmarse antes de comprar.",
       "Los impuestos de importación, aduana, gastos portuarios y entrega en destino NO están incluidos.",
+      "La carga llega a Santiago. El envío a regiones se cotiza aparte o puedes retirar en bodega una vez que llegue.",
       "El consolidado se factura por CBM: mínimo 1 m³; bajo 5 m³ aplica cargo operativo fijo.",
       "Para confirmar, envía tu solicitud por WhatsApp indicando la referencia " + ref + "."
     ];
@@ -327,7 +328,15 @@
       }
     }
 
-    doc.save("Cotizacion-Chelme-" + ref + ".pdf");
+    var filename = "Cotizacion-Chelme-" + ref + ".pdf";
+    if (opts && opts.mode === "blob") return { blob: doc.output("blob"), filename: filename, ref: ref };
+    if (opts && opts.mode === "print") {
+      doc.autoPrint();
+      var url = doc.output("bloburl");
+      if (opts.win && !opts.win.closed) opts.win.location.href = url; else window.open(url, "_blank");
+      return;
+    }
+    doc.save(filename);
   }
 
   function ready(fn) {
@@ -347,5 +356,12 @@
     });
     var b2 = document.getElementById("quotePdfBtn");
     if (b2) b2.addEventListener("click", function () { buildPdf(collectPreview()); });
+    var b3 = document.getElementById("quotePrintBtn");
+    if (b3) b3.addEventListener("click", function () {
+      var w = window.open("about:blank", "_blank");
+      buildPdf(collectPreview(), { mode: "print", win: w });
+    });
+    // Para que el asistente pueda adjuntar el PDF al enviar por WhatsApp.
+    window.ChelmePdf = { fromPreview: function () { return buildPdf(collectPreview(), { mode: "blob" }); } };
   });
 })();
