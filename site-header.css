@@ -67,3 +67,6 @@
   .rd-nav-cta{ white-space:nowrap; padding:10px 14px !important; margin-left:2px; font-size:.86rem !important; }
   .rd-nav-cta svg{ display:none; }
 }
+
+/* Menú Mi cuenta con sesión iniciada */
+.nav-user-dot{ display:inline-grid; place-items:center; width:22px; height:22px; margin-right:4px; border-radius:50%; background:#f2b91f; color:#123f49; font-size:.72rem; font-weight:800; vertical-align:middle; }

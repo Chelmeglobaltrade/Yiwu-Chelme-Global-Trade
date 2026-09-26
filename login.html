@@ -46,21 +46,35 @@
     </div>
 
     <form id="loginForm" class="auth-form">
-      <label class="auth-field">Correo<input type="email" id="loginEmail" required autocomplete="email"></label>
-      <label class="auth-field">Contraseña<input type="password" id="loginPassword" required autocomplete="current-password"></label>
-      <button type="submit" class="btn btn-gold" style="width:100%">Entrar</button>
-      <p style="margin-top:12px;font-size:.82rem;text-align:center"><a href="#" id="forgotPasswordLink" style="color:var(--muted)">¿Olvidaste tu contraseña?</a></p>
+      <label class="auth-field">Correo<input type="email" id="loginEmail" required autocomplete="email" placeholder="tucorreo@ejemplo.com"></label>
+      <label class="auth-field">Contraseña<span class="pw-wrap"><input type="password" id="loginPassword" required autocomplete="current-password" placeholder="Tu contraseña"><button type="button" class="pw-toggle" data-target="loginPassword" aria-label="Mostrar contraseña">Mostrar</button></span></label>
+      <button type="submit" class="btn btn-gold auth-submit">Entrar a mi cuenta</button>
+      <p class="auth-alt"><a href="#" id="forgotPasswordLink">¿Olvidaste tu contraseña?</a></p>
+      <p class="auth-switch">¿Primera vez aquí? <a href="?tab=signup" data-switch="signup">Crea tu cuenta gratis</a></p>
     </form>
 
     <form id="signupForm" class="auth-form" style="display:none">
-      <label class="auth-field">Nombre completo<input type="text" id="signupName" required autocomplete="name"></label>
-      <label class="auth-field">WhatsApp<input type="tel" id="signupPhone" placeholder="+56 9 1234 5678" autocomplete="tel"></label>
-      <label class="auth-field">Correo<input type="email" id="signupEmail" required autocomplete="email"></label>
-      <label class="auth-field">Contraseña<input type="password" id="signupPassword" required minlength="6" autocomplete="new-password"></label>
-      <button type="submit" class="btn btn-gold" style="width:100%">Crear mi cuenta</button>
+      <label class="auth-field">Nombre completo<input type="text" id="signupName" required autocomplete="name" placeholder="Ej.: María Pérez"></label>
+      <label class="auth-field">Correo<input type="email" id="signupEmail" required autocomplete="email" placeholder="tucorreo@ejemplo.com"></label>
+      <label class="auth-field">Contraseña<span class="pw-wrap"><input type="password" id="signupPassword" required minlength="6" autocomplete="new-password" placeholder="Mínimo 6 caracteres"><button type="button" class="pw-toggle" data-target="signupPassword" aria-label="Mostrar contraseña">Mostrar</button></span></label>
+      <label class="auth-field">WhatsApp <em class="opt">(opcional, para que te contactemos)</em><input type="tel" id="signupPhone" placeholder="+56 9 1234 5678" autocomplete="tel"></label>
+      <button type="submit" class="btn btn-gold auth-submit">Crear mi cuenta</button>
+      <p class="auth-switch">¿Ya tienes cuenta? <a href="?tab=login" data-switch="login">Inicia sesión</a></p>
     </form>
 
-    <p id="authMessage" class="auth-message" hidden></p>
+    <div id="authSuccess" class="auth-success" hidden aria-live="polite">
+      <div class="auth-success-icon"><svg><use href="#i-check"></use></svg></div>
+      <h2 id="successTitle">¡Cuenta creada!</h2>
+      <p id="successText"></p>
+      <ol id="successSteps" class="auth-success-steps"></ol>
+      <div class="auth-success-actions">
+        <a class="btn btn-gold" id="successPrimary" href="mi-cuenta.html">Ir a mi cuenta</a>
+        <button type="button" class="btn btn-light" id="resendBtn" hidden>Reenviar correo</button>
+      </div>
+      <p class="auth-success-help" id="successHelp"></p>
+    </div>
+
+    <p id="authMessage" class="auth-message" hidden role="status"></p>
 
     <div class="auth-privacy-note"><svg><use href="#i-shield"></use></svg><span>Tus datos se usan solo para gestionar tu importación. No los compartimos con terceros.</span></div>
   </div>
@@ -94,7 +108,7 @@
     loginForm.style.display = isLogin ? 'flex' : 'none';
     signupForm.style.display = isLogin ? 'none' : 'flex';
     title.textContent = isLogin ? 'Inicia sesión' : 'Crea tu cuenta';
-    subtitle.textContent = isLogin ? 'Entra a tu cuenta para ver tus cotizaciones y pedidos.' : 'Regístrate para seguir tus cotizaciones y pedidos.';
+    subtitle.textContent = isLogin ? 'Entra a tu cuenta para ver tus cotizaciones y pedidos.' : 'Es gratis y toma menos de un minuto.';
     msg.hidden = true;
   }
 
@@ -114,37 +128,148 @@
 
   loginForm.addEventListener('submit', async function(e){
     e.preventDefault();
-    showMessage('Entrando...', false);
+    msg.hidden = true;
+    setBusy(loginForm, true, 'Entrando...');
     var email = document.getElementById('loginEmail').value.trim();
     var password = document.getElementById('loginPassword').value;
     var result = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+    setBusy(loginForm, false);
     if (result.error) {
-      showMessage(result.error.message === 'Invalid login credentials' ? 'Correo o contraseña incorrectos.' : result.error.message, true);
+      if ((result.error.message || '').toLowerCase().indexOf('not confirmed') > -1) { showConfirmEmail(email); return; }
+      showMessage(friendlyError(result.error), true);
       return;
     }
     window.location.href = accountDestination();
   });
 
+  function friendlyError(err){
+    var m = (err && err.message || '').toLowerCase();
+    if (m.indexOf('invalid login') > -1) return 'Correo o contraseña incorrectos. Revisa los datos o crea tu cuenta.';
+    if (m.indexOf('already registered') > -1 || m.indexOf('already been registered') > -1) return 'Ese correo ya tiene una cuenta. Inicia sesión o recupera tu contraseña.';
+    if (m.indexOf('password') > -1 && (m.indexOf('least') > -1 || m.indexOf('weak') > -1 || m.indexOf('short') > -1)) return 'La contraseña es muy corta o débil. Usa al menos 6 caracteres.';
+    if (m.indexOf('rate limit') > -1 || m.indexOf('too many') > -1 || m.indexOf('seconds') > -1) return 'Hiciste muchos intentos seguidos. Espera un minuto y vuelve a probar.';
+    if (m.indexOf('valid email') > -1 || m.indexOf('invalid email') > -1) return 'Escribe un correo válido, por ejemplo nombre@correo.com.';
+    if (m.indexOf('failed to fetch') > -1 || m.indexOf('network') > -1) return 'No hay conexión con el servidor. Revisa tu internet y vuelve a intentar.';
+    return 'No pudimos completar la acción (' + (err && err.message || 'error desconocido') + '). Intenta de nuevo o escríbenos por WhatsApp.';
+  }
+
+  document.querySelectorAll('.pw-toggle').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var input = document.getElementById(btn.dataset.target);
+      var show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      btn.textContent = show ? 'Ocultar' : 'Mostrar';
+      btn.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    });
+  });
+  document.querySelectorAll('[data-switch]').forEach(function(a){
+    a.addEventListener('click', function(e){ e.preventDefault(); activateTab(a.dataset.switch); });
+  });
+
+  var authCard = document.querySelector('.auth-card');
+  var successBox = document.getElementById('authSuccess');
+  var resendBtn = document.getElementById('resendBtn');
+  var pendingEmail = '';
+
+  function setBusy(form, busy, label){
+    var btn = form.querySelector('.auth-submit');
+    if (!btn) return;
+    if (!btn.dataset.label) btn.dataset.label = btn.textContent;
+    btn.disabled = busy;
+    btn.textContent = busy ? label : btn.dataset.label;
+  }
+
+  function showSuccess(opts){
+    authCard.querySelector('.auth-tabs').hidden = true;
+    loginForm.style.display = 'none';
+    signupForm.style.display = 'none';
+    msg.hidden = true;
+    title.textContent = opts.heroTitle;
+    subtitle.textContent = opts.heroSubtitle;
+    document.getElementById('successTitle').textContent = opts.title;
+    document.getElementById('successText').innerHTML = opts.text;
+    document.getElementById('successSteps').innerHTML = opts.steps.map(function(t){ return '<li>' + t + '</li>'; }).join('');
+    var primary = document.getElementById('successPrimary');
+    primary.textContent = opts.primaryLabel;
+    primary.href = opts.primaryHref;
+    resendBtn.hidden = !opts.canResend;
+    document.getElementById('successHelp').textContent = opts.help || '';
+    successBox.hidden = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function escapeHtml(t){ return String(t).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  function showConfirmEmail(email){
+    pendingEmail = email;
+    showSuccess({
+      heroTitle: 'Un paso más',
+      heroSubtitle: 'Confirma tu correo para activar tu cuenta.',
+      title: 'Revisa tu correo',
+      text: 'Te enviamos un mensaje a <strong>' + escapeHtml(email) + '</strong>.',
+      steps: [
+        'Abre tu correo y busca el mensaje de Chelme Global Trade.',
+        'Toca el botón <strong>Confirmar correo</strong> dentro del mensaje.',
+        'Volverás a la página y entrarás directo a tu cuenta.'
+      ],
+      primaryLabel: 'Ya confirmé, iniciar sesión',
+      primaryHref: 'login.html',
+      canResend: true,
+      help: 'Si no lo ves en unos minutos, revisa la carpeta de spam o correo no deseado.'
+    });
+  }
+
+  resendBtn.addEventListener('click', async function(){
+    resendBtn.disabled = true;
+    var r = await supabaseClient.auth.resend({ type: 'signup', email: pendingEmail });
+    document.getElementById('successHelp').textContent = r.error ? friendlyError(r.error) : 'Listo, te reenviamos el correo. Puede tardar un par de minutos.';
+    setTimeout(function(){ resendBtn.disabled = false; }, 30000);
+  });
+
   signupForm.addEventListener('submit', async function(e){
     e.preventDefault();
-    showMessage('Creando cuenta...', false);
+    msg.hidden = true;
+    setBusy(signupForm, true, 'Creando tu cuenta...');
     var fullName = document.getElementById('signupName').value.trim();
     var phone = document.getElementById('signupPhone').value.trim();
     var email = document.getElementById('signupEmail').value.trim();
     var password = document.getElementById('signupPassword').value;
-    var result = await supabaseClient.auth.signUp({
-      email: email,
-      password: password,
-      options: { data: { full_name: fullName, phone: phone } }
-    });
+    var result;
+    try {
+      result = await supabaseClient.auth.signUp({
+        email: email,
+        password: password,
+        options: { data: { full_name: fullName, phone: phone }, emailRedirectTo: window.location.origin + '/mi-cuenta.html?bienvenida=1' }
+      });
+    } catch (err) {
+      result = { error: err };
+    }
+    setBusy(signupForm, false);
     if (result.error) {
-      showMessage(result.error.message, true);
+      showMessage(friendlyError(result.error), true);
+      return;
+    }
+    var user = result.data && result.data.user;
+    if (user && user.identities && user.identities.length === 0) {
+      showMessage('Ese correo ya tiene una cuenta. Inicia sesión o recupera tu contraseña.', true);
       return;
     }
     if (result.data.session) {
-      window.location.href = accountDestination();
+      var nextPage = accountDestination();
+      showSuccess({
+        heroTitle: '¡Bienvenido!',
+        heroSubtitle: 'Tu cuenta ya está lista.',
+        title: 'Cuenta creada',
+        text: 'Hola <strong>' + escapeHtml(fullName.split(' ')[0] || '') + '</strong>, ya puedes cotizar y seguir tus pedidos.',
+        steps: ['Pide tu primera cotización en menos de 3 minutos.', 'Guardamos tus datos para que no los repitas.', 'Te respondemos por WhatsApp con el detalle.'],
+        primaryLabel: 'Ir a mi cuenta',
+        primaryHref: nextPage + (nextPage.indexOf('?') > -1 ? '&' : '?') + 'bienvenida=1',
+        canResend: false,
+        help: 'Te llevamos a tu cuenta en unos segundos...'
+      });
+      setTimeout(function(){ window.location.href = document.getElementById('successPrimary').href; }, 2500);
     } else {
-      showMessage('Cuenta creada. Revisa tu correo para confirmar tu cuenta antes de iniciar sesión.', false);
+      showConfirmEmail(email);
     }
   });
 
@@ -160,7 +285,7 @@
       redirectTo: window.location.origin + '/reset-password.html'
     });
     if (result.error) {
-      showMessage(result.error.message, true);
+      showMessage(friendlyError(result.error), true);
       return;
     }
     showMessage('Te enviamos un correo con un enlace para restablecer tu contraseña.', false);

@@ -23,9 +23,15 @@
   </div>
 </header><main>
 
-<section class="standalone-hero"><img class="standalone-hero-bg" src="clientes-shanghai.webp" alt=""><div class="standalone-hero-scrim"></div><div class="container"><span class="eyebrow">Portal del cliente</span><h1>Hola, <span id="welcomeName">...</span></h1><p>Aquí puedes ver tus pedidos y cotizaciones. Cualquier duda, escríbenos por WhatsApp.</p><div style="margin-top:8px"><button type="button" id="logoutBtn" class="btn" style="background:transparent;border:1px solid var(--line)">Cerrar sesión</button></div></div></section>
+<section class="standalone-hero"><img class="standalone-hero-bg" src="clientes-shanghai.webp" alt=""><div class="standalone-hero-scrim"></div><div class="container"><span class="eyebrow">Portal del cliente</span><h1>Hola, <span id="welcomeName">...</span></h1><p>Aquí puedes ver tus pedidos y cotizaciones. Cualquier duda, escríbenos por WhatsApp.</p>
+<div class="acct-bar">
+  <div class="acct-chip"><span class="acct-avatar" id="acctAvatar">·</span><div><strong id="acctName">Tu cuenta</strong><small id="acctEmail"></small></div></div>
+  <button type="button" class="btn btn-gold" id="openProfileBtn">Mi perfil</button>
+  <button type="button" id="logoutBtn" class="btn btn-ghost">Cerrar sesión</button>
+</div></div></section>
 
 <nav class="section" style="padding:26px 0 0"><div class="container">
+  <div class="acct-welcome" id="acctWelcome" hidden><h3>¡Tu cuenta está lista!</h3><p>Ya puedes pedir tu primera cotización. Guardamos tus datos para que no tengas que repetirlos.</p><div class="acts"><button type="button" class="btn btn-gold" id="welcomeQuoteBtn">Pedir mi primera cotización</button><button type="button" class="btn btn-light" id="welcomeProfileBtn">Completar mi perfil</button></div></div>
   <div class="portal-tabbar" id="portalTabbar">
     <button class="portal-tab active" data-tab="orders">Mis pedidos <span class="n" id="ordersCount" hidden>0</span></button>
     <button class="portal-tab" data-tab="quotes">Cotizaciones <span class="n" id="quotesCount" hidden>0</span></button>
@@ -191,6 +197,7 @@
 
   <h2>Mi perfil</h2>
   <div class="auth-card" style="margin-top:20px">
+    <div class="profile-summary"><span class="acct-avatar" id="profileAvatar">·</span><div><strong id="profileHeadName">Tu cuenta</strong><span id="profileHeadEmail"></span></div></div>
     <form id="profileForm" class="auth-form">
       <label class="auth-field">Nombre completo<input type="text" id="profileName" autocomplete="name"></label>
       <label class="auth-field">WhatsApp<input type="tel" id="profilePhone" placeholder="+56 9 1234 5678" autocomplete="tel"></label>
@@ -233,6 +240,25 @@
 
   function moneyFmt(v){
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(Number(v) || 0);
+  }
+
+  function showTab(name){
+    var btn = document.querySelector('.portal-tab[data-tab="' + name + '"]');
+    if (btn && !btn.hidden) btn.click();
+  }
+  function initials(t){
+    var parts = String(t || '').replace(/@.*/, '').trim().split(/\s+/).filter(Boolean);
+    return ((parts[0] || '?')[0] + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase();
+  }
+  function paintUser(name, email){
+    var shown = name || email;
+    document.getElementById('welcomeName').textContent = (name || '').split(' ')[0] || email;
+    document.getElementById('acctName').textContent = shown;
+    document.getElementById('acctEmail').textContent = email;
+    document.getElementById('acctAvatar').textContent = initials(shown);
+    document.getElementById('profileHeadName').textContent = shown;
+    document.getElementById('profileHeadEmail').textContent = email;
+    document.getElementById('profileAvatar').textContent = initials(shown);
   }
 
   var TAB_PANELS = { orders: 'panel-orders', quotes: 'panel-quotes', quote: 'panel-quote', profile: 'panel-profile', team: 'panel-team' };
@@ -683,8 +709,7 @@
       .single();
     var profile = profileRes.data;
     var isStaff = profile && (profile.role === 'admin' || profile.role === 'owner');
-    document.getElementById('welcomeName').textContent =
-      (profile && profile.full_name) || session.user.email;
+    paintUser((profile && profile.full_name) || '', session.user.email);
     document.getElementById('profileName').value = (profile && profile.full_name) || '';
     document.getElementById('profilePhone').value = (profile && profile.phone) || '';
 
@@ -714,6 +739,13 @@
     await loadOrders(isStaff, customersById);
     await loadQuotes(isStaff, customersById);
 
+    var qs = new URLSearchParams(location.search);
+    if (qs.get('bienvenida') === '1') document.getElementById('acctWelcome').hidden = false;
+    if (qs.get('logout') === '1') { await supabaseClient.auth.signOut(); window.location.href = 'login.html'; return; }
+    if (location.hash === '#perfil') showTab('profile');
+    else if (location.hash === '#cotizaciones') showTab('quotes');
+    else if (qs.get('bienvenida') === '1') showTab('quote');
+
     if (profile && profile.role === 'owner') {
       document.getElementById('teamTabBtn').hidden = false;
       loadTeam(session.user.id);
@@ -721,6 +753,12 @@
     }
   }
 
+  document.getElementById('openProfileBtn').addEventListener('click', function(){
+    showTab('profile');
+    document.getElementById('panel-profile').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  document.getElementById('welcomeQuoteBtn').addEventListener('click', function(){ showTab('quote'); document.getElementById('panel-quote').scrollIntoView({ behavior: 'smooth' }); });
+  document.getElementById('welcomeProfileBtn').addEventListener('click', function(){ document.getElementById('openProfileBtn').click(); });
   document.getElementById('logoutBtn').addEventListener('click', async function(){
     await supabaseClient.auth.signOut();
     window.location.href = 'login.html';
@@ -745,7 +783,7 @@
       msg.classList.add('is-error');
       return;
     }
-    document.getElementById('welcomeName').textContent = name || session.user.email;
+    paintUser(name, session.user.email);
     msg.textContent = 'Perfil actualizado.';
   });
 
