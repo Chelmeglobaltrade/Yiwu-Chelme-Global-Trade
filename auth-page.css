@@ -199,3 +199,42 @@
 .standalone-hero.portal-hero h1{ font-size:clamp(1.8rem,3.2vw,2.5rem); margin:8px 0 4px; }
 .standalone-hero.portal-hero p{ margin:0; }
 .standalone-hero.portal-hero .acct-bar{ margin-top:14px; }
+
+/* ---------- Contenedores (equipo) ---------- */
+.ship-form{ margin-top:16px; padding:20px; border-radius:18px; background:#fff; border:1px solid var(--line); box-shadow:0 12px 30px rgba(18,63,73,.08); }
+.ship-form h3{ margin:0 0 14px; color:var(--petrol); }
+.ship-form-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; }
+.ship-form-grid select,.ship-form-grid input,.ship-form-grid textarea{ width:100%; margin-top:4px; padding:9px 11px; border:1px solid var(--line); border-radius:10px; font:inherit; font-size:.9rem; background:#fff; box-sizing:border-box; }
+.ship-form-wide{ grid-column:1 / -1; }
+.ship-card{ margin-top:16px; padding:20px; border-radius:18px; background:#fff; border:1px solid var(--line); display:flex; flex-direction:column; gap:14px; }
+.ship-card.is-done{ opacity:.8; }
+.ship-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; }
+.ship-code{ display:block; font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-size:1.05rem; color:var(--petrol); }
+.ship-type{ font-size:.8rem; color:var(--muted); font-weight:600; }
+.ship-head-actions{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.ship-head-actions select{ width:auto; }
+.ship-head-actions select,.ship-add select{ padding:8px 10px; border:1px solid var(--line); border-radius:10px; font:inherit; font-size:.85rem; background:#fff; color:var(--petrol); font-weight:700; }
+.ship-dates{ display:flex; flex-wrap:wrap; gap:8px 22px; align-items:flex-end; font-size:.76rem; color:var(--muted); font-weight:700; }
+.ship-dates b{ display:block; font-size:.95rem; color:var(--petrol); }
+.ship-link{ border:0; background:none; padding:0; color:var(--petrol); font:inherit; font-size:.8rem; font-weight:800; text-decoration:underline; cursor:pointer; }
+.ship-fill-top{ display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; font-size:.88rem; color:var(--petrol); margin-bottom:6px; font-variant-numeric:tabular-nums; }
+.ship-fill-top span{ color:var(--muted); font-weight:600; }
+.ship-bar{ position:relative; display:flex; height:22px; border-radius:8px; background:repeating-linear-gradient(90deg,#edf3f3 0 14px,#e4ecec 14px 15px); overflow:visible; }
+.ship-bar span{ height:100%; border-right:2px solid #fff; box-sizing:border-box; }
+.ship-bar span:first-child{ border-radius:8px 0 0 8px; }
+.ship-be{ position:absolute; top:-5px; bottom:-5px; width:0; border-left:2px dashed #b83232; }
+.ship-be::after{ content:"equilibrio"; position:absolute; top:-16px; left:-26px; font-size:.64rem; font-weight:800; color:#b83232; font-style:normal; }
+.ship-warn{ color:#b83232 !important; font-style:normal; font-weight:700; }
+.ship-money{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.ship-money div{ padding:12px 14px; border-radius:12px; background:#f7f9f9; }
+.ship-money span{ display:block; font-size:.74rem; color:var(--muted); font-weight:700; }
+.ship-money b{ font-size:1.1rem; color:var(--petrol); font-variant-numeric:tabular-nums; }
+.ship-money small{ font-size:.75rem; color:var(--muted); }
+.ship-money .is-late b{ color:var(--danger); } .ship-money .is-ok b{ color:#1f7a43; }
+.ship-table{ width:100%; border-collapse:collapse; font-size:.86rem; font-variant-numeric:tabular-nums; }
+.ship-table th{ text-align:left; font-size:.72rem; color:var(--muted); font-weight:800; padding:6px 8px; border-bottom:1px solid var(--line); }
+.ship-table td{ padding:9px 8px; border-bottom:1px solid #eef2f2; vertical-align:middle; }
+.ship-table td small{ display:block; color:var(--muted); font-size:.74rem; margin-left:16px; }
+.ship-dot{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
+.ship-done{ margin-top:18px; } .ship-done summary{ cursor:pointer; font-weight:800; color:var(--petrol); }
+@media (max-width:560px){ .ship-money{ grid-template-columns:1fr; } }
