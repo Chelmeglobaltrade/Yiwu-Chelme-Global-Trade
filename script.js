@@ -4,8 +4,8 @@ const money = (value) => new Intl.NumberFormat("es-CL",{style:"currency",currenc
 const fmt = (value, decimals=2) => new Intl.NumberFormat("es-CL",{minimumFractionDigits:decimals,maximumFractionDigits:decimals}).format(Number(value)||0);
 
 const miniServiceCopy = {
-  lcl: { title: "Consolidado LCL", badge: "Estimación aproximada" },
-  fcl: { title: "Contenedor FCL", badge: "Estimación aproximada" },
+  lcl: { title: "Consolidado LCL", badge: "Estimación automática" },
+  fcl: { title: "Contenedor completo (FCL)", badge: "Cotización personalizada" },
   quality: { title: "Control de calidad", badge: "Cotización personalizada" },
   sourcing: { title: "Buscar proveedor", badge: `Depósito desde ${money(CONFIG.sourcing.startingDepositUsd)}` },
   translation: { title: "Traducción", badge: "Cotización personalizada" },
@@ -13,7 +13,7 @@ const miniServiceCopy = {
 };
 
 const miniFieldsHtml = {
-  lcl: `<label class="field"><span>Volumen aproximado (m³)</span><input id="miniCbm" type="number" min="0" step="0.01" placeholder="Ej: 1.5"></label>`,
+  lcl: `<label class="field"><span>Volumen aproximado (m³)</span><input id="miniCbm" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ej: 3,5"></label><label class="field"><span>Peso total (kg) · opcional</span><input id="miniWeight" type="number" min="0" step="1" inputmode="decimal" placeholder="Ej: 780"></label>`,
   fcl: `<label class="field"><span>Tamaño de contenedor</span><select id="miniContainer"><option>20GP</option><option>40GP</option><option selected>40HQ</option></select></label>`,
   quality: "",
   sourcing: "",
@@ -46,7 +46,14 @@ function updateMiniEstimate(){
   let note="Ingresa el volumen para ver un estimado de flete.";
   if(miniService==="lcl"){
     const cbm=Number.parseFloat($("miniCbm")?.value)||0;
-    try{ if(cbm>0) localStorage.setItem("chelme_quote_draft",JSON.stringify({service:"lcl",cbm,savedAt:Date.now()})); }catch(e){}
+    try{ const w=Number.parseFloat($("miniWeight")?.value)||0; if(cbm>0) localStorage.setItem("chelme_quote_draft",JSON.stringify({service:"lcl",cbm,weight:w,savedAt:Date.now()})); }catch(e){}
+    const kg=Number.parseFloat($("miniWeight")?.value)||0;
+    const maxKg=(CONFIG.lclScope&&CONFIG.lclScope.weightReviewKgPerCbm)||500;
+    if(cbm>0&&kg>0&&kg/cbm>maxKg){
+      text="Requiere revisión";
+      note=`Tu carga pesa ${fmt(kg/cbm,0)} kg por m³, sobre ${maxKg} kg por m³. La revisamos antes de darte un total: guarda tu solicitud y te respondemos.`;
+      $("miniEstimate").textContent=text;$("miniEstimateNote").textContent=note;return;
+    }
     if(cbm>0){
       const result=CHELME_PRICING.calculateLcl({goodsAmount:0,goodsCurrency:"USD",cbm,includeSourcing:false},lclRates?lclRates.configFor(cbm,CONFIG):CONFIG);
       text=money(result.logistics);

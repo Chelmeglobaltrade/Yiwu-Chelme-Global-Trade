@@ -22,7 +22,7 @@
 <link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="polish.css">
 <link rel="stylesheet" href="site-header.css">
@@ -124,106 +124,92 @@
     </button>
     <nav class="rd-nav" id="mainNav">
       <details class="nav-services" id="navServices"><summary>Servicios</summary><div class="nav-services-menu"><div class="nav-services-group"><span class="nav-services-group-label">Envío de carga</span><a href="consolidado-lcl.html"><strong>Consolidado LCL</strong><small>Carga chica: compartes contenedor con otros</small></a><a href="contenedor-fcl.html"><strong>Contenedor FCL</strong><small>Carga grande: un contenedor solo para ti</small></a></div><div class="nav-services-group"><span class="nav-services-group-label">Antes de comprar</span><a href="busqueda-proveedor.html"><strong>Búsqueda de proveedor</strong><small>Te ayudamos a encontrar la fábrica</small></a><a href="control-calidad.html"><strong>Control de calidad</strong><small>Revisamos tu pedido antes de enviarlo</small></a><a href="traduccion.html"><strong>Traducción</strong><small>Te acompañamos en reuniones y compras</small></a></div><div class="nav-services-group"><span class="nav-services-group-label">Asesoría y guía</span><a href="viajes-china.html"><strong>Viajes a China</strong><small>Viaja con nosotros a conocer fábricas</small></a><a href="asesoria.html"><strong>Asesoría</strong><small>Te orientamos antes de decidir</small></a><a href="como-funciona.html"><strong>Importar paso a paso</strong><small>El proceso completo, de la compra a tu bodega</small></a></div></div></details>
-      <details class="nav-services nav-travel-dd"><summary>Viajes a China</summary><div class="nav-services-menu"><div class="nav-services-group"><a href="viajes-china.html#ruta-proveedores"><strong>Ruta de Proveedores</strong><small>5 días · mercados y fábricas</small></a><a href="viajes-china.html#mision-comercial"><strong>Misión Comercial China</strong><small>7–10 días · varias ciudades</small></a><a href="viajes-china.html#viaje-insignia"><strong>Viaje Insignia a Yiwu</strong><small>12 días · el más completo</small></a><a href="viajes-china.html"><strong>Ver todos los viajes</strong><small>Paquetes y agenda</small></a></div></div></details>
-      <a href="#alan">Sobre nosotros</a>
+      <a href="consolidado-lcl.html">Consolidado LCL</a>
+      <a href="como-funciona.html">Paso a paso</a>
+      <a href="#alan">Nosotros</a>
       <a class="rd-account" id="navAccount" href="login.html"><svg class="rd-account-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.6 4.5-5.5 8-5.5s6.5 1.9 8 5.5"/></svg><span>Ingresar</span></a>
-      <a class="btn btn-gold rd-nav-cta" href="#cotizar">Cotizar importación <svg><use href="#i-arrow"></use></svg></a>
+      <a class="btn btn-gold rd-nav-cta" href="#cotizar">Cotizar mi carga <svg><use href="#i-arrow"></use></svg></a>
     </nav>
   </div>
 </header>
 
 <main>
 
-  <!-- 1. HERO -->
-  <section class="rd-hero">
-    <div class="container rd-hero-grid">
-      <div class="rd-hero-copy">
-        <span class="rd-eyebrow">Operación directa desde China</span>
-        <h1>Tu equipo en China para comprar, inspeccionar y enviar con confianza</h1>
-        <p>Coordinamos proveedores, compras, control de calidad y logística directamente desde China para empresas e importadores de Latinoamérica.</p>
-        <div class="rd-hero-actions">
-          <a class="btn btn-gold" href="#cotizar">Cotizar mi importación <svg><use href="#i-arrow"></use></svg></a>
-          <a class="btn btn-light" data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> Hablar por WhatsApp</a>
+  <!-- 1. PORTADA -->
+  <section class="rd2-hero">
+    <div class="rd2-hero-media" aria-hidden="false">
+      <img src="hero-fabrica-industrial.webp" alt="Alan Chelme junto a una bobina industrial en una fábrica en China" width="960" height="1200">
+      <div class="rd2-hero-tag"><svg><use href="#i-pin"></use></svg><div><strong>Alan Chelme</strong><span>En terreno · Yiwu, China</span></div></div>
+    </div>
+    <div class="container rd2-hero-inner">
+      <div class="rd2-hero-copy">
+        <span class="rd2-route-label">Yiwu → Ningbo → San Antonio → Santiago</span>
+        <h1>Compra en China con un equipo que revisa y coordina por ti</h1>
+        <p>Búsqueda de proveedores, revisión en bodega y carga consolidada hasta Santiago, con atención en español desde Yiwu.</p>
+        <div class="rd2-hero-actions">
+          <a class="btn btn-gold" href="#cotizar">Cotizar mi carga <svg><use href="#i-arrow"></use></svg></a>
+          <a class="btn rd2-btn-ghost" href="como-funciona.html">Ver cómo trabajamos</a>
         </div>
-        <ul class="rd-hero-indicators">
-          <li>Atención en español</li>
-          <li>Operación en Yiwu</li>
-          <li>LCL y FCL</li>
-          <li>Control en terreno</li>
-        </ul>
+        <a class="rd2-hero-wa" data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> o escríbenos por WhatsApp</a>
       </div>
-      <div class="rd-hero-media">
-        <img src="hero-fabrica-industrial.webp" alt="Alan Chelme revisando producción en fábrica en China" width="960" height="1200">
-        <div class="rd-hero-tag">
-          <svg><use href="#i-pin"></use></svg>
-          <div><strong>Alan Chelme</strong><span>En terreno · Yiwu, China</span></div>
+    </div>
+  </section>
+
+  <!-- 2. COTIZADOR COMPACTO + VISTA DE LA CUENTA -->
+  <section class="rd2-panel-wrap" id="cotizar">
+    <div class="container">
+      <div class="rd2-panel" id="quoteShell">
+        <div class="rd2-quote">
+          <div class="rd2-quote-head">
+            <div><span class="rd2-kicker" id="miniBadge">Estimación automática</span><h2 id="miniTitle">Consolidado LCL</h2></div>
+            <div class="rd2-seg" role="group" aria-label="Tipo de envío">
+              <button type="button" class="quote-menu-item active" data-mini-service="lcl">Consolidado</button>
+              <button type="button" class="quote-menu-item" data-mini-service="fcl">Contenedor completo</button>
+            </div>
+          </div>
+          <div id="miniFields" class="form-grid"></div>
+          <div class="rd-fill" id="miniFill" aria-live="polite">
+            <div class="rd-fill-head"><span id="miniFillLabel">Espacio en un contenedor de 40 pies</span><b id="miniFillPct">0%</b></div>
+            <div class="rd-fill-box" aria-hidden="true"><div class="rd-fill-bar" id="miniFillBar"></div><i class="rd-fill-door"></i></div>
+            <p class="rd-fill-note" id="miniFillNote">Escribe el volumen y te mostramos cuánto espacio ocupa tu carga.</p>
+          </div>
+          <div class="rd2-result" aria-live="polite">
+            <div class="rd2-result-top"><span>Servicio Chelme</span><strong id="miniEstimate">Desde US$250/m³</strong></div>
+            <p id="miniEstimateNote">Ingresa el volumen para ver un estimado de flete.</p>
+          </div>
+          <div class="rd2-quote-actions">
+            <a class="btn btn-gold" id="miniSignupLink" href="login.html?tab=signup&service=lcl">Guardar y pedir cotización revisada</a>
+            <a class="rd-link" href="consolidado-lcl.html">Qué incluye y qué no <svg><use href="#i-arrow"></use></svg></a>
+          </div>
+        </div>
+        <div class="rd2-preview">
+          <div class="rd2-preview-head"><strong>Así se ve tu operación</strong><span class="rd2-sample">Vista de ejemplo</span></div>
+          <div class="rd2-op-row"><span class="rd2-ref">CGT-0412</span><span class="rd2-op-name">Consolidado · 3,50 m³</span><span class="rd2-status">Recibida en Yiwu</span></div>
+          <div class="rd2-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+          <div class="rd2-next"><span class="rd2-dot"></span><div><strong>Siguiente paso: aprobar la medición</strong><span>Medimos 3,62 m³ en bodega (declaraste 3,50). Revisas las fotos y apruebas el ajuste.</span></div></div>
+          <ul class="rd2-preview-list">
+            <li><svg><use href="#i-check"></use></svg>Fotos y medidas de tu carga en bodega</li>
+            <li><svg><use href="#i-check"></use></svg>Cobros y comprobantes en un solo lugar</li>
+            <li><svg><use href="#i-check"></use></svg>Documentos de tu operación siempre disponibles</li>
+          </ul>
+          <a class="rd-link" href="login.html?tab=signup">Crear mi cuenta gratis <svg><use href="#i-arrow"></use></svg></a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 2. FRANJA DE CONFIANZA -->
-  <section class="rd-trust">
-    <div class="container rd-trust-grid">
-      <div><svg><use href="#i-pin"></use></svg><span>Operación directa desde Yiwu</span></div>
-      <div><svg><use href="#i-language"></use></svg><span>Atención en español</span></div>
-      <div><svg><use href="#i-boxes"></use></svg><span>Coordinación en distintas ciudades de China</span></div>
-      <div><svg><use href="#i-tag"></use></svg><span>Consolidado LCL</span></div>
-      <div><svg><use href="#i-container"></use></svg><span>Contenedores FCL</span></div>
-      <div><svg><use href="#i-shield"></use></svg><span>Inspección y control en terreno</span></div>
-    </div>
-  </section>
-
-  <!-- 3. SOLUCIONES PRINCIPALES -->
+  <!-- 3. SELECTOR POR CASO -->
   <section class="rd-section" id="soluciones">
     <div class="container">
-      <header class="rd-section-head">
-        <h2>Tres soluciones, una sola operación</h2>
-        <p>Cada servicio puntual se agrupa en el frente que realmente resuelve.</p>
-      </header>
-      <div class="rd-solutions">
-        <article class="rd-solution">
-          <img src="reunion-muestras-proveedor.webp" alt="Reunión con proveedor revisando muestras" loading="lazy" width="900" height="1200">
-          <div class="rd-solution-body">
-            <h3>Compras y proveedores</h3>
-            <p>Búsqueda, validación, comparación y negociación con proveedores reales, con seguimiento hasta que tu pedido esté listo.</p>
-            <ul>
-              <li>Búsqueda y validación de proveedores</li>
-              <li>Comparación de fábricas, precios y MOQ</li>
-              <li>Negociación directa en chino</li>
-              <li>Seguimiento de producción</li>
-            </ul>
-            <a class="rd-link" href="busqueda-proveedor.html">Conocer más <svg><use href="#i-arrow"></use></svg></a>
-          </div>
-        </article>
-        <article class="rd-solution">
-          <img src="carga-contenedor-verde.webp" alt="Carga consolidada dentro de contenedor" loading="lazy" width="900" height="1200">
-          <div class="rd-solution-body">
-            <h3>Control y logística</h3>
-            <p>Inspeccionamos, consolidamos y coordinamos el envío de tu carga, sea consolidado o contenedor completo.</p>
-            <ul>
-              <li>Inspección y control de calidad</li>
-              <li>Recepción y consolidación</li>
-              <li>Documentación de exportación</li>
-              <li>Consolidado LCL y contenedor FCL</li>
-            </ul>
-            <a class="rd-link" href="consolidado-lcl.html">Conocer más <svg><use href="#i-arrow"></use></svg></a>
-          </div>
-        </article>
-        <article class="rd-solution">
-          <img src="clientes-shanghai.webp" alt="Acompañamiento comercial a cliente en China" loading="lazy" width="900" height="1200">
-          <div class="rd-solution-body">
-            <h3>Viajes y representación comercial</h3>
-            <p>Te acompañamos en mercados, ferias y fábricas, con traducción y agenda comercial preparada.</p>
-            <ul>
-              <li>Planificación de rutas y ciudades</li>
-              <li>Traducción y negociación en terreno</li>
-              <li>Visitas a mercados y fábricas</li>
-              <li>Acompañamiento comercial completo</li>
-            </ul>
-            <a class="rd-link" href="viajes-china.html">Conocer más <svg><use href="#i-arrow"></use></svg></a>
-          </div>
-        </article>
+      <header class="rd2-head"><span class="rd2-kicker">Empieza por tu caso</span><h2>¿En qué punto de tu compra estás?</h2></header>
+      <div class="rd2-cases">
+        <a class="rd2-case is-main" href="#cotizar"><span class="rd2-case-tag">01 · Carga lista</span><strong>Ya tengo proveedor</strong><span>Tu proveedor despacha a nuestra bodega en Yiwu. Revisamos, consolidamos y enviamos a Santiago.</span><em>Cotizar consolidado <svg><use href="#i-arrow"></use></svg></em></a>
+        <a class="rd2-case" href="asesoria.html"><span class="rd2-case-tag">02 · Sin proveedor</span><strong>Necesito proveedor</strong><span>Buscamos fábricas, comparamos precios y negociamos en chino. Empieza con una asesoría de US$200.</span><em>Ver asesoría <svg><use href="#i-arrow"></use></svg></em></a>
+        <a class="rd2-case" href="viajes-china.html"><span class="rd2-case-tag">03 · En terreno</span><strong>Quiero viajar a China</strong><span>Rutas por mercados y fábricas con traducción y acompañamiento comercial.</span><em>Ver viajes <svg><use href="#i-arrow"></use></svg></em></a>
+      </div>
+      <div class="rd2-more">
+        <span>Otros servicios:</span>
+        <a href="contenedor-fcl.html">Contenedor completo</a><a href="control-calidad.html">Control de calidad</a><a href="traduccion.html">Traducción</a><a href="busqueda-proveedor.html">Búsqueda de proveedor</a>
       </div>
     </div>
   </section>
@@ -326,54 +312,6 @@
     </div>
   </section>
 
-  <!-- 7. COTIZACIÓN -->
-  <section class="rd-section rd-section-soft" id="cotizar">
-    <div class="container">
-      <header class="rd-section-head">
-        <h2>Cotiza tu importación</h2>
-        <p>Un estimado aproximado en el momento, sin costo. Crea tu cuenta después, si decides avanzar, para agregar el valor de tu mercancía y recibir el desglose exacto.</p>
-      </header>
-      <div class="rd-quote-explain">
-        <div><svg><use href="#i-boxes"></use></svg><div><strong>Qué puedes cotizar</strong><span>Consolidado LCL, contenedor FCL, control de calidad, búsqueda de proveedor, traducción o asesoría.</span></div></div>
-        <div><svg><use href="#i-file"></use></svg><div><strong>Qué necesitas</strong><span>Producto, volumen o cantidad aproximada, y destino.</span></div></div>
-        <div><svg><use href="#i-check"></use></svg><div><strong>Qué recibes</strong><span>Un estimado aproximado al instante, sin compromiso.</span></div></div>
-        <div><svg><use href="#i-arrow"></use></svg><div><strong>Siguiente paso</strong><span>Si te sirve, creas tu cuenta para el desglose exacto y el seguimiento.</span></div></div>
-      </div>
-
-      <div class="quote-shell mini-estimator" id="quoteShell">
-        <aside class="quote-menu">
-          <button class="quote-menu-item active" data-mini-service="lcl"><svg><use href="#i-boxes"></use></svg><span><strong>Consolidado LCL</strong><small>Carga por m³</small></span></button>
-          <button class="quote-menu-item" data-mini-service="fcl"><svg><use href="#i-container"></use></svg><span><strong>Contenedor FCL</strong><small>Carga completa</small></span></button>
-          <button class="quote-menu-item" data-mini-service="quality"><svg><use href="#i-shield"></use></svg><span><strong>Control de calidad</strong><small>Revisamos tu pedido antes de enviarlo</small></span></button>
-          <button class="quote-menu-item" data-mini-service="sourcing"><svg><use href="#i-search"></use></svg><span><strong>Buscar proveedor</strong><small>Te ayudamos a encontrar la fábrica</small></span></button>
-          <button class="quote-menu-item" data-mini-service="translation"><svg><use href="#i-language"></use></svg><span><strong>Traducción</strong><small>Te acompañamos en reuniones y compras</small></span></button>
-          <button class="quote-menu-item" data-mini-service="advisory"><svg><use href="#i-chat"></use></svg><span><strong>Asesoría</strong><small>Te orientamos antes de decidir</small></span></button>
-        </aside>
-
-        <section class="quote-card">
-          <div class="quote-title-row">
-            <div><span>Estimado rápido</span><h3 id="miniTitle">Consolidado LCL</h3></div>
-            <strong id="miniBadge">Estimación aproximada</strong>
-          </div>
-          <div id="miniFields" class="form-grid"></div>
-          <div class="rd-fill" id="miniFill" aria-live="polite">
-            <div class="rd-fill-head"><span id="miniFillLabel">Espacio en un contenedor de 40 pies</span><b id="miniFillPct">0%</b></div>
-            <div class="rd-fill-box" aria-hidden="true"><div class="rd-fill-bar" id="miniFillBar"></div><i class="rd-fill-door"></i></div>
-            <p class="rd-fill-note" id="miniFillNote">Escribe el volumen y te mostramos cuánto espacio ocupa tu carga.</p>
-          </div>
-          <div class="estimate-box">
-            <div><span>Estimado aproximado</span><strong id="miniEstimate">Desde US$250/m³</strong></div>
-            <p id="miniEstimateNote">Ingresa el volumen para ver un estimado de flete.</p>
-          </div>
-          <div class="mini-estimator-cta">
-            <a class="btn btn-gold" id="miniSignupLink" href="login.html?tab=signup&service=lcl">Crea tu cuenta para tu cotización completa</a>
-            <p>Con tu cuenta agregas el valor de tu mercancía, envías fotos o un enlace del producto, y recibes el desglose exacto — guardado en tus pedidos para seguir tu importación.</p>
-          </div>
-        </section>
-      </div>
-    </div>
-  </section>
-
   <!-- 8. TESTIMONIOS — desactivado hasta contar con casos reales autorizados por el
        propietario. Para activar: reemplazar el contenido de .rd-testimonials-empty
        por tarjetas .rd-testimonial reales (nombre, empresa si corresponde, cita
@@ -402,14 +340,13 @@
     </div>
   </section>
 
-  <!-- 10. CTA FINAL -->
-  <section class="rd-cta-final">
-    <div class="container">
-      <h2>Cuéntanos qué necesitas importar</h2>
-      <p>Revisaremos tu producto, cantidades, destino y modalidad recomendada para comenzar correctamente tu operación desde China.</p>
-      <div class="rd-hero-actions">
-        <a class="btn btn-gold" href="#cotizar">Solicitar cotización <svg><use href="#i-arrow"></use></svg></a>
-        <a class="btn btn-light" data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> Hablar por WhatsApp</a>
+  <!-- 10. CIERRE -->
+  <section class="rd2-close">
+    <div class="container rd2-close-inner">
+      <div><h2>¿Tu carga ya está lista?</h2><p>Estima el costo en un minuto. Te pedimos cuenta solo al guardar.</p></div>
+      <div class="rd2-hero-actions">
+        <a class="btn btn-gold" href="#cotizar">Cotizar mi carga <svg><use href="#i-arrow"></use></svg></a>
+        <a class="btn rd2-btn-ghost" data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> Escribir por WhatsApp</a>
       </div>
     </div>
   </section>

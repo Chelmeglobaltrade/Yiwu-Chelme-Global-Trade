@@ -292,7 +292,7 @@
     doc.setTextColor(23, 40, 44);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11.5);
-    doc.text("ESTIMACIÓN TOTAL", M + 4, y + 8);
+    doc.text(currentService() === "lcl" ? "SERVICIO CHELME (ESTIMADO)" : "ESTIMACIÓN", M + 4, y + 8);
     doc.setFontSize(12.5);
     doc.text(String(data.total || "Por confirmar"), W - M - 4, y + 8, { align: "right" });
     y += 18;

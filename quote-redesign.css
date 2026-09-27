@@ -280,3 +280,29 @@ body:has(#panel-quote:not([hidden])) .sticky-cta-bar{ display:none; }
   .qz *,.qz *::before,.qz *::after{ animation:none!important; transition:none!important; }
   .qz-card:hover,.qz-choice:hover{ transform:none; }
 }
+
+/* ---------- Desglose tipo "riel" (sept 2026): secciones, operadores y alcance ---------- */
+.cost-breakdown-section{ margin:14px 0 4px; padding-top:10px; border-top:1px solid rgba(255,255,255,.14); font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; opacity:.8; }
+.cost-breakdown-section:first-of-type{ margin-top:4px; border-top:0; padding-top:0; }
+.cb-op{ display:inline-grid; place-items:center; width:20px; height:20px; margin-right:8px; border-radius:50%; border:1.5px solid currentColor; font-style:normal; font-size:.78rem; font-weight:800; opacity:.75; vertical-align:-3px; }
+.cost-breakdown-row.subtotal{ font-weight:800; background:rgba(242,185,31,.14); border-radius:10px; }
+.qz-stages{ list-style:none; margin:0 0 10px; padding:0; display:flex; flex-wrap:wrap; gap:6px; }
+.qz-stages li{ padding:5px 10px; border-radius:999px; font-size:.72rem; font-weight:800; background:rgba(255,255,255,.1); color:rgba(255,255,255,.75); }
+.qz-stages li.is-now{ background:#f2b91f; color:#123f49; }
+.qz-scope{ display:grid; gap:10px; margin-top:12px; }
+.qz-scope[hidden]{ display:none; }
+.qz-scope strong{ display:block; margin-bottom:6px; font-size:.74rem; letter-spacing:.05em; text-transform:uppercase; }
+.qz-scope ul{ margin:0; padding-left:18px; display:grid; gap:4px; font-size:.82rem; line-height:1.4; }
+.qz-scope-in strong{ color:#9fe3c4; }
+.qz-scope-out strong{ color:#ffc9c4; }
+.qz-scope-in,.qz-scope-out{ padding:12px 14px; border-radius:12px; background:rgba(255,255,255,.06); }
+
+/* Grupos de cajas */
+.qz-boxrow{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)) auto 36px; gap:8px; align-items:end; margin-bottom:8px; }
+.qz-boxvol{ font-variant-numeric:tabular-nums; font-weight:700; padding-bottom:12px; white-space:nowrap; }
+.qz-boxdel{ width:36px; height:36px; margin-bottom:4px; border:1px solid var(--line); border-radius:10px; background:#fff; color:#a33; font-size:1.1rem; cursor:pointer; }
+.qz-boxadd{ margin-top:4px; padding:10px 14px; border:1.5px dashed var(--petrol-2); border-radius:10px; background:transparent; color:var(--petrol-2); font:inherit; font-weight:700; cursor:pointer; }
+@media (max-width:640px){ .qz-boxrow{ grid-template-columns:repeat(2,minmax(0,1fr)); padding:12px; border:1px solid var(--line); border-radius:12px; } .qz-boxvol{ padding-bottom:0; align-self:center; } .qz-boxdel{ justify-self:end; } }
+.qz-summary .cost-breakdown-section{ margin:0; padding:12px 14px 6px; border-top:1px solid rgba(255,255,255,.14); color:var(--qz-gold); }
+.qz-summary .cost-breakdown-section:first-of-type{ border-top:0; }
+.qz-summary .cost-breakdown-row.subtotal{ border-radius:0; background:rgba(242,185,31,.12); color:#fff; }

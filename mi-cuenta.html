@@ -14,15 +14,16 @@
     </button>
     <nav class="rd-nav" id="mainNav">
       <details class="nav-services" id="navServices"><summary>Servicios</summary><div class="nav-services-menu"><div class="nav-services-group"><span class="nav-services-group-label">Envío de carga</span><a href="consolidado-lcl.html"><strong>Consolidado LCL</strong><small>Carga chica: compartes contenedor con otros</small></a><a href="contenedor-fcl.html"><strong>Contenedor FCL</strong><small>Carga grande: un contenedor solo para ti</small></a></div><div class="nav-services-group"><span class="nav-services-group-label">Antes de comprar</span><a href="busqueda-proveedor.html"><strong>Búsqueda de proveedor</strong><small>Te ayudamos a encontrar la fábrica</small></a><a href="control-calidad.html"><strong>Control de calidad</strong><small>Revisamos tu pedido antes de enviarlo</small></a><a href="traduccion.html"><strong>Traducción</strong><small>Te acompañamos en reuniones y compras</small></a></div><div class="nav-services-group"><span class="nav-services-group-label">Asesoría y guía</span><a href="viajes-china.html"><strong>Viajes a China</strong><small>Viaja con nosotros a conocer fábricas</small></a><a href="asesoria.html"><strong>Asesoría</strong><small>Te orientamos antes de decidir</small></a><a href="como-funciona.html"><strong>Importar paso a paso</strong><small>El proceso completo, de la compra a tu bodega</small></a></div></div></details>
-      <details class="nav-services nav-travel-dd"><summary>Viajes a China</summary><div class="nav-services-menu"><div class="nav-services-group"><a href="viajes-china.html#ruta-proveedores"><strong>Ruta de Proveedores</strong><small>5 días · mercados y fábricas</small></a><a href="viajes-china.html#mision-comercial"><strong>Misión Comercial China</strong><small>7–10 días · varias ciudades</small></a><a href="viajes-china.html#viaje-insignia"><strong>Viaje Insignia a Yiwu</strong><small>12 días · el más completo</small></a><a href="viajes-china.html"><strong>Ver todos los viajes</strong><small>Paquetes y agenda</small></a></div></div></details>
-      <a href="index.html#alan">Sobre nosotros</a>
+      <a href="consolidado-lcl.html">Consolidado LCL</a>
+      <a href="como-funciona.html">Paso a paso</a>
+      <a href="index.html#alan">Nosotros</a>
       <a class="rd-account" id="navAccount" href="login.html"><svg class="rd-account-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.6 4.5-5.5 8-5.5s6.5 1.9 8 5.5"/></svg><span>Ingresar</span></a>
-      <a class="btn btn-gold rd-nav-cta" href="index.html#cotizar">Cotizar importación <svg><use href="#i-arrow"></use></svg></a>
+      <a class="btn btn-gold rd-nav-cta" href="index.html#cotizar">Cotizar mi carga <svg><use href="#i-arrow"></use></svg></a>
     </nav>
   </div>
 </header><main>
 
-<section class="standalone-hero"><img class="standalone-hero-bg" src="clientes-shanghai.webp" alt=""><div class="standalone-hero-scrim"></div><div class="container"><span class="eyebrow">Portal del cliente</span><h1>Hola, <span id="welcomeName">...</span></h1><p>Aquí puedes ver tus pedidos y cotizaciones. Cualquier duda, escríbenos por WhatsApp.</p>
+<section class="standalone-hero portal-hero"><img class="standalone-hero-bg" src="clientes-shanghai.webp" alt=""><div class="standalone-hero-scrim"></div><div class="container"><span class="eyebrow">Portal del cliente</span><h1>Hola, <span id="welcomeName">...</span></h1><p>Aquí puedes ver tus pedidos y cotizaciones. Cualquier duda, escríbenos por WhatsApp.</p>
 <div class="acct-bar">
   <div class="acct-chip"><span class="acct-avatar" id="acctAvatar">·</span><div><strong id="acctName">Tu cuenta</strong><small id="acctEmail"></small></div></div>
   <button type="button" class="btn btn-gold" id="openProfileBtn">Mi perfil</button>
@@ -54,6 +55,8 @@
       <div><h2 id="ordersTitle">Mis pedidos</h2><p class="orders-sub" id="ordersSub">Aquí sigues cada importación: estado, pagos y archivos.</p></div>
       <button type="button" id="toggleNewOrderBtn" class="btn btn-gold btn-sm" hidden>+ Agregar pedido</button>
     </div>
+    <section class="attn" id="attentionBox" aria-label="Requiere tu atención" hidden></section>
+    <div class="bal-tiles" id="balanceTiles" hidden></div>
     <div id="ordersEmpty" class="orders-empty" hidden>
       <div class="orders-empty-head"><strong>Todavía no tienes pedidos</strong><span>Un pedido aparece aquí cuando confirmamos una cotización contigo. Empieza eligiendo qué necesitas:</span></div>
       <div class="svc-start">
@@ -224,13 +227,15 @@
 
       <aside class="qz-summary" id="qzSummary" aria-label="Estimado de costo">
         <div class="qz-sum-top">
-          <div class="qz-sum-label"><span>Tu estimado</span><em id="quoteTitle">Cotizar carga consolidada</em></div>
+          <div class="qz-sum-label"><span id="qzTotalLabel">Tu estimado</span><em id="quoteTitle">Cotizar carga consolidada</em></div>
           <strong id="quoteEstimate" class="qz-total">Por calcular</strong>
           <button type="button" class="qz-sum-toggle" id="qzSumToggle" aria-expanded="false" aria-controls="qzSumBody"><span>Ver detalle</span><svg><use href="#qi-chev"></use></svg></button>
         </div>
         <div class="qz-sum-body" id="qzSumBody">
+          <ol class="qz-stages" aria-label="Etapas del precio"><li class="is-now" aria-current="step">Estimación automática</li><li>Cotización revisada</li><li>Liquidación final</li></ol>
           <span class="qz-badge" id="quoteBadge">Estimación disponible</span>
           <div class="cost-breakdown hidden" id="quoteBreakdown" aria-live="polite"></div>
+          <div class="qz-scope" id="qzScope" hidden></div>
           <p class="qz-sum-note" id="quoteEstimateNote">Completa los datos disponibles.</p>
           <button class="btn qz-pdf" type="button" id="livePdfBtn"><svg><use href="#qi-download"></use></svg> Descargar esta estimación en PDF</button>
           <small class="qz-sum-foot">No necesitas completar tus datos para descargar esta estimación.</small>
@@ -811,6 +816,57 @@
     renderRatesAdmin();
   }
 
+  /* ---------- Requiere tu atención + saldos por moneda (cliente y equipo) ---------- */
+  function renderAttention(isStaff){
+    var box = document.getElementById('attentionBox');
+    var tiles = document.getElementById('balanceTiles');
+    if (!box || !tiles) return;
+    var items = [];
+    var refOf = function(o){ return o.reference || ('Pedido ' + String(o.id).slice(0, 6)); };
+    ordersCache.forEach(function(o){
+      var pend = chargesCache.filter(function(c){ return c.order_id === o.id; });
+      if (isStaff) {
+        pend.filter(function(c){ return c.status === 'en_revision'; }).forEach(function(c){
+          items.push({ tone: 'gold', ref: refOf(o), text: 'Comprobante por revisar: ' + c.concept + ' (' + fmtCharge(c) + ').', oid: o.id, action: 'Revisar' });
+        });
+        pend.filter(isOverdue).forEach(function(c){
+          items.push({ tone: 'red', ref: refOf(o), text: 'Cobro vencido: ' + c.concept + ' (' + fmtCharge(c) + ').', oid: o.id, action: 'Ver pedido' });
+        });
+      } else {
+        if (o.next_action) items.push({ tone: 'gold', ref: refOf(o), text: o.next_action, oid: o.id, action: 'Ver pedido' });
+        pend.filter(function(c){ return c.status === 'pendiente'; }).forEach(function(c){
+          items.push({ tone: isOverdue(c) ? 'red' : 'teal', ref: refOf(o), text: (isOverdue(c) ? 'Pago vencido: ' : 'Pago pendiente: ') + c.concept + ' · ' + fmtCharge(c), oid: o.id, action: 'Pagar' });
+        });
+      }
+    });
+    if (!items.length) { box.hidden = true; box.innerHTML = ''; }
+    else {
+      box.hidden = false;
+      box.innerHTML = '<div class="attn-title">Requiere tu atención · ' + items.length + '</div>' + items.slice(0, 6).map(function(it){
+        return '<div class="attn-row attn-' + it.tone + '"><span class="attn-dot"></span><span class="attn-ref">' + escapeHtml(it.ref) + '</span><span class="attn-text">' + escapeHtml(it.text) + '</span><button type="button" class="attn-btn" data-open-order="' + escapeHtml(it.oid) + '">' + it.action + '</button></div>';
+      }).join('');
+      box.querySelectorAll('[data-open-order]').forEach(function(b){
+        b.addEventListener('click', function(){
+          var t = document.querySelector('.order-detail-toggle[data-oid="' + b.dataset.openOrder + '"]');
+          if (!t) return;
+          var d = document.getElementById('odetail-' + b.dataset.openOrder);
+          if (d && d.hidden) t.click();
+          t.closest('.account-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+    }
+    // Saldos por moneda: nunca se suman USD y CLP.
+    var sum = function(list, cur){ return list.filter(function(c){ return c.currency === cur; }).reduce(function(a, c){ return a + Number(c.amount); }, 0); };
+    var open = chargesCache.filter(function(c){ return c.status === 'pendiente'; });
+    var review = chargesCache.filter(function(c){ return c.status === 'en_revision'; });
+    if (!chargesCache.length) { tiles.hidden = true; return; }
+    tiles.hidden = false;
+    tiles.innerHTML =
+      '<div><span>Pendiente en USD</span><b>' + fmtCharge({ amount: sum(open, 'USD'), currency: 'USD' }) + '</b></div>' +
+      '<div><span>Pendiente en CLP</span><b>' + fmtCharge({ amount: sum(open, 'CLP'), currency: 'CLP' }) + '</b></div>' +
+      '<div><span>Comprobantes en revisión</span><b>' + review.length + '</b><small>Un comprobante no confirma el pago hasta revisarlo.</small></div>';
+  }
+
   function renderCash(){
     var box = document.getElementById('cashContent');
     if (!box) return;
@@ -1031,6 +1087,7 @@
       costsCache = costsRes.data || [];
     }
     renderOrders(ordersCache, customersById, isStaff);
+    renderAttention(isStaff);
     if (isStaff) renderCash();
   }
 

@@ -24,14 +24,22 @@ const state = {
    el estimado, el mensaje de WhatsApp, el PDF y el guardado los leen igual. */
 const qzScreen=(question,hint,inner)=>`<div class="qz-screen" data-phase="Detalles"><h3 class="qz-q" tabindex="-1">${question}</h3><p class="qz-hint">${hint}</p>${inner}</div>`;
 const qzGrid=(inner)=>`<div class="form-grid">${inner}</div>`;
+const BOX_ROW=`
+      <div class="qz-boxrow" data-box-row>
+        <label class="field"><span>Largo (cm)</span><input type="number" min="0" inputmode="decimal" placeholder="0" data-box-length></label>
+        <label class="field"><span>Ancho (cm)</span><input type="number" min="0" inputmode="decimal" placeholder="0" data-box-width></label>
+        <label class="field"><span>Alto (cm)</span><input type="number" min="0" inputmode="decimal" placeholder="0" data-box-height></label>
+        <label class="field"><span>Cajas</span><input type="number" min="1" inputmode="numeric" placeholder="0" data-box-count></label>
+        <output class="qz-boxvol" data-box-vol>0,000 m³</output>
+        <button type="button" class="qz-boxdel" data-box-del aria-label="Quitar este tamaño de caja">×</button>
+      </div>`;
 const CBM_HELPER=`
   <div class="cbm-helper">
-    <button type="button" class="cbm-helper-toggle" data-cbm-helper-toggle aria-expanded="false"><svg><use href="#qi-box"></use></svg><span>¿No sabes el CBM? Calcúlalo con las medidas de tus cajas</span></button>
-    <div class="cbm-helper-fields hidden form-grid" data-cbm-helper-fields>
-      <label class="field"><span>Largo (cm)</span><input type="number" min="0" placeholder="0" data-box-length></label>
-      <label class="field"><span>Ancho (cm)</span><input type="number" min="0" placeholder="0" data-box-width></label>
-      <label class="field"><span>Alto (cm)</span><input type="number" min="0" placeholder="0" data-box-height></label>
-      <label class="field"><span>Cantidad de cajas</span><input type="number" min="1" placeholder="0" data-box-count></label>
+    <button type="button" class="cbm-helper-toggle" data-cbm-helper-toggle aria-expanded="false"><svg><use href="#qi-box"></use></svg><span>¿No sabes el volumen? Calcúlalo con las medidas de tus cajas</span></button>
+    <div class="cbm-helper-fields hidden" data-cbm-helper-fields>
+      <p class="qz-hint">Un grupo por cada tamaño de caja. Sumamos todos los grupos en el volumen de arriba.</p>
+      <div data-box-rows>${BOX_ROW}</div>
+      <button type="button" class="qz-boxadd" data-box-add>+ Agregar otro tamaño de caja</button>
     </div>
   </div>`;
 const SOURCING_OPTION=`
@@ -186,22 +194,39 @@ function wireCbmHelper(){
   const toggle=document.querySelector("[data-cbm-helper-toggle]");
   const fields=document.querySelector("[data-cbm-helper-fields]");
   if(!toggle||!fields)return;
+  const rowsBox=fields.querySelector("[data-box-rows]");
   toggle.addEventListener("click",()=>{
     fields.classList.toggle("hidden");
     toggle.setAttribute("aria-expanded",fields.classList.contains("hidden")?"false":"true");
   });
+  // Volumen = largo × ancho × alto (cm) × cajas / 1.000.000 por grupo; se suman sin redondeos intermedios.
   const recompute=()=>{
-    const l=Number(document.querySelector("[data-box-length]")?.value)||0;
-    const w=Number(document.querySelector("[data-box-width]")?.value)||0;
-    const h=Number(document.querySelector("[data-box-height]")?.value)||0;
-    const count=Number(document.querySelector("[data-box-count]")?.value)||0;
+    let total=0,complete=0;
+    rowsBox.querySelectorAll("[data-box-row]").forEach(row=>{
+      const n=(sel)=>Number(row.querySelector(sel)?.value)||0;
+      const l=n("[data-box-length]"),w=n("[data-box-width]"),h=n("[data-box-height]"),c=n("[data-box-count]");
+      const v=(l>0&&w>0&&h>0&&c>0)?l*w*h*c/1_000_000:0;
+      row.querySelector("[data-box-vol]").textContent=`${fmt(v,3)} m³`;
+      if(v>0){total+=v;complete++;}
+    });
     const cbmField=$("qCbm");
-    if(l>0&&w>0&&h>0&&count>0&&cbmField){
-      cbmField.value=((l*w*h/1_000_000)*count).toFixed(3);
-      updateEstimate();
-    }
+    if(complete&&cbmField){cbmField.value=total.toFixed(3);updateEstimate();}
   };
-  fields.querySelectorAll("input").forEach(i=>i.addEventListener("input",recompute));
+  const wireRow=(row)=>{
+    row.querySelectorAll("input").forEach(i=>i.addEventListener("input",recompute));
+    row.querySelector("[data-box-del]").addEventListener("click",()=>{
+      if(rowsBox.querySelectorAll("[data-box-row]").length>1){row.remove();recompute();}
+      else{row.querySelectorAll("input").forEach(i=>{i.value="";});recompute();}
+    });
+  };
+  rowsBox.querySelectorAll("[data-box-row]").forEach(wireRow);
+  fields.querySelector("[data-box-add]").addEventListener("click",()=>{
+    rowsBox.insertAdjacentHTML("beforeend",BOX_ROW);
+    const rows=rowsBox.querySelectorAll("[data-box-row]");
+    const row=rows[rows.length-1];
+    wireRow(row);
+    row.querySelector("input").focus();
+  });
 }
 
 function setSourceMode(mode){
@@ -347,6 +372,22 @@ function updateFileHelp(){
       ? "Selecciona las fotos antes de enviar. No necesitas tener un enlace."
       : "Puedes subir un archivo o pegar la lista directamente en el formulario.";
 }
+// Qué incluye y qué no, desde el alcance único de config.js (solo consolidado).
+function renderScope(service){
+  const box=$("qzScope"),label=$("qzTotalLabel");
+  if(label)label.textContent=service==="lcl"?"Servicio Chelme":"Tu estimado";
+  if(!box)return;
+  const sc=CONFIG.lclScope;
+  if(service!=="lcl"||!sc){box.hidden=true;return;}
+  if(!box.dataset.filled){
+    const li=(t)=>`<li>${escapeText(t)}</li>`;
+    box.innerHTML=`<div class="qz-scope-in"><strong>Incluido hasta ${escapeText(sc.deliveryPlace)}</strong><ul>${sc.includes.map(li).join("")}</ul></div>`+
+      `<div class="qz-scope-out"><strong>No incluye</strong><ul>${sc.excludes.map(li).join("")}</ul></div>`;
+    box.dataset.filled="1";
+  }
+  box.hidden=false;
+}
+
 function renderBreakdown(targetId, title, rows, note=""){
   const box=$(targetId);
   if(!rows.length){
@@ -357,9 +398,9 @@ function renderBreakdown(targetId, title, rows, note=""){
   box.classList.remove("hidden");
   box.innerHTML=`
     <div class="cost-breakdown-header"><span>${title}</span><span>USD</span></div>
-    ${rows.map(row=>`
-      <div class="cost-breakdown-row ${row.pending?"pending":""} ${row.total?"total":""}">
-        <span>${row.label}</span>
+    ${rows.map(row=>row.section?`<div class="cost-breakdown-section">${row.section}</div>`:`
+      <div class="cost-breakdown-row ${row.pending?"pending":""} ${row.total?"total":""} ${row.subtotal?"subtotal":""}">
+        <span>${row.op?`<i class="cb-op" aria-hidden="true">${row.op} </i>`:""}${row.label}</span>
         <strong>${row.value}</strong>
       </div>`).join("")}
     ${note?`<div class="cost-breakdown-note">${note}</div>`:""}
@@ -373,16 +414,17 @@ function originalGoodsText(amount,currency){
     : money(amount);
 }
 
-const LCL_MAX_KG_PER_CBM=500;
+const LCL_MAX_KG_PER_CBM=(window.CHELME_CONFIG&&window.CHELME_CONFIG.lclScope&&window.CHELME_CONFIG.lclScope.weightReviewKgPerCbm)||500;
 function lclWeightNotice(){
   const kg=val("qWeight"),cbm=val("qCbm");
   if(kg<=0||cbm<=0)return "";
-  const billable=Math.max(cbm,Number(CONFIG.lcl.minimumBillableCbm)||0);
-  return kg>LCL_MAX_KG_PER_CBM*billable?`Tu carga pesa más de ${LCL_MAX_KG_PER_CBM} kg por m³ (${fmt(kg/billable,0)} kg/m³). Puede aplicar un cobro extra por peso; lo confirmamos en la cotización final.`:"";
+  // Densidad sobre el volumen real (no el facturable): 0,5 m³ y 400 kg = 800 kg/m³.
+  return kg>LCL_MAX_KG_PER_CBM*cbm?`Tu carga pesa ${fmt(kg/cbm,0)} kg por m³, sobre ${LCL_MAX_KG_PER_CBM} kg por m³. La revisamos antes de darte un total.`:"";
 }
 
 function updateEstimate(){
   const service=state.quoteService;
+  renderScope(service);
   const wn=$("qWeightNotice");
   if(wn){const msg=lclWeightNotice();wn.textContent=msg;wn.classList.toggle("hidden",!msg);}
   let totalText="Cotización personalizada";
@@ -402,35 +444,44 @@ function updateEstimate(){
     },window.ChelmeLclRates?window.ChelmeLclRates.configFor(cbm,CONFIG):CONFIG);
 
     if(cbm>0){
-      rows.push({label:`Mercancía ingresada (${goodsCurrency})`,value:originalGoodsText(goodsAmount,goodsCurrency),pending:goodsAmount<=0});
-      if(goodsCurrency==="RMB"&&goodsAmount>0){
-        rows.push({label:`Equivalente usando ${CONFIG.exchange.commercialRmbPerUsd.toFixed(4)} RMB/USD`,value:money(result.goodsUsd)});
-      }
+      const tierLbl=window.ChelmeLclRates?window.ChelmeLclRates.tierLabel(cbm,CONFIG):"";
+      const heavy=lclWeightNotice();
+      const serviceSubtotal=result.logistics+(result.sourcing||0);
+      rows.push({section:`Servicio Chelme hasta ${(CONFIG.lclScope&&CONFIG.lclScope.deliveryPlace)||"Santiago"}`});
       rows.push({label:"Volumen real informado",value:`${fmt(result.actualCbm,2)} m³`});
       rows.push({label:"Volumen facturable",value:`${fmt(result.billableCbm,2)} m³`});
       if(result.minimumApplied){
         rows.push({label:"Mínimo de facturación aplicado",value:`${fmt(result.minimumBillableCbm,2)} m³`,pending:true});
       }
-      const tierLbl=window.ChelmeLclRates?window.ChelmeLclRates.tierLabel(cbm,CONFIG):"";
-      rows.push({label:`Flete consolidado (${fmt(result.billableCbm,2)} m³ × ${money(result.baseRate)}${tierLbl?`, tramo ${tierLbl}`:""})`,value:money(result.baseFreight)});
+      rows.push({op:"×",label:`Tarifa por m³${tierLbl?` (tramo ${tierLbl})`:""}`,value:money(result.baseRate)});
+      rows.push({op:"=",label:"Flete consolidado",value:money(result.baseFreight)});
       if(result.smallCargo){
-        rows.push({label:`Cargo operativo por carga bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ (fijo)`,value:money(result.smallCargoExtra)});
+        rows.push({op:"+",label:`Cargo operativo por carga bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ (fijo)`,value:money(result.smallCargoExtra)});
       }
-      if(lclWeightNotice())rows.push({label:"Aviso de peso",value:"Posible cobro extra",pending:true});
       rows.push({
+        op:"+",
         label:`Búsqueda y gestión de compra (${CONFIG.lcl.sourcingPercent}%)`,
         value:includeSourcing
           ? (result.sourcing!==null?money(result.sourcing):"Pendiente")
           : "No seleccionada",
         pending:includeSourcing&&result.sourcing===null
       });
+      if(heavy)rows.push({label:"Peso sobre 500 kg por m³",value:"Revisión manual",pending:true});
+      rows.push({op:"=",label:includeSourcing&&result.sourcing===null?"Servicio Chelme (búsqueda pendiente)":"Servicio Chelme",value:heavy?"Por revisar":money(serviceSubtotal),subtotal:true});
 
-      if(goodsAmount>0){
-        totalText=money(result.operationTotalKnown);
-        rows.push({label:"Estimado total (incluye tu mercancía)",value:money(result.operationTotalKnown),total:true});
+      rows.push({section:"Pagas aparte · no es servicio Chelme"});
+      rows.push({label:`Mercancía a tu proveedor (${goodsCurrency})`,value:originalGoodsText(goodsAmount,goodsCurrency),pending:goodsAmount<=0});
+      if(goodsCurrency==="RMB"&&goodsAmount>0){
+        rows.push({label:`Equivalente usando ${CONFIG.exchange.commercialRmbPerUsd.toFixed(4)} RMB/USD`,value:money(result.goodsUsd)});
+      }
+      rows.push({label:"IVA y arancel, si aplica",value:"Con la declaración de aduana",pending:true});
+
+      if(heavy){
+        totalText="Requiere revisión por peso";
+        rows.push({label:"Total",value:"Lo confirmamos después de revisar el peso",total:true,pending:true});
       }else{
-        totalText=money(result.logistics);
-        rows.push({label:"Logística conocida",value:money(result.logistics),total:true});
+        totalText=money(serviceSubtotal);
+        if(goodsAmount>0)rows.push({label:"Costo estimado de tu operación, sin impuestos",value:money(result.operationTotalKnown),total:true});
       }
 
       note=`Estimación automática, sin costo. El servicio Chelme incluye todo hasta ${(CONFIG.lclScope&&CONFIG.lclScope.deliveryPlace)||"Santiago"}; el IVA y el arancel se pagan aparte, antes de la llegada. ${window.ChelmeLclRates?window.ChelmeLclRates.validityText():""}`;
@@ -637,7 +688,7 @@ async function submitQuote(event){
   state.preparedQuoteReference=createQuoteReference();state.preparedQuoteFiles=[...state.quoteFiles];
   const concise=[...sourceLines.slice(0,4),...serviceLines.slice(0,5)];
   const requiresAdvisory=["sourcing","advisory"].includes(state.quoteService);
-  state.preparedQuoteText=["SOLICITUD CHELME GLOBAL TRADE",`Referencia: ${state.preparedQuoteReference}`,`Servicio: ${serviceTitle}`,`Cliente: ${name}`,`Destino: ${destination}`,`WhatsApp cliente: ${phone}`,`Información disponible: ${infoLabel}`,`Proveedor / búsqueda: ${sourcingStatus}`,...concise,`Resultado mostrado: ${result}`,state.quoteFiles.length?`Archivos para adjuntar: ${state.quoteFiles.length}`:"",$("quoteNotes").value.trim()?`Comentarios: ${$("quoteNotes").value.trim()}`:"","",requiresAdvisory?`Asesoría inicial: ${money(CONFIG.advisory.startingPriceUsd)}`:"Esta cotización no tiene costo.",requiresAdvisory?"La revisión comienza después de confirmar la asesoría.":"Quedamos atentos para confirmar por WhatsApp.",(state.quoteService==="lcl"&&lclWeightNotice())?`Aviso: ${lclWeightNotice()}`:"","Impuestos y gastos de destino se confirman por separado.",(state.quoteService==="lcl"||state.quoteService==="fcl")?"La carga llega a Santiago. Envío a regiones se cotiza aparte o retiro en bodega.":""].filter(Boolean).join("\n");
+  state.preparedQuoteText=["SOLICITUD CHELME GLOBAL TRADE",`Referencia: ${state.preparedQuoteReference}`,`Servicio: ${serviceTitle}`,`Cliente: ${name}`,`Destino: ${destination}`,`WhatsApp cliente: ${phone}`,`Información disponible: ${infoLabel}`,`Proveedor / búsqueda: ${sourcingStatus}`,...concise,`${state.quoteService==="lcl"?"Servicio Chelme estimado":"Resultado mostrado"}: ${result}`,state.quoteFiles.length?`Archivos para adjuntar: ${state.quoteFiles.length}`:"",$("quoteNotes").value.trim()?`Comentarios: ${$("quoteNotes").value.trim()}`:"","",requiresAdvisory?`Asesoría inicial: ${money(CONFIG.advisory.startingPriceUsd)}`:"Esta cotización no tiene costo.",requiresAdvisory?"La revisión comienza después de confirmar la asesoría.":"Quedamos atentos para confirmar por WhatsApp.",(state.quoteService==="lcl"&&lclWeightNotice())?`Aviso: ${lclWeightNotice()}`:"",state.quoteService==="lcl"?"Servicio Chelme hasta nuestra bodega en Santiago. IVA y arancel se pagan aparte, antes de la llegada. Envío a regiones se cotiza aparte.":(state.quoteService==="fcl"?"IVA, arancel y gastos de destino se cotizan por separado.":"")].filter(Boolean).join("\n");
   renderQuotePreview([["Referencia",state.preparedQuoteReference],["Servicio",serviceTitle],["Cliente",name],["Destino",destination],["Información",infoLabel],["Búsqueda",sourcingStatus],["Resultado mostrado",result],[requiresAdvisory?"Asesoría inicial":"Costo de esta cotización",requiresAdvisory?money(CONFIG.advisory.startingPriceUsd):"Sin costo"]]);
 }
 

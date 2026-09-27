@@ -174,3 +174,28 @@
 .staff-bar .portal-tab:not(.active):hover{ color:#fff; }
 .staff-bar .portal-tab.active{ background:#fff; color:#123f49; }
 .staff-bar small{ color:rgba(255,255,255,.7); font-size:.76rem; flex-basis:100%; }
+
+/* Mi operación: requiere tu atención y saldos por moneda */
+.attn{ margin-top:18px; display:flex; flex-direction:column; gap:8px; }
+.attn[hidden],.bal-tiles[hidden]{ display:none; }
+.attn-title{ font-size:.74rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#7a5b00; }
+.attn-row{ display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; background:#fff; border:1px solid var(--line); }
+.attn-gold{ border-color:#f0d98a; } .attn-red{ border-color:#f0b4b4; background:#fff8f8; }
+.attn-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; background:#274F5B; }
+.attn-gold .attn-dot{ background:#DAAD2B; } .attn-red .attn-dot{ background:#b3261e; }
+.attn-ref{ font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-size:.8rem; font-weight:600; white-space:nowrap; }
+.attn-text{ flex:1; font-size:.9rem; min-width:0; }
+.attn-btn{ height:36px; padding:0 14px; border-radius:9px; border:0; background:#DAAD2B; color:#17363F; font:inherit; font-size:.82rem; font-weight:800; cursor:pointer; }
+.attn-teal .attn-btn{ background:#274F5B; color:#fff; }
+.bal-tiles{ margin-top:14px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.bal-tiles div{ padding:14px 16px; border-radius:12px; background:#fff; border:1px solid var(--line); }
+.bal-tiles span{ display:block; font-size:.74rem; font-weight:700; color:var(--muted); }
+.bal-tiles b{ display:block; margin-top:4px; font-size:1.2rem; color:var(--petrol); font-variant-numeric:tabular-nums; }
+.bal-tiles small{ display:block; margin-top:2px; font-size:.72rem; color:var(--muted); }
+@media (max-width:640px){ .attn-row{ flex-wrap:wrap; } .attn-text{ flex-basis:100%; order:3; } .attn-btn{ margin-left:auto; } .bal-tiles{ grid-template-columns:1fr; } }
+
+/* Cabecera compacta del portal: lo importante (atención y pedidos) queda arriba */
+.standalone-hero.portal-hero{ padding:34px 0 30px; }
+.standalone-hero.portal-hero h1{ font-size:clamp(1.8rem,3.2vw,2.5rem); margin:8px 0 4px; }
+.standalone-hero.portal-hero p{ margin:0; }
+.standalone-hero.portal-hero .acct-bar{ margin-top:14px; }
