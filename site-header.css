@@ -85,3 +85,12 @@
   .rd-nav a.rd-account{ justify-content:center; margin-top:8px; border-bottom:1.5px solid var(--petrol); }
   .rd-account-menu > summary{ border:0; padding:12px 4px !important; }
 }
+
+/* Barra fija de acción: solo en celular, una acción principal y WhatsApp como ícono */
+@media (min-width:901px){ .sticky-cta-bar{ display:none !important; } footer{ padding-bottom:0 !important; } }
+@media (max-width:900px){
+  .sticky-cta-bar{ gap:10px; padding:10px 16px calc(10px + env(safe-area-inset-bottom)); background:rgba(255,255,255,.97); box-shadow:0 -8px 24px rgba(23,54,63,.12); }
+  .sticky-cta-btn{ border-radius:999px; padding:14px 10px; }
+  .sticky-cta-btn.sticky-cta-whatsapp{ flex:0 0 52px; width:52px; padding:0; font-size:0; gap:0; }
+  .sticky-cta-btn.sticky-cta-whatsapp svg{ width:22px; height:22px; }
+}
