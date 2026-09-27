@@ -40,16 +40,18 @@ function setMiniService(service){
 }
 
 function updateMiniEstimate(){
-  let text=`Desde ${money(CONFIG.lcl.ratePerCbmUsd)}/m³`;
+  const lclRates=window.ChelmeLclRates;
+  const fromRate=lclRates?lclRates.fromRate(CONFIG):CONFIG.lcl.ratePerCbmUsd;
+  let text=`Desde ${money(fromRate)}/m³`;
   let note="Ingresa el volumen para ver un estimado de flete.";
   if(miniService==="lcl"){
     const cbm=Number.parseFloat($("miniCbm")?.value)||0;
     if(cbm>0){
-      const result=CHELME_PRICING.calculateLcl({goodsAmount:0,goodsCurrency:"USD",cbm,includeSourcing:false},CONFIG);
+      const result=CHELME_PRICING.calculateLcl({goodsAmount:0,goodsCurrency:"USD",cbm,includeSourcing:false},lclRates?lclRates.configFor(cbm,CONFIG):CONFIG);
       text=money(result.logistics);
-      note=`Volumen facturable: ${fmt(result.billableCbm,2)} m³. No incluye el valor de tu mercancía ni impuestos de destino.`;
+      note=`Volumen facturable: ${fmt(result.billableCbm,2)} m³ a ${money(result.baseRate)}/m³. No incluye el valor de tu mercancía ni impuestos de destino.`;
     }else{
-      text=`Desde ${money(CONFIG.lcl.ratePerCbmUsd)}/m³`;
+      text=`Desde ${money(fromRate)}/m³`;
       note=`Mínimo facturable: ${CONFIG.lcl.minimumBillableCbm} m³.`;
     }
   }else if(miniService==="fcl"){
@@ -215,6 +217,7 @@ function init(){
 
   const requestedService=new URLSearchParams(location.search).get("service");
   setMiniService(requestedService&&miniServiceCopy[requestedService]?requestedService:"lcl");
+  if(window.ChelmeLclRates)window.ChelmeLclRates.ready.then(()=>updateMiniEstimate());
   if(requestedService&&miniServiceCopy[requestedService]&&location.hash==="#quoteShell"){
     setTimeout(()=>$("quoteShell").scrollIntoView({behavior:"smooth",block:"start"}),50);
   }
