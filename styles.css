@@ -450,3 +450,9 @@ footer{padding:35px 0;background:var(--petrol-3);color:rgba(255,255,255,.78)}
 a.yiwu-contact-item{color:var(--petrol-2);font-weight:750;text-decoration:none}
 .yiwu-contact-note{margin-top:4px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:.78rem}
 @media(max-width:900px){.yiwu-contact-grid{grid-template-columns:1fr}}
+
+/* Galería: fotos horizontales a lo ancho, nunca en casilla alta */
+.gallery-grid{grid-auto-flow:dense}
+.gallery-card.is-landscape{grid-row:auto!important;grid-column:span 2}
+.gallery-card.is-landscape,.gallery-card.is-landscape img{min-height:350px!important}
+@media(max-width:760px){.gallery-card.is-landscape{grid-column:1/-1}}

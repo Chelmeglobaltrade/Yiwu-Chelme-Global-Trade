@@ -203,3 +203,58 @@
   .rd-hero-media img{ object-position:center 66%; }
   .rd-hero-tag{ bottom:auto; top:12px; }
 }
+
+/* ---------- Ruta interactiva de la carga ---------- */
+.rd-route{ max-width:1040px; margin:0 auto; }
+.rd-route-map{ display:block; width:100%; height:auto; border-radius:22px; box-shadow:0 18px 44px rgba(18,63,73,.12); }
+.rd-land{ fill:#f6f1e3; stroke:#e7dcc0; stroke-width:2; }
+.rd-land-label{ fill:#b9a672; font-size:15px; font-weight:800; letter-spacing:.2em; }
+.rd-route-base{ fill:none; stroke:#9dbcc2; stroke-width:4; stroke-dasharray:2 10; stroke-linecap:round; }
+.rd-route-progress{ fill:none; stroke:#123f49; stroke-width:5; stroke-linecap:round; }
+.rd-stop{ cursor:pointer; outline:none; }
+.rd-stop circle{ fill:#fff; stroke:#9dbcc2; stroke-width:4; transition:fill .3s ease, stroke .3s ease, r .2s ease; }
+.rd-stop text{ fill:#123f49; font-size:15px; font-weight:800; text-anchor:middle; paint-order:stroke; stroke:#e8f2f4; stroke-width:5px; stroke-linejoin:round; }
+.rd-stop.is-reached circle{ stroke:#123f49; fill:#123f49; }
+.rd-stop.is-active circle{ fill:#f2b91f; stroke:#123f49; r:14; }
+.rd-stop:hover circle,.rd-stop:focus-visible circle{ stroke:#f2b91f; }
+.rd-stop:focus-visible text{ text-decoration:underline; }
+.rd-waves path{ animation:rdWave 4.5s ease-in-out infinite; }
+.rd-waves path:nth-child(2n){ animation-delay:-2s; }
+@keyframes rdWave{ 50%{ transform:translateX(10px); } }
+.rd-route-stops{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:18px 0 0; }
+.rd-route-stops button{ padding:9px 15px; border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--petrol); font:inherit; font-size:.85rem; font-weight:700; cursor:pointer; transition:background .18s ease, color .18s ease, border-color .18s ease; }
+.rd-route-stops button:hover{ border-color:var(--petrol); }
+.rd-route-stops button.is-active{ background:var(--petrol); border-color:var(--petrol); color:#fff; }
+.rd-route-card{ max-width:620px; margin:18px auto 0; padding:22px 26px; border-radius:18px; background:#fff; border:1px solid var(--line); border-left:5px solid #f2b91f; box-shadow:0 12px 30px rgba(18,63,73,.08); text-align:left; }
+.rd-route-card.is-swap{ animation:rdSwap .35s ease; }
+@keyframes rdSwap{ from{ transform:translateY(6px); } to{ transform:none; } }
+.rd-route-when{ display:inline-block; margin-bottom:8px; padding:4px 10px; border-radius:999px; background:#fff8e1; color:#8a6a12; font-size:.75rem; font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
+.rd-route-card h3{ margin:0 0 6px; color:var(--petrol); font-size:1.2rem; }
+.rd-route-card p{ margin:0; color:var(--muted); }
+.rd-route-actions{ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-top:22px; }
+@media (max-width:700px){ .rd-stop text{ display:none; } .rd-route-card{ padding:18px; } }
+@media (prefers-reduced-motion:reduce){ .rd-waves path,.rd-route-card.is-swap{ animation:none; } }
+
+/* ---------- Contenedor que se llena (calculadora) ---------- */
+.rd-fill{ margin:18px 0 4px; }
+.rd-fill[hidden]{ display:none; }
+.rd-fill-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:8px; color:var(--petrol); font-size:.86rem; font-weight:700; }
+.rd-fill-head b{ font-size:1.05rem; font-variant-numeric:tabular-nums; }
+.rd-fill-box{ position:relative; height:78px; border:3px solid #123f49; border-radius:8px; overflow:hidden;
+  background:repeating-linear-gradient(90deg,#f4f8f8 0 15px,#e3ecec 15px 18px); }
+.rd-fill-bar{ position:absolute; inset:0 auto 0 0; width:0;
+  background:repeating-linear-gradient(90deg,transparent 0 24px,rgba(18,63,73,.35) 24px 26px),repeating-linear-gradient(0deg,#f2b91f 0 24px,#d69c0c 24px 26px);
+  transition:width .9s cubic-bezier(.22,1,.36,1); box-shadow:4px 0 0 rgba(18,63,73,.25); }
+.rd-fill.is-fcl .rd-fill-bar{ background:repeating-linear-gradient(90deg,transparent 0 24px,rgba(255,255,255,.25) 24px 26px),repeating-linear-gradient(0deg,#1d5b66 0 24px,#164a54 24px 26px); }
+.rd-fill-door{ position:absolute; right:0; top:0; bottom:0; width:12px; background:repeating-linear-gradient(0deg,#123f49 0 6px,#1d5b66 6px 12px); }
+.rd-fill-note{ margin:10px 0 0; color:var(--muted); font-size:.86rem; }
+@media (prefers-reduced-motion:reduce){ .rd-fill-bar{ transition:none; } }
+
+/* ---------- Tarjetas de soluciones: un poco de vida al pasar el mouse ---------- */
+.rd-solution{ transition:transform .25s ease, box-shadow .25s ease; }
+.rd-solution img{ transition:transform .5s ease; }
+.rd-solution:hover{ transform:translateY(-4px); box-shadow:0 18px 40px rgba(18,63,73,.14); }
+.rd-solution:hover img{ transform:scale(1.04); }
+@media (prefers-reduced-motion:reduce){ .rd-solution,.rd-solution img{ transition:none; } .rd-solution:hover,.rd-solution:hover img{ transform:none; } }
+.rd-body .rd-btn-outline{ background:#fff; color:var(--petrol); border:1.5px solid var(--petrol); box-shadow:none; }
+.rd-body .rd-btn-outline:hover{ background:var(--petrol); color:#fff; }

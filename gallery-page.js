@@ -23,6 +23,10 @@ function renderGallery(filter = activeGalleryFilter){
 
   grid.querySelectorAll("[data-gallery-index]").forEach(button => {
     button.addEventListener("click", () => openLightbox(Number(button.dataset.galleryIndex)));
+    // Una foto horizontal nunca va en una casilla alta y angosta: ocupa dos columnas.
+    const img = button.querySelector("img");
+    const mark = () => { if (img.naturalWidth > img.naturalHeight) button.classList.add("is-landscape"); };
+    if (img.complete) mark(); else img.addEventListener("load", mark);
   });
 }
 
