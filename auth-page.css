@@ -165,3 +165,12 @@
 .rates-table input{ width:90px; padding:7px 8px; border:1px solid var(--line); border-radius:8px; font:inherit; }
 .rates-table tr.is-used td{ background:#fff8e1; }
 .rates-actions{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:14px 0 8px; }
+
+/* Barra del equipo: separada de las pestañas del cliente */
+.staff-bar{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; margin-top:14px; padding:12px 14px; border-radius:16px; background:#123f49; }
+.staff-badge{ padding:5px 12px; border-radius:999px; background:#f2b91f; color:#123f49; font-size:.78rem; font-weight:800; white-space:nowrap; }
+.staff-bar .staff-tabbar{ background:transparent; border:0; padding:0; max-width:none; flex:0 1 auto; }
+.staff-bar .portal-tab{ color:rgba(255,255,255,.8); flex:0 0 auto; }
+.staff-bar .portal-tab:not(.active):hover{ color:#fff; }
+.staff-bar .portal-tab.active{ background:#fff; color:#123f49; }
+.staff-bar small{ color:rgba(255,255,255,.7); font-size:.76rem; flex-basis:100%; }
