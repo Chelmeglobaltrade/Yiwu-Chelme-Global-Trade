@@ -418,7 +418,7 @@
 
   /* ---------- Cobros por pedido, costos internos y caja ---------- */
   var chargesCache = [], ordersCache = [], costsCache = [], customersCache = null;
-  var CHARGE_CATS = { flete: 'Flete', servicio: 'Servicio', iva: 'IVA aduanero', arancel: 'Arancel', gastos_destino: 'Gastos de destino', otro: 'Otro' };
+  var CHARGE_CATS = { mercancia: 'Mercancía', flete: 'Flete', servicio: 'Servicio', iva: 'IVA aduanero', arancel: 'Arancel', gastos_destino: 'Gastos de destino', otro: 'Otro' };
   var CHARGE_STATUS = { pendiente: 'Pendiente', en_revision: 'En revisión', pagado: 'Pagado' };
   var PASS_THROUGH = ['iva', 'arancel'];
 
@@ -454,7 +454,7 @@
     var slot = document.getElementById('cbadge-' + orderId);
     if (slot) slot.innerHTML = chargeBadge(orderId);
     renderOrderCharges(orderId, isStaff);
-    if (isStaff) { renderOrderCosts(orderId); renderCash(); }
+    if (isStaff) { renderOrderCosts(orderId); renderOrderInvoice(orderId); renderCash(); }
   }
   async function reloadCharges(){
     var r = await supabaseClient.from('order_charges').select('*').order('due_date', { ascending: true });
@@ -493,7 +493,8 @@
         '<input type="number" min="0" step="0.01" id="chg-amount-' + orderId + '" placeholder="Monto">' +
         '<select id="chg-cur-' + orderId + '"><option>USD</option><option>CLP</option></select>' +
         '<input type="date" id="chg-due-' + orderId + '">' +
-        '<button type="button" class="btn btn-gold btn-sm" data-act="add">Agregar cobro</button></div>' +
+        '<button type="button" class="btn btn-gold btn-sm" data-act="add">Agregar cobro</button>' +
+        '<button type="button" class="btn btn-light btn-sm" data-act="suggest-iva">Sugerir provisión IVA</button></div>' +
         '<b style="margin-top:14px;display:block">Plan anticipo + saldo</b><div class="charge-form-grid">' +
         '<input type="text" id="plan-concept-' + orderId + '" placeholder="Concepto (ej.: Servicio consolidado)">' +
         '<input type="number" min="0" step="0.01" id="plan-total-' + orderId + '" placeholder="Total USD">' +
@@ -502,6 +503,8 @@
         '<input type="date" id="plan-due-' + orderId + '" title="Fecha del saldo">' +
         '<button type="button" class="btn btn-light btn-sm" data-act="plan">Crear plan</button></div></div>';
     }
+    var oinv = orderById(orderId);
+    if (oinv.invoice_number) html += '<div class="charge-note" style="margin-top:10px">Factura emitida: N° ' + escapeHtml(oinv.invoice_number) + (oinv.invoice_date ? ' del ' + new Date(oinv.invoice_date + 'T12:00:00').toLocaleDateString('es-CL') : '') + '</div>';
     box.innerHTML = html;
     if (box.dataset.wired) return;
     box.dataset.wired = '1';
@@ -523,6 +526,7 @@
         window.open('https://wa.me/' + CHELME_CONFIG.business.whatsapp + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
         return;
       }
+      if (act === 'suggest-iva') { suggestIva(orderId); return; }
       if (act === 'del') {
         if (!confirm('¿Eliminar este cobro?')) return;
         var d = await supabaseClient.from('order_charges').delete().eq('id', id);
@@ -613,6 +617,98 @@
     });
   }
 
+  /* ---------- IVA, factura y checklist por pedido (equipo) ---------- */
+  var IVA_RATE = 0.19, SEGURO_RATE = 0.0044;
+  function usdSum(orderId, filterFn){
+    return chargesOf(orderId).filter(function(c){ return c.currency === 'USD' && filterFn(c); })
+      .reduce(function(s, c){ return s + Number(c.amount); }, 0);
+  }
+  function orderById(id){ return ordersCache.filter(function(o){ return o.id === id; })[0] || {}; }
+  function taxSummary(orderId){
+    var o = orderById(orderId);
+    var neto = usdSum(orderId, function(c){ return PASS_THROUGH.indexOf(c.category) < 0; });
+    var ivaVenta = Math.round(neto * IVA_RATE * 100) / 100;
+    var pagado = usdSum(orderId, function(c){ return c.status === 'pagado' && c.category !== 'arancel'; });
+    var customs = Number(o.customs_iva_usd) || 0;
+    return { neto: neto, ivaVenta: ivaVenta, total: neto + ivaVenta, pagado: pagado, saldo: neto + ivaVenta - pagado, customs: customs, ivaNeto: ivaVenta - customs };
+  }
+  function checklistOf(orderId){
+    var o = orderById(orderId), iva = chargesOf(orderId).filter(function(c){ return c.category === 'iva'; });
+    return [
+      { ok: iva.length > 0 && iva.every(function(c){ return c.status === 'pagado'; }), label: 'IVA cobrado al cliente' },
+      { ok: !!o.agent_paid, label: 'Agente y aduana pagados' },
+      { ok: o.status === 'entregado' && !unpaidOf(orderId).length, label: 'Entrega liberada' },
+      { ok: !!o.invoice_number, label: 'Factura emitida' }
+    ];
+  }
+  function renderOrderInvoice(orderId){
+    var box = document.getElementById('ofact-' + orderId);
+    if (!box) return;
+    var o = orderById(orderId), t = taxSummary(orderId), steps = checklistOf(orderId);
+    var check = '<div class="check-steps">' + steps.map(function(s){ return '<span class="' + (s.ok ? 'is-ok' : '') + '">' + (s.ok ? '✓ ' : '○ ') + s.label + '</span>'; }).join('') + '</div>';
+    var resumen = '<div class="tax-grid">' +
+      '<div>Neto de la venta<b>' + moneyFmt(t.neto) + '</b></div>' +
+      '<div>IVA de la venta (19%)<b>' + moneyFmt(t.ivaVenta) + '</b></div>' +
+      '<div>Total a facturar<b>' + moneyFmt(t.total) + '</b></div>' +
+      '<div>Pagado por el cliente<b>' + moneyFmt(t.pagado) + '</b></div>' +
+      '<div>Saldo por cobrar<b>' + moneyFmt(t.saldo) + '</b></div>' +
+      '<div>IVA pagado en aduana<b>' + moneyFmt(t.customs) + '</b></div>' +
+      '<div class="span2">IVA neto que te toca pagar (venta − aduana)<b>' + moneyFmt(t.ivaNeto) + '</b></div></div>' +
+      '<p class="charge-hint">Solo incluye cobros en USD. IVA y arancel no cuentan como venta. Si le vendes la mercancía al cliente, agrega su cobro con categoría Mercancía para que el neto y el IVA de la venta sean correctos. Valores referenciales: confirma con tu contador.</p>';
+    box.innerHTML = check + resumen +
+      '<div class="charge-form-grid" style="margin-top:12px">' +
+        '<label class="charge-lbl">ETA (llegada a puerto)<input type="date" id="eta-' + orderId + '" value="' + (o.eta || '') + '"></label>' +
+        '<label class="charge-lbl">IVA pagado en aduana (USD)<input type="number" min="0" step="0.01" id="cust-' + orderId + '" value="' + (o.customs_iva_usd || '') + '"></label>' +
+        '<label class="charge-lbl check-inline"><input type="checkbox" id="agent-' + orderId + '"' + (o.agent_paid ? ' checked' : '') + '> Agente y aduana pagados</label>' +
+        '<button type="button" class="btn btn-light btn-sm" id="savefact-' + orderId + '">Guardar</button></div>' +
+      '<div class="charge-form-grid" style="margin-top:8px">' +
+        '<label class="charge-lbl">N° de factura<input type="text" id="inv-num-' + orderId + '" value="' + escapeHtml(o.invoice_number || '') + '"></label>' +
+        '<label class="charge-lbl">Fecha factura<input type="date" id="inv-date-' + orderId + '" value="' + (o.invoice_date || '') + '"></label>' +
+        '<label class="charge-lbl">Neto USD<input type="number" min="0" step="0.01" id="inv-net-' + orderId + '" value="' + (o.invoice_net_usd || t.neto || '') + '"></label>' +
+        '<label class="charge-lbl">IVA USD<input type="number" min="0" step="0.01" id="inv-iva-' + orderId + '" value="' + (o.invoice_iva_usd || t.ivaVenta || '') + '"></label>' +
+        '<button type="button" class="btn btn-gold btn-sm" id="saveinv-' + orderId + '">Registrar factura</button></div>';
+    var save = async function(fields, btn){
+      btn.disabled = true;
+      var r = await supabaseClient.from('orders').update(fields).eq('id', orderId);
+      btn.disabled = false;
+      if (r.error) { alert('No se pudo guardar: ' + r.error.message); return; }
+      Object.assign(orderById(orderId), fields);
+      refreshChargeViews(orderId, true);
+    };
+    document.getElementById('savefact-' + orderId).addEventListener('click', function(){
+      save({
+        eta: document.getElementById('eta-' + orderId).value || null,
+        customs_iva_usd: document.getElementById('cust-' + orderId).value === '' ? null : Number(document.getElementById('cust-' + orderId).value),
+        agent_paid: document.getElementById('agent-' + orderId).checked
+      }, this);
+    });
+    document.getElementById('saveinv-' + orderId).addEventListener('click', function(){
+      var num = document.getElementById('inv-num-' + orderId).value.trim();
+      if (!num) { alert('Escribe el número de factura.'); return; }
+      save({
+        invoice_number: num,
+        invoice_date: document.getElementById('inv-date-' + orderId).value || null,
+        invoice_net_usd: Number(document.getElementById('inv-net-' + orderId).value) || null,
+        invoice_iva_usd: Number(document.getElementById('inv-iva-' + orderId).value) || null
+      }, this);
+    });
+  }
+  function suggestIva(orderId){
+    var o = orderById(orderId);
+    var merc = usdSum(orderId, function(c){ return c.category === 'mercancia'; });
+    if (!merc && o.goods_currency === 'USD') merc = Number(o.goods_value) || 0;
+    var flete = usdSum(orderId, function(c){ return c.category === 'flete'; });
+    if (!merc && !flete) { alert('Primero agrega el cobro de mercancía y el de flete (o el valor de mercancía del pedido) para calcular el CIF.'); return false; }
+    var cif = merc * (1 + SEGURO_RATE) + flete;
+    var iva = Math.round(cif * IVA_RATE * 100) / 100;
+    document.getElementById('chg-concept-' + orderId).value = 'Provisión IVA aduanero (19% del CIF ≈ ' + moneyFmt(cif) + ')';
+    document.getElementById('chg-cat-' + orderId).value = 'iva';
+    document.getElementById('chg-amount-' + orderId).value = iva;
+    document.getElementById('chg-cur-' + orderId).value = 'USD';
+    if (o.eta) { var d = new Date(o.eta + 'T12:00:00'); d.setDate(d.getDate() - 3); document.getElementById('chg-due-' + orderId).value = d.toISOString().slice(0, 10); }
+    return true;
+  }
+
   function renderCash(){
     var box = document.getElementById('cashContent');
     if (!box) return;
@@ -640,7 +736,20 @@
           var oi = orderInfo(x.o.id);
           return '<div class="cash-row is-loss"><div><strong>' + escapeHtml(oi.client || 'Cliente') + '</strong><small>' + escapeHtml(oi.ref) + '</small></div><div class="charge-amt">' + moneyFmt(x.m.margin) + '</div></div>';
         }).join('') : '';
-    box.innerHTML = tiles + '<h3 style="margin:22px 0 10px">Pendiente de cobro</h3>' + rows + lossHtml;
+    var soon = ordersCache.filter(function(o){
+      if (!o.eta) return false;
+      var days = (new Date(o.eta + 'T12:00:00') - new Date()) / 86400000;
+      var iv = chargesOf(o.id).filter(function(c){ return c.category === 'iva'; });
+      return days <= 7 && !(iv.length && iv.every(function(c){ return c.status === 'pagado'; }));
+    });
+    var noInvoice = ordersCache.filter(function(o){ return o.status === 'entregado' && !o.invoice_number; });
+    var alertRow = function(o, txt){ var oi = orderInfo(o.id); return '<div class="cash-row is-loss"><div><strong>' + escapeHtml(oi.client || 'Cliente') + '</strong><small>' + escapeHtml(oi.ref) + ' · ' + txt + '</small></div></div>'; };
+    var alertsHtml = (soon.length || noInvoice.length)
+      ? '<h3 style="margin:22px 0 10px">Requiere acción</h3>' +
+        soon.map(function(o){ return alertRow(o, 'llega en 7 días o menos y el IVA aún no está cobrado'); }).join('') +
+        noInvoice.map(function(o){ return alertRow(o, 'entregado sin factura emitida'); }).join('')
+      : '';
+    box.innerHTML = tiles + alertsHtml + '<h3 style="margin:22px 0 10px">Pendiente de cobro</h3>' + rows + lossHtml;
   }
 
   async function loadOrderPayments(orderId, containerId, isStaff, totalAmount){
@@ -750,6 +859,7 @@
             structHtml +
             '<div><div class="order-detail-subhead">Archivos</div><div class="file-chip-list" id="ofiles-' + order.id + '"></div>' + uploadRow + '</div>' +
             '<div><div class="order-detail-subhead">Cobros</div><div id="ocharges-' + order.id + '"></div></div>' +
+            (isStaff ? '<div><div class="order-detail-subhead">IVA, factura y checklist (solo equipo)</div><div id="ofact-' + order.id + '"></div></div>' : '') +
             (isStaff ? '<div><div class="order-detail-subhead">Costos y ganancia (solo equipo)</div><div id="ocosts-' + order.id + '"></div></div>' : '') +
             '<div><div class="order-detail-subhead">Pagos registrados</div><div id="opayments-' + order.id + '"></div></div>' +
             '<div><div class="order-detail-subhead">Historial de estado</div><div class="timeline-list" id="otimeline-' + order.id + '"></div></div>' +
@@ -797,7 +907,7 @@
           var order = ordersById[id];
           loadOrderFiles('orders', id, 'ofiles-' + id, isStaff);
           renderOrderCharges(id, isStaff);
-          if (isStaff) renderOrderCosts(id);
+          if (isStaff) { renderOrderCosts(id); renderOrderInvoice(id); }
           loadOrderPayments(id, 'opayments-' + id, isStaff, order.total_amount);
           loadOrderTimeline(id, 'otimeline-' + id);
           if (isStaff) wireFileUpload('orders', id, 'ofiles-' + id);

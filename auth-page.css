@@ -139,3 +139,16 @@
 .cash-row strong{ display:block; color:var(--petrol); font-size:.9rem; } .cash-row small{ color:var(--muted); font-size:.78rem; }
 .cash-row.is-loss{ border-color:#f0b4b4; background:#fff6f6; }
 @media (max-width:560px){ .charge-row,.cash-row{ grid-template-columns:1fr auto; } .charge-pill{ grid-column:1; justify-self:start; } .margin-box{ grid-template-columns:1fr; } }
+
+/* IVA, factura y checklist */
+.check-steps{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+.check-steps span{ padding:6px 12px; border-radius:999px; background:var(--soft); color:var(--muted); font-size:.78rem; font-weight:700; }
+.check-steps span.is-ok{ background:#e6f7ec; color:#1f7a43; }
+.tax-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; }
+.tax-grid div{ padding:10px 12px; border-radius:10px; background:var(--soft); font-size:.76rem; color:var(--muted); }
+.tax-grid b{ display:block; color:var(--petrol); font-size:.98rem; margin-top:2px; }
+.tax-grid .span2{ grid-column:1 / -1; background:#fff8e1; }
+.charge-lbl{ display:flex; flex-direction:column; gap:4px; font-size:.74rem; color:var(--muted); font-weight:700; }
+.charge-lbl input{ padding:9px 10px; border:1px solid var(--line); border-radius:9px; font:inherit; font-size:.86rem; }
+.check-inline{ flex-direction:row; align-items:center; gap:8px; align-self:end; padding-bottom:8px; }
+.check-inline input{ width:auto; }
