@@ -11,11 +11,11 @@
   /* ---------- Ruta de la carga ---------- */
   var STOPS = [
     { when: "7 a 25 días según producto", title: "Tu proveedor prepara el pedido", text: "Tu proveedor fabrica o prepara tu compra. Si todavía no tienes proveedor, lo buscamos y negociamos por ti." },
-    { when: "Al llegar a bodega", title: "Recibimos y revisamos en Yiwu", text: "Contamos los bultos, revisamos el embalaje, tomamos fotos, medimos y pesamos. Nada sale sin revisar." },
-    { when: "En la fecha de carga confirmada", title: "Consolidación y zarpe desde Ningbo", text: "Tu carga se ordena en el contenedor junto a la de otros importadores y zarpa en la salida programada." },
+    { when: "Antes de cargar", title: "Revisamos tu carga en China", text: "Contamos los bultos, revisamos el embalaje, tomamos fotos, medimos y pesamos, en nuestra bodega de Yiwu o al cargar tu contenedor. Nada sale sin revisar." },
+    { when: "En la fecha de carga confirmada", title: "Zarpe desde Ningbo", text: "Tu contenedor completo, o tu espacio en un consolidado junto a otros importadores, zarpa en la salida programada." },
     { when: "30 a 45 días de navegación", title: "Tu carga cruza el Pacífico", text: "Mientras navega, sigues el estado de tu pedido desde tu cuenta en la página." },
     { when: "Antes y al llegar", title: "Aduana en San Antonio", text: "Pagas IVA y arancel antes de la llegada y nuestro agente de aduana desaduana tu carga." },
-    { when: "Lista para retirar", title: "Tu carga en Santiago", text: "Retiras en nuestra bodega de Santiago o te cotizamos el envío a regiones." }
+    { when: "Lista para retirar", title: "Tu carga en Santiago", text: "Coordinamos contigo la entrega de tu contenedor. Si es consolidado, retiras en nuestra bodega de Santiago o te cotizamos el envío a regiones." }
   ];
   var route = document.getElementById("rdRoute");
   if (route) {
