@@ -36,9 +36,15 @@
     <button class="portal-tab" data-tab="quotes">Cotizaciones <span class="n" id="quotesCount" hidden>0</span></button>
     <button class="portal-tab" data-tab="quote">Nueva cotización</button>
     <button class="portal-tab" data-tab="profile">Mi perfil</button>
-    <button class="portal-tab" data-tab="cash" id="cashTabBtn" hidden>Cobros</button>
-    <button class="portal-tab" data-tab="rates" id="ratesTabBtn" hidden>Tarifas LCL</button>
-    <button class="portal-tab" data-tab="team" id="teamTabBtn" hidden>Equipo</button>
+  </div>
+  <div class="staff-bar" id="staffBar" hidden>
+    <span class="staff-badge" id="staffBadge">Panel del equipo</span>
+    <div class="portal-tabbar staff-tabbar">
+      <button class="portal-tab" data-tab="cash" id="cashTabBtn" hidden>Cobros</button>
+      <button class="portal-tab" data-tab="rates" id="ratesTabBtn" hidden>Tarifas LCL</button>
+      <button class="portal-tab" data-tab="team" id="teamTabBtn" hidden>Equipo y permisos</button>
+    </div>
+    <small>Solo tú y los administradores ven esta barra. Los clientes no la ven.</small>
   </div>
 </div></nav>
 
@@ -1283,6 +1289,8 @@
       var customersRes = await supabaseClient.from('profiles').select('id, full_name, email');
       customersById = {};
       (customersRes.data || []).forEach(function(c){ customersById[c.id] = c; });
+      document.getElementById('staffBar').hidden = false;
+      document.getElementById('staffBadge').textContent = profile.role === 'owner' ? 'Panel del equipo · Dueño' : 'Panel del equipo · Administrador';
       document.getElementById('cashTabBtn').hidden = false;
       document.getElementById('ratesTabBtn').hidden = false;
       loadRatesAdmin();
