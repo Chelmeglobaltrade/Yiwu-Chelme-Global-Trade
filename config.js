@@ -69,10 +69,34 @@ window.CHELME_CONFIG = {
   },
   destinationCosts: {
     taxesIncludedInPublicEstimate: false,
-    customsBrokerIncluded: false,
-    portChargesIncluded: false,
+    customsBrokerIncluded: true,
+    portChargesIncluded: true,
     finalDeliveryIncluded: false,
-    message: "Al llegar la carga, el cliente debe pagar los impuestos y gastos de destino que correspondan."
+    message: "En consolidado LCL, el agente de aduana y los gastos portuarios van en la tarifa por m³. IVA y arancel se pagan aparte, antes de la llegada."
+  },
+  // Alcance único del consolidado LCL: lo leen la página, el cotizador, el PDF y los términos.
+  lclScope: {
+    version: "2026-09-27",
+    deliveryPlace: "nuestra bodega en Santiago",
+    includes: [
+      "Recepción y revisión en nuestra bodega de Yiwu: conteo, fotos, medición y peso",
+      "Consolidación y flete marítimo hasta Chile",
+      "Seguro de la carga",
+      "Gastos portuarios y agente de aduana en Chile",
+      "Traslado a nuestra bodega en Santiago"
+    ],
+    payAside: [
+      "La mercancía que pagas a tu proveedor",
+      "IVA de importación y arancel, si aplica: se calculan con la declaración de aduana y se pagan antes de la llegada"
+    ],
+    excludes: [
+      "Traslado desde la fábrica hasta nuestra bodega en China",
+      "Envío a regiones: se cotiza aparte",
+      "Permisos o certificaciones (SEC, SAG, ISP u otros)",
+      "Control de calidad y búsqueda de proveedor: son servicios aparte",
+      "Bodegaje en Santiago después de los días sin costo"
+    ],
+    weightReviewKgPerCbm: 500
   },
 
   fcl: {

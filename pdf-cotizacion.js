@@ -148,6 +148,36 @@
     doc.text((biz.instagramHandle ? "IG " + biz.instagramHandle + "   ·   " : "") + SITE_URL, W / 2, fy + 41, { align: "center" });
   }
 
+  // Condiciones según el servicio cotizado; el consolidado usa el alcance único de config.js.
+  function currentService() {
+    var shell = document.getElementById("quoteShell");
+    return (shell && shell.dataset.service) || "";
+  }
+  function conditionsFor(service, ref) {
+    var base = "Estimación referencial: no es una cotización final ni una factura. La cotización revisada llega a tu cuenta después de validar producto, medidas y peso.";
+    var close = "Referencia de esta estimación: " + ref + ". Te respondemos por WhatsApp o desde tu cuenta en la página.";
+    if (service === "lcl") {
+      var sc = CONFIG.lclScope || {};
+      return [
+        base,
+        "Incluye hasta " + (sc.deliveryPlace || "Santiago") + ": " + (sc.includes || []).join("; ") + ".",
+        "Pagas aparte: " + (sc.payAside || []).join("; ") + ".",
+        "No incluye: " + (sc.excludes || []).join("; ") + ".",
+        "Se factura por m³: mínimo 1 m³; bajo 5 m³ aplica un cargo operativo fijo. Sobre " + (sc.weightReviewKgPerCbm || 500) + " kg por m³ la carga se revisa antes de dar un total.",
+        close
+      ];
+    }
+    if (service === "fcl") {
+      return [
+        base,
+        "El flete marítimo y los costos locales en China se confirman según contenedor, ruta y semana.",
+        "IVA, arancel, gastos portuarios, agente de aduana y entrega en destino se cotizan aparte en contenedor completo.",
+        close
+      ];
+    }
+    return [base, "El alcance, los plazos y el valor final se confirman contigo antes de comenzar el servicio.", close];
+  }
+
   async function buildPdf(data, opts) {
     if (!window.jspdf || !window.jspdf.jsPDF) {
       alert("El generador de PDF aún está cargando. Intenta de nuevo en unos segundos.");
@@ -268,13 +298,7 @@
     y += 18;
 
     // ---- Condiciones: panel con fondo suave y borde lateral ----
-    var conditionItems = [
-      "Estimación referencial: no constituye una cotización final. Precio, MOQ, peso, embalaje, CBM, disponibilidad y restricciones deben confirmarse antes de comprar.",
-      "Los impuestos de importación, aduana, gastos portuarios y entrega en destino NO están incluidos.",
-      "La carga llega a Santiago. El envío a regiones se cotiza aparte o puedes retirar en bodega una vez que llegue.",
-      "El consolidado se factura por CBM: mínimo 1 m³; bajo 5 m³ aplica cargo operativo fijo.",
-      "Para confirmar, envía tu solicitud por WhatsApp indicando la referencia " + ref + "."
-    ];
+    var conditionItems = conditionsFor(currentService(), ref);
     var textW = W - 2 * M - 10;
     var wrapped = conditionItems.map(function (item) { return doc.splitTextToSize("•  " + item, textW); });
     var lineCount = wrapped.reduce(function (n, arr) { return n + arr.length; }, 0);
