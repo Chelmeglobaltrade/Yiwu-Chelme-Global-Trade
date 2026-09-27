@@ -833,6 +833,15 @@
     if (isStaff) return order.shipment_id ? shipsCache.filter(function(s){ return s.id === order.shipment_id; })[0] : null;
     return myShipsByOrder[order.id] || null;
   }
+  function shipLineHtml(order, isStaff){
+    var s = shipInfoFor(order, isStaff);
+    if (!s) return '';
+    var bits = [];
+    if (s.status === 'abierto' && s.cutoff_date) bits.push('Cierre de carga <b>' + fmtDay(s.cutoff_date) + '</b>');
+    if (s.etd) bits.push((s.status === 'abierto' || s.status === 'cerrado' ? 'Zarpe estimado ' : 'Zarpó ') + '<b>' + fmtDay(s.etd) + '</b>');
+    if (s.eta) bits.push((s.status === 'llego' || s.status === 'finalizado' ? 'Llegó ' : 'Llegada estimada ') + '<b>' + fmtDay(s.eta) + '</b>');
+    return '<div class="order-ship"><span class="order-ship-code">' + escapeHtml(s.code) + '</span><span>' + escapeHtml(SHIP_STATUS[s.status] || s.status) + '</span>' + bits.map(function(x){ return '<span>' + x + '</span>'; }).join('') + '</div>';
+  }
   function clientName(o){
     var cu = customersCache && customersCache[o.user_id];
     return cu ? (cu.full_name || cu.email) : 'Cliente';
@@ -1078,33 +1087,16 @@
     box.innerHTML = tiles + alertsHtml + '<h3 style="margin:22px 0 10px">Pendiente de cobro</h3>' + rows + lossHtml;
   }
 
-  async function loadOrderPayments(orderId, containerId, isStaff, totalAmount){
+  // Pagos del sistema anterior (order_payments): solo lectura. Los pagos nuevos se registran como cobros.
+  async function loadOrderPayments(orderId, containerId){
     var res = await supabaseClient.from('order_payments').select('*').eq('order_id', orderId).order('paid_at', { ascending: false });
     var payments = res.data || [];
-    var paid = payments.reduce(function(sum, p){ return sum + Number(p.amount); }, 0);
-    var summary = '<div class="payments-summary">' +
-      (totalAmount ? '<div>Total<b>' + moneyFmt(totalAmount) + '</b></div>' : '') +
-      '<div>Pagado<b>' + moneyFmt(paid) + '</b></div>' +
-      (totalAmount ? '<div>Saldo<b>' + moneyFmt(totalAmount - paid) + '</b></div>' : '') +
-      '</div>';
-    var rows = payments.map(function(p){
-      return '<div class="payment-row"><span>' + new Date(p.paid_at).toLocaleDateString('es-CL') + (p.note ? (' · ' + escapeHtml(p.note)) : '') + '</span><strong>' + moneyFmt(p.amount) + '</strong></div>';
-    }).join('');
-    var formHtml = isStaff
-      ? '<div class="payment-form-row"><input type="number" min="0" placeholder="Monto USD" id="pay-amount-' + orderId + '"><input type="text" placeholder="Nota (opcional)" id="pay-note-' + orderId + '"><button type="button" class="btn btn-light" id="pay-btn-' + orderId + '">+ Registrar pago</button></div>'
-      : '';
-    document.getElementById(containerId).innerHTML = summary + rows + formHtml;
-    if (isStaff) {
-      document.getElementById('pay-btn-' + orderId).addEventListener('click', async function(){
-        var amount = Number(document.getElementById('pay-amount-' + orderId).value);
-        if (!amount || amount <= 0) { alert('Ingresa un monto válido.'); return; }
-        var note = document.getElementById('pay-note-' + orderId).value.trim() || null;
-        var sessionRes = await supabaseClient.auth.getSession();
-        var res2 = await supabaseClient.from('order_payments').insert({ order_id: orderId, amount: amount, note: note, recorded_by: sessionRes.data.session.user.id });
-        if (res2.error) { alert('No se pudo registrar: ' + res2.error.message); return; }
-        loadOrderPayments(orderId, containerId, isStaff, totalAmount);
-      });
-    }
+    var wrap = document.getElementById(containerId + '-wrap');
+    if (!payments.length) { if (wrap) wrap.hidden = true; return; }
+    if (wrap) wrap.hidden = false;
+    document.getElementById(containerId).innerHTML = payments.map(function(p){
+      return '<div class="payment-row"><span>' + new Date(p.paid_at + 'T12:00:00').toLocaleDateString('es-CL') + (p.note ? (' · ' + escapeHtml(p.note)) : '') + '</span><strong>' + moneyFmt(p.amount) + '</strong></div>';
+    }).join('') + '<p class="charge-hint">Registrados antes del sistema de cobros. Los pagos nuevos aparecen en Cobros.</p>';
   }
 
   async function loadOrderTimeline(orderId, containerId){
@@ -1178,6 +1170,7 @@
           '</div>' +
           '<div class="account-status-bar">' + segs + '</div>' +
           '<div class="order-stage-labels"><span>Confirmado</span><span>Yiwu</span><span>Tránsito</span><span>Aduana</span><span>Entregado</span></div>' +
+          shipLineHtml(order, isStaff) +
           nextActionHtml +
           '<div id="cbadge-' + order.id + '">' + chargeBadge(order.id) + '</div>' +
           (order.notes ? '<p style="margin-top:12px;font-size:.86rem;color:var(--muted)">' + escapeHtml(order.notes) + '</p>' : '') +
@@ -1189,7 +1182,7 @@
             '<div><div class="order-detail-subhead">Cobros</div><div id="ocharges-' + order.id + '"></div></div>' +
             (isStaff ? '<div><div class="order-detail-subhead">IVA, factura y checklist (solo equipo)</div><div id="ofact-' + order.id + '"></div></div>' : '') +
             (isStaff ? '<div><div class="order-detail-subhead">Costos y ganancia (solo equipo)</div><div id="ocosts-' + order.id + '"></div></div>' : '') +
-            '<div><div class="order-detail-subhead">Pagos registrados</div><div id="opayments-' + order.id + '"></div></div>' +
+            '<div id="opayments-' + order.id + '-wrap" hidden><div class="order-detail-subhead">Pagos anteriores</div><div id="opayments-' + order.id + '"></div></div>' +
             '<div><div class="order-detail-subhead">Historial de estado</div><div class="timeline-list" id="otimeline-' + order.id + '"></div></div>' +
           '</div>' +
         '</div>';
@@ -1236,7 +1229,7 @@
           loadOrderFiles('orders', id, 'ofiles-' + id, isStaff);
           renderOrderCharges(id, isStaff);
           if (isStaff) { renderOrderCosts(id); renderOrderInvoice(id); }
-          loadOrderPayments(id, 'opayments-' + id, isStaff, order.total_amount);
+          loadOrderPayments(id, 'opayments-' + id);
           loadOrderTimeline(id, 'otimeline-' + id);
           if (isStaff) wireFileUpload('orders', id, 'ofiles-' + id);
         }
