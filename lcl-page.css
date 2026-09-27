@@ -1,0 +1,21 @@
+/* Página de consolidado LCL: solo estilos nuevos, con prefijo lcl- */
+.lcl-page .included-not-included li{ line-height:1.45; }
+.lcl-note{ max-width:760px; margin:18px 0 0; padding:12px 16px; border-radius:12px; background:#fff8e1; border:1px solid #f2d56a; color:#6b5410; font-size:.9rem; }
+.lcl-steps{ list-style:none; margin:10px 0 0; padding:0; display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; counter-reset:lcl; }
+.lcl-steps li{ position:relative; padding:20px 20px 20px 64px; border:1px solid var(--line); border-radius:16px; background:#fff; counter-increment:lcl; }
+.lcl-steps li::before{ content:counter(lcl); position:absolute; left:18px; top:18px; width:32px; height:32px; border-radius:50%; background:#f2b91f; color:#123f49; font-weight:800; display:grid; place-items:center; }
+.lcl-steps strong{ display:block; color:var(--petrol); margin-bottom:4px; }
+.lcl-steps span{ display:block; color:var(--muted); font-size:.9rem; }
+.lcl-pay{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+.lcl-pay article{ padding:20px; border-radius:16px; background:#fff; border:1px solid var(--line); border-top:4px solid var(--petrol); }
+.lcl-pay b{ display:block; color:var(--petrol); font-size:1rem; margin-bottom:6px; }
+.lcl-pay p{ margin:0; color:var(--muted); font-size:.9rem; }
+.lcl-two{ display:grid; grid-template-columns:1fr 1fr; gap:36px; align-items:start; }
+.lcl-two h2{ margin:8px 0 14px; color:var(--petrol); }
+.lcl-two p{ color:var(--muted); }
+.lcl-check{ list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+.lcl-check li{ position:relative; padding-left:28px; color:var(--ink); }
+.lcl-check li::before{ content:""; position:absolute; left:0; top:4px; width:16px; height:16px; border-radius:50%; background:#e6f7ec; border:2px solid #1f8a5b; box-sizing:border-box; }
+.lcl-page a:not(.btn){ color:var(--petrol-2); font-weight:700; }
+@media (max-width:900px){ .lcl-pay{ grid-template-columns:1fr 1fr; } .lcl-two{ grid-template-columns:1fr; gap:24px; } }
+@media (max-width:560px){ .lcl-pay{ grid-template-columns:1fr; } .lcl-steps li{ padding-left:60px; } }
