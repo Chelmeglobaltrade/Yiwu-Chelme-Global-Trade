@@ -155,16 +155,56 @@
     </div>
   </section>
 
-  <!-- 2. COTIZADOR COMPACTO + VISTA DE LA CUENTA -->
-  <section class="rd2-panel-wrap" id="cotizar">
+  <!-- 2. SERVICIOS EN CHINA (superpuesto a la portada) -->
+  <section class="rd2-panel-wrap" id="servicios">
     <div class="container">
+      <div class="rd2-services">
+        <header class="rd2-services-head">
+          <div><span class="rd2-kicker">Tu agente en China</span><h2>Nuestros servicios</h2></div>
+          <p>Tengas o no proveedor, te acompañamos desde la fábrica hasta tu bodega en Chile.</p>
+        </header>
+        <div class="rd2-svc-grid">
+          <a class="rd2-svc is-featured" href="contenedor-fcl.html">
+            <img src="carga-contenedor-verde.webp" alt="Carga de mercancía dentro de un contenedor" loading="lazy">
+            <div class="rd2-svc-body"><span class="rd2-svc-tag">Recomendado para volúmenes grandes</span><strong>Contenedor completo (FCL)</strong><span>Un contenedor solo para tu carga: coordinamos con la fábrica, revisamos, cargamos y hacemos el seguimiento hasta Chile.</span><em>Cotizar contenedor <svg><use href="#i-arrow"></use></svg></em></div>
+          </a>
+          <a class="rd2-svc" href="busqueda-proveedor.html">
+            <img src="reunion-muestras-proveedor.webp" alt="Revisión de muestras con un proveedor" loading="lazy">
+            <div class="rd2-svc-body"><strong>Búsqueda de proveedor</strong><span>Encontramos fábricas, comparamos precios y negociamos en chino.</span></div>
+          </a>
+          <a class="rd2-svc" href="control-calidad.html">
+            <img src="control-produccion-textil.webp" alt="Control de calidad durante la producción" loading="lazy">
+            <div class="rd2-svc-body"><strong>Control de calidad</strong><span>Revisamos tu pedido en fábrica o en bodega antes de embarcar.</span></div>
+          </a>
+          <a class="rd2-svc" href="consolidado-lcl.html">
+            <img src="carga-mixta-contenedor.webp" alt="Carga consolidada de varios clientes" loading="lazy">
+            <div class="rd2-svc-body"><strong>Consolidado (LCL)</strong><span>Si tu carga es chica, compartes contenedor y pagas por m³.</span></div>
+          </a>
+          <a class="rd2-svc" href="traduccion.html">
+            <img src="visita-equipo-fabrica.webp" alt="Acompañamiento en visita a fábrica" loading="lazy">
+            <div class="rd2-svc-body"><strong>Traducción y negociación</strong><span>Te acompañamos en reuniones, ferias y compras en terreno.</span></div>
+          </a>
+          <a class="rd2-svc" href="viajes-china.html">
+            <img src="viaje-gran-muralla.webp" alt="Viaje de negocios a China" loading="lazy">
+            <div class="rd2-svc-body"><strong>Viajes a China</strong><span>Rutas por mercados y fábricas con acompañamiento comercial.</span></div>
+          </a>
+        </div>
+        <p class="rd2-services-foot">¿No sabes por dónde empezar? <a href="asesoria.html">La asesoría inicial</a> revisa tu producto, presupuesto y la mejor forma de traerlo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. COTIZADOR (contenedor completo primero) -->
+  <section class="rd-section rd2-quote-section" id="cotizar">
+    <div class="container">
+      <header class="rd2-head"><span class="rd2-kicker">Estimado en un minuto</span><h2>Cotiza tu carga</h2></header>
       <div class="rd2-panel" id="quoteShell">
         <div class="rd2-quote">
           <div class="rd2-quote-head">
-            <div><span class="rd2-kicker" id="miniBadge">Estimación automática</span><h2 id="miniTitle">Consolidado LCL</h2></div>
+            <div><span class="rd2-kicker" id="miniBadge">Estimación automática</span><h2 id="miniTitle">Contenedor completo (FCL)</h2></div>
             <div class="rd2-seg" role="group" aria-label="Tipo de envío">
-              <button type="button" class="quote-menu-item active" data-mini-service="lcl">Consolidado</button>
-              <button type="button" class="quote-menu-item" data-mini-service="fcl">Contenedor completo</button>
+              <button type="button" class="quote-menu-item active" data-mini-service="fcl">Contenedor completo</button>
+              <button type="button" class="quote-menu-item" data-mini-service="lcl">Consolidado</button>
             </div>
           </div>
           <div id="miniFields" class="form-grid"></div>
@@ -178,8 +218,8 @@
             <p id="miniEstimateNote">Ingresa el volumen para ver un estimado de flete.</p>
           </div>
           <div class="rd2-quote-actions">
-            <a class="btn btn-gold" id="miniSignupLink" href="login.html?tab=signup&service=lcl">Guardar y pedir cotización revisada</a>
-            <a class="rd-link" href="consolidado-lcl.html">Qué incluye y qué no <svg><use href="#i-arrow"></use></svg></a>
+            <a class="btn btn-gold" id="miniSignupLink" href="login.html?tab=signup&service=fcl">Guardar y pedir cotización revisada</a>
+            <a class="rd-link" id="miniScopeLink" href="contenedor-fcl.html">Qué incluye y qué no <svg><use href="#i-arrow"></use></svg></a>
           </div>
         </div>
         <div class="rd2-preview">
@@ -194,22 +234,6 @@
           </ul>
           <a class="rd-link" href="login.html?tab=signup">Crear mi cuenta gratis <svg><use href="#i-arrow"></use></svg></a>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 3. SELECTOR POR CASO -->
-  <section class="rd-section" id="soluciones">
-    <div class="container">
-      <header class="rd2-head"><span class="rd2-kicker">Empieza por tu caso</span><h2>¿En qué punto de tu compra estás?</h2></header>
-      <div class="rd2-cases">
-        <a class="rd2-case is-main" href="#cotizar"><span class="rd2-case-tag">01 · Carga lista</span><strong>Ya tengo proveedor</strong><span>Tu proveedor despacha a nuestra bodega en Yiwu. Revisamos, consolidamos y enviamos a Santiago.</span><em>Cotizar consolidado <svg><use href="#i-arrow"></use></svg></em></a>
-        <a class="rd2-case" href="asesoria.html"><span class="rd2-case-tag">02 · Sin proveedor</span><strong>Necesito proveedor</strong><span>Buscamos fábricas, comparamos precios y negociamos en chino. Empieza con una asesoría de US$200.</span><em>Ver asesoría <svg><use href="#i-arrow"></use></svg></em></a>
-        <a class="rd2-case" href="viajes-china.html"><span class="rd2-case-tag">03 · En terreno</span><strong>Quiero viajar a China</strong><span>Rutas por mercados y fábricas con traducción y acompañamiento comercial.</span><em>Ver viajes <svg><use href="#i-arrow"></use></svg></em></a>
-      </div>
-      <div class="rd2-more">
-        <span>Otros servicios:</span>
-        <a href="contenedor-fcl.html">Contenedor completo</a><a href="control-calidad.html">Control de calidad</a><a href="traduccion.html">Traducción</a><a href="busqueda-proveedor.html">Búsqueda de proveedor</a>
       </div>
     </div>
   </section>
