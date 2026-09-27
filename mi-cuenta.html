@@ -290,8 +290,8 @@
 
 </div></section>
 
-</main><footer><div class="container footer-grid"><img src="logo-light.png" alt="Chelme Global Trade"><div><strong>Importaciones y servicios comerciales desde China</strong><p><span data-business-city></span> · <a data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener">WhatsApp</a> · <a data-email-link></a> · <a href="index.html#contacto-yiwu">Contacto</a></p><p style="font-size:.78rem;margin-top:8px"><a href="como-funciona.html">Cómo funciona</a> · <a href="terminos-y-condiciones.html">Términos y condiciones</a> · <a href="politica-privacidad.html">Privacidad</a> · <a href="mercancias-restringidas.html">Mercancías restringidas</a></p></div><div class="footer-social"><a data-instagram-link target="_blank" rel="noopener"><svg><use href="#i-instagram"></use></svg></a><a data-tiktok-link target="_blank" rel="noopener"><svg><use href="#i-tiktok"></use></svg></a><a data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg></a></div></div></footer><div class="sticky-cta-bar"><a class="sticky-cta-btn sticky-cta-quote" href="#cotizar">Cotizar ahora</a><a class="sticky-cta-btn sticky-cta-whatsapp" data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> WhatsApp</a></div><script src="site-chrome.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</main><footer><div class="container footer-grid"><img src="logo-light.png" alt="Chelme Global Trade"><div><strong>Importaciones y servicios comerciales desde China</strong><p><span data-business-city></span> · <a data-whatsapp-message="Hola, quiero información sobre los servicios de Chelme Global Trade." target="_blank" rel="noopener">WhatsApp</a> · <a data-email-link></a> · <a href="index.html#alan">Contacto</a></p><p style="font-size:.78rem;margin-top:8px"><a href="como-funciona.html">Cómo funciona</a> · <a href="terminos-y-condiciones.html">Términos y condiciones</a> · <a href="politica-privacidad.html">Privacidad</a> · <a href="mercancias-restringidas.html">Mercancías restringidas</a></p></div><div class="footer-social"><a data-instagram-link target="_blank" rel="noopener"><svg><use href="#i-instagram"></use></svg></a><a data-tiktok-link target="_blank" rel="noopener"><svg><use href="#i-tiktok"></use></svg></a><a data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg></a></div></div></footer><div class="sticky-cta-bar"><a class="sticky-cta-btn sticky-cta-quote" href="#nueva-cotizacion">Cotizar ahora</a><a class="sticky-cta-btn sticky-cta-whatsapp" data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> WhatsApp</a></div><script src="site-chrome.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script src="supabase-config.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="pdf-cotizacion.js"></script>
@@ -380,24 +380,34 @@
       container.innerHTML = '<span style="color:var(--muted);font-size:.82rem">Sin archivos todavía.</span>';
       return;
     }
-    var chips = [];
+    container.textContent = '';
     for (var i = 0; i < files.length; i++) {
       var f = files[i];
-      var signed = await supabaseClient.storage.from('order-files').createSignedUrl(prefix + '/' + f.name, 3600);
-      var url = signed.data && signed.data.signedUrl;
-      chips.push('<span class="file-chip"><a href="' + (url || '#') + '" target="_blank" rel="noopener">' + escapeHtml(f.name.replace(/^\d+-/, '')) + '</a>' +
-        (isStaff ? '<button type="button" data-delpath="' + prefix + '/' + f.name + '" aria-label="Eliminar">&times;</button>' : '') + '</span>');
-    }
-    container.innerHTML = chips.join('');
-    if (isStaff) {
-      container.querySelectorAll('[data-delpath]').forEach(function(btn){
-        btn.addEventListener('click', async function(e){
+      var fullPath = prefix + '/' + f.name;
+      var signed = await supabaseClient.storage.from('order-files').createSignedUrl(fullPath, 900);
+      var chip = document.createElement('span');
+      chip.className = 'file-chip';
+      var link = document.createElement('a');
+      link.href = (signed.data && signed.data.signedUrl) || '#';
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = f.name.replace(/^\d+-/, '');
+      chip.appendChild(link);
+      if (isStaff) {
+        var del = document.createElement('button');
+        del.type = 'button';
+        del.setAttribute('aria-label', 'Eliminar archivo');
+        del.textContent = '×';
+        del.dataset.delpath = fullPath;
+        del.addEventListener('click', async function(e){
           e.preventDefault();
           if (!confirm('¿Eliminar este archivo?')) return;
-          await supabaseClient.storage.from('order-files').remove([btn.dataset.delpath]);
+          await supabaseClient.storage.from('order-files').remove([this.dataset.delpath]);
           loadOrderFiles(kind, id, containerId, isStaff);
         });
-      });
+        chip.appendChild(del);
+      }
+      container.appendChild(chip);
     }
   }
 
@@ -409,7 +419,7 @@
       var files = Array.from(input.files || []);
       for (var i = 0; i < files.length; i++) {
         var f = files[i];
-        var path = kind + '/' + id + '/' + Date.now() + '-' + f.name;
+        var path = kind + '/' + id + '/' + Date.now() + '-' + f.name.replace(/[^a-zA-Z0-9._-]/g, '_');
         var res = await supabaseClient.storage.from('order-files').upload(path, f);
         if (res.error) alert('No se pudo subir ' + f.name + ': ' + res.error.message);
       }
@@ -655,7 +665,7 @@
       '<div>Pagado por el cliente<b>' + moneyFmt(t.pagado) + '</b></div>' +
       '<div>Saldo por cobrar<b>' + moneyFmt(t.saldo) + '</b></div>' +
       '<div>IVA pagado en aduana<b>' + moneyFmt(t.customs) + '</b></div>' +
-      '<div class="span2">IVA neto que te toca pagar (venta − aduana)<b>' + moneyFmt(t.ivaNeto) + '</b></div></div>' +
+      '<div class="span2">Diferencia referencial: IVA de venta − IVA de aduana (no es una declaración de impuestos)<b>' + moneyFmt(t.ivaNeto) + '</b></div></div>' +
       '<p class="charge-hint">Solo incluye cobros en USD. IVA y arancel no cuentan como venta. Si le vendes la mercancía al cliente, agrega su cobro con categoría Mercancía para que el neto y el IVA de la venta sean correctos. Valores referenciales: confirma con tu contador.</p>';
     box.innerHTML = check + resumen +
       '<div class="charge-form-grid" style="margin-top:12px">' +
@@ -703,7 +713,7 @@
     if (!merc && !flete) { alert('Primero agrega el cobro de mercancía y el de flete (o el valor de mercancía del pedido) para calcular el CIF.'); return false; }
     var cif = merc * (1 + SEGURO_RATE) + flete;
     var iva = Math.round(cif * IVA_RATE * 100) / 100;
-    document.getElementById('chg-concept-' + orderId).value = 'Provisión IVA aduanero (19% del CIF ≈ ' + moneyFmt(cif) + ')';
+    document.getElementById('chg-concept-' + orderId).value = 'Provisión IVA aduanero referencial (19% del CIF ≈ ' + moneyFmt(cif) + ', sin arancel; ajustar con la declaración)';
     document.getElementById('chg-cat-' + orderId).value = 'iva';
     document.getElementById('chg-amount-' + orderId).value = iva;
     document.getElementById('chg-cur-' + orderId).value = 'USD';
@@ -1249,7 +1259,8 @@
     var sessionRes = await supabaseClient.auth.getSession();
     var session = sessionRes.data.session;
     if (!session) {
-      window.location.href = 'login.html';
+      var wanted = new URLSearchParams(location.search).get('service');
+      window.location.href = 'login.html' + (wanted && /^[a-z]+$/.test(wanted) ? '?service=' + wanted : '');
       return;
     }
 
@@ -1308,6 +1319,7 @@
     if (qs.get('logout') === '1') { await supabaseClient.auth.signOut(); window.location.href = 'login.html'; return; }
     if (location.hash === '#perfil') showTab('profile');
     else if (location.hash === '#cotizaciones') showTab('quotes');
+    else if (location.hash === '#nueva-cotizacion') showTab('quote');
     else if (qs.get('bienvenida') === '1') showTab('quote');
 
     if (profile && profile.role === 'owner') {
@@ -1324,6 +1336,11 @@
       if (pick) pick.click();
       document.getElementById('panel-quote').scrollIntoView({ behavior: 'smooth' });
     });
+  });
+  window.addEventListener('hashchange', function(){
+    if (location.hash === '#nueva-cotizacion') { showTab('quote'); document.getElementById('panel-quote').scrollIntoView({ behavior: 'smooth' }); }
+    else if (location.hash === '#perfil') showTab('profile');
+    else if (location.hash === '#cotizaciones') showTab('quotes');
   });
   document.getElementById('openProfileBtn').addEventListener('click', function(){
     showTab('profile');

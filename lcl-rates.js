@@ -9,7 +9,7 @@
   "use strict";
   var URL = "https://pvivlnljgpldtlblyvxo.supabase.co";
   var KEY = "sb_publishable_krvbtoyK0RSsBA3g1dspgA_Bkh55PEh";
-  var state = { active: false, freight: null, tiers: [], row: null, rowFreight: null };
+  var state = { active: false, freight: null, tiers: [], row: null, rowFreight: null, failed: false, updatedAt: null };
 
   function pickRow(rates, freight) {
     var keys = Object.keys(rates || {}).map(Number).filter(function (n) { return !isNaN(n); }).sort(function (a, b) { return a - b; });
@@ -20,6 +20,7 @@
   }
 
   function apply(data) {
+    if (data && data.updated_at) state.updatedAt = data.updated_at;
     if (!data || !data.active) { state.active = false; return; }
     var picked = pickRow(data.rates, Number(data.current_freight_usd));
     if (!picked || !Array.isArray(picked.prices) || !picked.prices.length) { state.active = false; return; }
@@ -30,10 +31,10 @@
     state.rowFreight = picked.freight;
   }
 
-  var ready = fetch(URL + "/rest/v1/lcl_pricing?id=eq.1&select=active,current_freight_usd,tiers,rates", { headers: { apikey: KEY } })
-    .then(function (r) { return r.ok ? r.json() : []; })
+  var ready = fetch(URL + "/rest/v1/lcl_pricing?id=eq.1&select=active,current_freight_usd,tiers,rates,updated_at", { headers: { apikey: KEY } })
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
     .then(function (rows) { apply(rows[0]); return state; })
-    .catch(function () { state.active = false; return state; });
+    .catch(function () { state.active = false; state.failed = true; return state; });
 
   function tierIndex(billableCbm) {
     var idx = 0;
@@ -65,6 +66,12 @@
       var copy = Object.assign({}, config, { lcl: Object.assign({}, config.lcl) });
       copy.lcl.ratePerCbmUsd = this.rateFor(cbm, config);
       return copy;
+    },
+    // Texto de vigencia para mostrar junto al precio.
+    validityText: function () {
+      if (state.failed) return "No pudimos cargar la tarifa vigente: este valor es referencial y te lo confirmamos en la cotización revisada.";
+      if (state.active && state.updatedAt) return "Tarifa vigente actualizada el " + new Date(state.updatedAt).toLocaleDateString("es-CL") + ". Se confirma en tu cotización revisada.";
+      return "Tarifa referencial publicada. Se confirma en tu cotización revisada.";
     },
     info: function () { return state; }
   };

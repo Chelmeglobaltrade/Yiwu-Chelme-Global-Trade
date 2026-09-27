@@ -125,6 +125,7 @@ const NO_PRODUCT_SERVICES=["trip","translation"];
 
 function setService(service){
   state.quoteService = service;
+  const shell=$("quoteShell"); if(shell) shell.dataset.service=service;
   document.querySelectorAll("[data-quote-service]").forEach(b=>{
     const on=b.dataset.quoteService===service;
     b.classList.toggle("active",on);
@@ -432,7 +433,7 @@ function updateEstimate(){
         rows.push({label:"Logística conocida",value:money(result.logistics),total:true});
       }
 
-      note=`Esta cotización no tiene costo. El valor de mercancía es el que tú informaste: lo confirmamos junto a tu proveedor antes del precio final. Envíala por WhatsApp o descarga el PDF. Los impuestos y gastos de destino se pagan al llegar.`;
+      note=`Estimación automática, sin costo. El servicio Chelme incluye todo hasta ${(CONFIG.lclScope&&CONFIG.lclScope.deliveryPlace)||"Santiago"}; el IVA y el arancel se pagan aparte, antes de la llegada. ${window.ChelmeLclRates?window.ChelmeLclRates.validityText():""}`;
     }else{
       totalText=`Desde ${money(window.ChelmeLclRates?window.ChelmeLclRates.fromRate(CONFIG):CONFIG.lcl.ratePerCbmUsd)}/m³`;
       note=`Mínimo facturable: ${CONFIG.lcl.minimumBillableCbm} m³. Bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ se agrega el cargo operativo.`;
@@ -579,7 +580,7 @@ async function saveQuoteAsQuote(){
 function notifyQuoteSaveFailed(){
   const alertBox=$("quoteAlert");
   if(!alertBox)return;
-  alertBox.textContent="No pudimos guardar tu solicitud en tu cuenta, pero tu mensaje sí se envía por WhatsApp. Si no te respondemos pronto, escríbenos directamente.";
+  alertBox.textContent="No se guardó tu solicitud en tu cuenta. Puedes reintentar o abrir WhatsApp y enviarnos el mensaje.";
   alertBox.classList.remove("hidden");
 }
 
@@ -597,10 +598,9 @@ async function sendPreparedQuote(){
     if(pdf&&pdf.blob&&quote&&quote.id){
       const path=`quotes/${quote.id}/${pdf.filename}`;
       const up=await supabaseClient.storage.from("order-files").upload(path,pdf.blob,{contentType:"application/pdf",upsert:false});
-      if(!up.error){
-        const signed=await supabaseClient.storage.from("order-files").createSignedUrl(path,31536000);
-        if(!signed.error)pdfUrl=signed.data.signedUrl;
-      }else console.warn("No se pudo subir el PDF:",up.error);
+      // En el mensaje va el enlace a la cuenta (pide iniciar sesión), no un enlace público al archivo.
+      if(!up.error)pdfUrl=`${location.origin}/mi-cuenta.html#cotizaciones`;
+      else console.warn("No se pudo subir el PDF:",up.error);
     }
   }catch(error){console.warn("Preparación del envío:",error);}
   btn.disabled=false;btn.innerHTML=btnHtml;
@@ -610,11 +610,11 @@ async function sendPreparedQuote(){
   if(isPhone&&navigator.share&&navigator.canShare){
     const shareFiles=[...(pdf&&pdf.blob?[new File([pdf.blob],pdf.filename,{type:"application/pdf"})]:[]),...files];
     try{
-      const data={title:"Solicitud Chelme Global Trade",text:pdfUrl?`${text}\n\nPDF de la cotización: ${pdfUrl}`:text,files:shareFiles};
+      const data={title:"Solicitud Chelme Global Trade",text:pdfUrl?`${text}\n\nPDF guardado en tu cuenta: ${pdfUrl}`:text,files:shareFiles};
       if(shareFiles.length&&navigator.canShare(data)){await navigator.share(data);if(win)win.close();return;}
     }catch(error){if(error.name==="AbortError"){if(win)win.close();return;}}
   }
-  const finalText=pdfUrl?`${text}\n\nPDF de la cotización: ${pdfUrl}`:text;
+  const finalText=pdfUrl?`${text}\n\nPDF guardado en tu cuenta: ${pdfUrl}`:text;
   if(win&&!win.closed)win.location.href=waUrl(finalText);else window.open(waUrl(finalText),"_blank","noopener");
   if(files.length){$("quoteAlert").textContent="WhatsApp está abierto. Adjunta los archivos seleccionados antes de enviar.";$("quoteAlert").classList.remove("hidden");}
 }
@@ -777,8 +777,20 @@ function initQuoteWizard(prefill){
   wizardStep=hasRequested?1:0;
   setService(hasRequested?requestedService:"lcl");
   if(prefill)applyPrefill(prefill);
+  applyPublicDraft();
   renderWizardStep();
   if(window.ChelmeLclRates)window.ChelmeLclRates.ready.then(()=>updateEstimate());
+}
+
+// Borrador de la calculadora pública (solo volumen y peso, nunca documentos).
+function applyPublicDraft(){
+  let draft=null;
+  try{draft=JSON.parse(localStorage.getItem("chelme_quote_draft")||"null");}catch(e){return;}
+  if(!draft||state.quoteService!=="lcl")return;
+  if(Date.now()-(draft.savedAt||0)>14*86400000)return;
+  if(draft.cbm>0&&$("qCbm")&&!$("qCbm").value){$("qCbm").value=draft.cbm;}
+  if(draft.weight>0&&$("qWeight")&&!$("qWeight").value){$("qWeight").value=draft.weight;}
+  updateEstimate();
 }
 
 function applyPrefill(prefill){
