@@ -31,6 +31,24 @@
     "40HQ": { L: 12.03, W: 2.35, H: 2.69 }
   };
 
+  // Carga compartida de Three.js (una sola descarga aunque la pidan varias escenas).
+  function loadThree(cb, onErr) {
+    if (window.THREE) { cb(); return; }
+    var w = window;
+    if (!w.__chelmeThreeCbs) {
+      w.__chelmeThreeCbs = [];
+      w.__chelmeThreeErrs = [];
+      var s = document.createElement("script");
+      s.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
+      s.async = true;
+      s.onload = function () { var l = w.__chelmeThreeCbs; w.__chelmeThreeCbs = null; l.forEach(function (f) { f(); }); };
+      s.onerror = function () { (w.__chelmeThreeErrs || []).forEach(function (f) { f(); }); };
+      document.head.appendChild(s);
+    }
+    if (w.__chelmeThreeCbs) { w.__chelmeThreeCbs.push(cb); if (onErr) w.__chelmeThreeErrs.push(onErr); }
+    else if (window.THREE) cb();
+  }
+
   var api = null, lastDetail = null, loading = false;
   window.addEventListener("chelme:fill", function (e) {
     lastDetail = e.detail;
@@ -40,12 +58,7 @@
   function load() {
     if (loading) return;
     loading = true;
-    if (window.THREE) { init(); return; }
-    var s = document.createElement("script");
-    s.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
-    s.async = true;
-    s.onload = init;
-    document.head.appendChild(s);
+    loadThree(init);
   }
   if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
