@@ -241,3 +241,6 @@
 .order-ship{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px; margin-top:12px; padding:10px 12px; border-radius:12px; background:#f3f7f7; font-size:.8rem; color:var(--muted); font-weight:600; }
 .order-ship b{ color:var(--petrol); }
 .order-ship-code{ font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-weight:600; color:var(--petrol); padding:2px 8px; border-radius:6px; background:#fff; border:1px solid var(--line); }
+.auth-consent{ display:flex; gap:10px; align-items:flex-start; font-size:.84rem; line-height:1.45; color:var(--muted); }
+.auth-consent input{ width:18px; height:18px; margin-top:2px; flex:none; accent-color:var(--petrol); }
+.auth-consent a{ color:var(--petrol); font-weight:700; text-decoration:underline; }

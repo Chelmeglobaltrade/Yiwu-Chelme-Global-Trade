@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#123f49"><meta name="robots" content="noindex,follow"><title>Iniciar sesión | Chelme Global Trade</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="polish.css"><link rel="stylesheet" href="site-header.css"><link rel="stylesheet" href="auth-page.css"><script src="config.js"></script><script src="pricing-core.js"></script></head><body class="standalone-page">
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><script>/* No permitir que otro sitio muestre esta página dentro de un marco (clickjacking). */(function(){try{if(window.top===window.self||window.top.location.origin===location.origin)return;}catch(e){}document.documentElement.style.display="none";})();</script><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#123f49"><meta name="robots" content="noindex,follow"><title>Iniciar sesión | Chelme Global Trade</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="polish.css"><link rel="stylesheet" href="site-header.css"><link rel="stylesheet" href="auth-page.css"><script src="config.js"></script><script src="pricing-core.js"></script></head><body class="standalone-page">
 <svg class="svg-sprite" aria-hidden="true">
   <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.7" r="1"/></symbol>
   <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M14 4v10.2a4.7 4.7 0 1 1-4-4.6"/><path d="M14 4c1 3 3.1 4.5 6 4.7"/></symbol>
@@ -56,8 +56,9 @@
     <form id="signupForm" class="auth-form" style="display:none">
       <label class="auth-field">Nombre completo<input type="text" id="signupName" required autocomplete="name" placeholder="Ej.: María Pérez"></label>
       <label class="auth-field">Correo<input type="email" id="signupEmail" required autocomplete="email" placeholder="tucorreo@ejemplo.com"></label>
-      <label class="auth-field">Contraseña<span class="pw-wrap"><input type="password" id="signupPassword" required minlength="6" autocomplete="new-password" placeholder="Mínimo 6 caracteres"><button type="button" class="pw-toggle" data-target="signupPassword" aria-label="Mostrar contraseña">Mostrar</button></span></label>
+      <label class="auth-field">Contraseña<span class="pw-wrap"><input type="password" id="signupPassword" required minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres"><button type="button" class="pw-toggle" data-target="signupPassword" aria-label="Mostrar contraseña">Mostrar</button></span></label>
       <label class="auth-field">WhatsApp <em class="opt">(opcional, para que te contactemos)</em><input type="tel" id="signupPhone" placeholder="+56 9 1234 5678" autocomplete="tel"></label>
+      <label class="auth-consent"><input type="checkbox" id="signupTerms" required> <span>Leí y acepto los <a href="terminos-y-condiciones.html" target="_blank" rel="noopener">Términos y condiciones</a> y la <a href="politica-privacidad.html" target="_blank" rel="noopener">Política de privacidad</a>.</span></label>
       <button type="submit" class="btn btn-gold auth-submit">Crear mi cuenta</button>
       <p class="auth-switch">¿Ya tienes cuenta? <a href="?tab=login" data-switch="login">Inicia sesión</a></p>
     </form>
@@ -146,7 +147,7 @@
     var m = (err && err.message || '').toLowerCase();
     if (m.indexOf('invalid login') > -1) return 'Correo o contraseña incorrectos. Revisa los datos o crea tu cuenta.';
     if (m.indexOf('already registered') > -1 || m.indexOf('already been registered') > -1) return 'Ese correo ya tiene una cuenta. Inicia sesión o recupera tu contraseña.';
-    if (m.indexOf('password') > -1 && (m.indexOf('least') > -1 || m.indexOf('weak') > -1 || m.indexOf('short') > -1)) return 'La contraseña es muy corta o débil. Usa al menos 6 caracteres.';
+    if (m.indexOf('password') > -1 && (m.indexOf('least') > -1 || m.indexOf('weak') > -1 || m.indexOf('short') > -1)) return 'La contraseña es muy corta o débil. Usa al menos 8 caracteres, mezclando letras y números.';
     if (m.indexOf('rate limit') > -1 || m.indexOf('too many') > -1 || m.indexOf('seconds') > -1) return 'Hiciste muchos intentos seguidos. Espera un minuto y vuelve a probar.';
     if (m.indexOf('valid email') > -1 || m.indexOf('invalid email') > -1) return 'Escribe un correo válido, por ejemplo nombre@correo.com.';
     if (m.indexOf('failed to fetch') > -1 || m.indexOf('network') > -1) return 'No hay conexión con el servidor. Revisa tu internet y vuelve a intentar.';
@@ -234,12 +235,13 @@
     var phone = document.getElementById('signupPhone').value.trim();
     var email = document.getElementById('signupEmail').value.trim();
     var password = document.getElementById('signupPassword').value;
+    if (!document.getElementById('signupTerms').checked) { setBusy(signupForm, false); showMessage('Para crear tu cuenta debes aceptar los Términos y condiciones y la Política de privacidad.', true); return; }
     var result;
     try {
       result = await supabaseClient.auth.signUp({
         email: email,
         password: password,
-        options: { data: { full_name: fullName, phone: phone }, emailRedirectTo: window.location.origin + '/mi-cuenta.html?bienvenida=1' }
+        options: { data: { full_name: fullName, phone: phone, terms_version: CHELME_CONFIG.legal.termsVersion }, emailRedirectTo: window.location.origin + '/mi-cuenta.html?bienvenida=1' }
       });
     } catch (err) {
       result = { error: err };

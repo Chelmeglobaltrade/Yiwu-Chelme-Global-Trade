@@ -1,9 +1,10 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#123f49"><meta name="robots" content="noindex,follow"><title>Mi cuenta | Chelme Global Trade</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="polish.css"><link rel="stylesheet" href="site-header.css"><link rel="stylesheet" href="auth-page.css"><link rel="stylesheet" href="quote-redesign.css"><script src="config.js"></script><script src="pricing-core.js"></script><script src="lcl-rates.js"></script></head><body class="standalone-page">
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><script>/* No permitir que otro sitio muestre esta página dentro de un marco (clickjacking). */(function(){try{if(window.top===window.self||window.top.location.origin===location.origin)return;}catch(e){}document.documentElement.style.display="none";})();</script><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#123f49"><meta name="robots" content="noindex,follow"><title>Mi cuenta | Chelme Global Trade</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="polish.css"><link rel="stylesheet" href="site-header.css"><link rel="stylesheet" href="auth-page.css"><link rel="stylesheet" href="quote-redesign.css"><script src="config.js"></script><script src="pricing-core.js"></script><script src="lcl-rates.js"></script></head><body class="standalone-page">
 <svg class="svg-sprite" aria-hidden="true">
   <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.7" r="1"/></symbol>
   <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M14 4v10.2a4.7 4.7 0 1 1-4-4.6"/><path d="M14 4c1 3 3.1 4.5 6 4.7"/></symbol>
   <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></symbol>
   <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M20.5 11.6a8.5 8.5 0 0 1-12.6 7.5L3 20.5l1.4-4.7a8.5 8.5 0 1 1 16.1-4.2Z"/><path d="M8.2 7.7c.3-.7.6-.7.9-.7h.6l1 2.2c.1.3 0 .5-.2.8l-.8.9c-.2.2-.1.5.1.8.7 1.2 1.7 2.2 3 2.8.3.2.6.1.8-.1l1-1.2c.2-.3.5-.3.8-.2l2.1 1c.3.2.5.3.5.6 0 .4-.2 1.5-1 2.2-.7.7-1.8 1-3.1.6-1.6-.4-3.4-1.3-5.1-2.9-2-1.9-3.2-4.2-3.2-5.8 0-.8.3-1.5.6-2Z"/></symbol>
+  <symbol id="i-boxes" viewBox="0 0 24 24"><path d="m4 7.5 8-4.5 8 4.5-8 4.5-8-4.5Z"/><path d="M4 7.5V16l8 5 8-5V7.5M12 12v9"/></symbol><symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 4h16v12H7l-3 3V4Z"/><path d="M8 8h8M8 12h5"/></symbol><symbol id="i-container" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="13" rx="2"/><path d="M7 5v13M12 5v13M17 5v13"/></symbol><symbol id="i-language" viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2M6 5c.5 4 2.7 6.8 6 8.5M11 5c-.5 4-2.7 6.8-6 8.5M14 20l4-9 4 9M15.5 17h5"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5.2-3.4 8.4-8 10-4.6-1.6-8-4.8-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></symbol>
 </svg>
 <header class="rd-header">
@@ -434,8 +435,9 @@
       for (var i = 0; i < files.length; i++) {
         var f = files[i];
         var path = kind + '/' + id + '/' + Date.now() + '-' + f.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        if (f.size > 20 * 1024 * 1024) { alert(f.name + ' pesa más de 20 MB. Comprímelo o divídelo antes de subirlo.'); continue; }
         var res = await supabaseClient.storage.from('order-files').upload(path, f);
-        if (res.error) alert('No se pudo subir ' + f.name + ': ' + res.error.message);
+        if (res.error) alert(/mime|type/i.test(res.error.message) ? f.name + ': tipo de archivo no permitido. Sube PDF, imágenes, Excel, Word, CSV o ZIP.' : 'No se pudo subir ' + f.name + ': ' + res.error.message);
       }
       input.value = '';
       loadOrderFiles(kind, id, containerId, true);
@@ -1161,7 +1163,7 @@
       var nextActionHtml = isStaff
         ? '<div class="next-action"><span>Próximo paso para el cliente</span><div class="next-action-row"><input type="text" class="next-action-input" data-id="' + order.id + '" value="' + escapeHtml(order.next_action || '') + '" placeholder="Ej.: Subir factura del proveedor"><button type="button" class="btn btn-light btn-sm next-action-save" data-id="' + order.id + '">Guardar</button></div></div>'
         : (order.next_action ? '<div class="next-action is-client"><span>Próximo paso</span><strong>' + escapeHtml(order.next_action) + '</strong></div>' : '');
-      var uploadRow = isStaff ? '<div class="file-upload-row"><input type="file" id="upload-orders-' + order.id + '" multiple></div>' : '';
+      var uploadRow = isStaff ? '<div class="file-upload-row"><input type="file" id="upload-orders-' + order.id + '" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.xlsx,.xls,.docx,.doc,.csv,.zip"></div>' : '';
       return '' +
         '<div class="account-card">' +
           '<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
@@ -1305,7 +1307,7 @@
           '</select></div>'
         : '';
       var convertBtn = isStaff ? '<button type="button" class="btn btn-light" style="margin-top:10px" data-convert="' + q.id + '">Convertir en pedido</button>' : '';
-      var uploadRow = isStaff ? '<div class="file-upload-row"><input type="file" id="upload-quotes-' + q.id + '" multiple></div>' : '';
+      var uploadRow = isStaff ? '<div class="file-upload-row"><input type="file" id="upload-quotes-' + q.id + '" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.xlsx,.xls,.docx,.doc,.csv,.zip"></div>' : '';
       return '' +
         '<div class="account-card">' +
           '<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
