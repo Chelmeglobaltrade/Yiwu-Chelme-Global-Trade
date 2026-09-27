@@ -35,7 +35,13 @@ function setMiniService(service){
     el.addEventListener("change",updateMiniEstimate);
   });
   const signupLink=$("miniSignupLink");
-  if(signupLink)signupLink.href=`login.html?tab=signup&service=${service}`;
+  if(signupLink){
+    signupLink.href=`login.html?tab=signup&service=${service}`;
+    signupLink.textContent=service==="fcl"?"Pedir cotización de mi contenedor":"Guardar y pedir cotización revisada";
+  }
+  // "Qué incluye y qué no" lleva a la página del servicio elegido.
+  const scopeLink=$("miniScopeLink");
+  if(scopeLink)scopeLink.href=service==="fcl"?"contenedor-fcl.html":"consolidado-lcl.html";
   updateMiniEstimate();
 }
 
@@ -65,8 +71,8 @@ function updateMiniEstimate(){
     }
   }else if(miniService==="fcl"){
     const container=$("miniContainer")?.value||"40HQ";
-    text="Se cotiza según tu contenedor";
-    note=`Costos locales en China y flete marítimo para un ${container}. Varían según tamaño, ruta y semana: te los confirmamos en tu cotización.`;
+    text="Cotización a tu medida";
+    note=`Para un ${container}: coordinación con la fábrica, revisión, carga y flete marítimo. El flete cambia según la ruta y la semana, por eso te lo confirmamos con la tarifa vigente. IVA, arancel y gastos de destino se cotizan aparte.`;
   }else if(miniService==="quality"){
     text="Se cotiza según tu carga";
     note="Depende de la cantidad de productos, ubicación y nivel de detalle requerido.";
@@ -225,7 +231,7 @@ function init(){
   document.querySelectorAll("[data-mini-service]").forEach(b=>b.addEventListener("click",()=>setMiniService(b.dataset.miniService)));
 
   const requestedService=new URLSearchParams(location.search).get("service");
-  setMiniService(requestedService&&miniServiceCopy[requestedService]?requestedService:"lcl");
+  setMiniService(requestedService&&miniServiceCopy[requestedService]?requestedService:"fcl");
   if(window.ChelmeLclRates)window.ChelmeLclRates.ready.then(()=>updateMiniEstimate());
   if(requestedService&&miniServiceCopy[requestedService]&&location.hash==="#quoteShell"){
     setTimeout(()=>$("quoteShell").scrollIntoView({behavior:"smooth",block:"start"}),50);
