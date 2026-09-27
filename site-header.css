@@ -70,3 +70,18 @@
 
 /* Menú Mi cuenta con sesión iniciada */
 .nav-user-dot{ display:inline-grid; place-items:center; width:22px; height:22px; margin-right:4px; border-radius:50%; background:#f2b91f; color:#123f49; font-size:.72rem; font-weight:800; vertical-align:middle; }
+
+/* Botón de cuenta: "Ingresar" sin sesión, inicial + nombre con sesión */
+.rd-nav a.rd-account{ display:inline-flex; align-items:center; gap:7px; padding:9px 16px !important; border:1.5px solid var(--petrol); border-radius:999px; color:var(--petrol); font-weight:700; transition:background .18s ease,color .18s ease; }
+.rd-nav a.rd-account:hover,.rd-nav a.rd-account.is-current{ background:var(--petrol); color:#fff !important; }
+.rd-account-ico{ width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; }
+.rd-account-menu > summary{ display:inline-flex; align-items:center; gap:4px; padding:6px 12px 6px 6px !important; border:1.5px solid var(--line); border-radius:999px; background:#fff; }
+.rd-account-menu .nav-user-dot{ width:28px; height:28px; font-size:.8rem; margin-right:4px; }
+.rd-account-menu{ position:relative; }
+.rd-account-menu .nav-services-menu{ right:0; left:auto; transform:none; }
+@media (max-width:850px){ .rd-account-menu .nav-services-menu{ right:auto; } }
+.rd-account-menu .nav-services-group-label{ text-transform:none; letter-spacing:0; overflow-wrap:anywhere; }
+@media (max-width:900px){
+  .rd-nav a.rd-account{ justify-content:center; margin-top:8px; border-bottom:1.5px solid var(--petrol); }
+  .rd-account-menu > summary{ border:0; padding:12px 4px !important; }
+}

@@ -123,11 +123,10 @@
       <span></span><span></span><span></span>
     </button>
     <nav class="rd-nav" id="mainNav">
-      <details class="nav-services" id="navServices"><summary>Servicios</summary><div class="nav-services-menu"><div class="nav-services-group"><span class="nav-services-group-label">Envío de carga</span><a href="consolidado-lcl.html"><strong>Consolidado LCL</strong><small>Carga chica: compartes contenedor con otros</small></a><a href="contenedor-fcl.html"><strong>Contenedor FCL</strong><small>Carga grande: un contenedor solo para ti</small></a></div><div class="nav-services-group"><span class="nav-services-group-label">Antes de comprar</span><a href="busqueda-proveedor.html"><strong>Búsqueda de proveedor</strong><small>Te ayudamos a encontrar la fábrica</small></a><a href="control-calidad.html"><strong>Control de calidad</strong><small>Revisamos tu pedido antes de enviarlo</small></a><a href="traduccion.html"><strong>Traducción</strong><small>Te acompañamos en reuniones y compras</small></a></div><div class="nav-services-group"><span class="nav-services-group-label">Presencial y asesoría</span><a href="viajes-china.html"><strong>Viajes a China</strong><small>Viaja con nosotros a conocer fábricas</small></a><a href="asesoria.html"><strong>Asesoría</strong><small>Te orientamos antes de decidir</small></a></div></div></details>
-      <a href="como-funciona.html">Cómo funciona</a>
+      <details class="nav-services" id="navServices"><summary>Servicios</summary><div class="nav-services-menu"><div class="nav-services-group"><span class="nav-services-group-label">Envío de carga</span><a href="consolidado-lcl.html"><strong>Consolidado LCL</strong><small>Carga chica: compartes contenedor con otros</small></a><a href="contenedor-fcl.html"><strong>Contenedor FCL</strong><small>Carga grande: un contenedor solo para ti</small></a></div><div class="nav-services-group"><span class="nav-services-group-label">Antes de comprar</span><a href="busqueda-proveedor.html"><strong>Búsqueda de proveedor</strong><small>Te ayudamos a encontrar la fábrica</small></a><a href="control-calidad.html"><strong>Control de calidad</strong><small>Revisamos tu pedido antes de enviarlo</small></a><a href="traduccion.html"><strong>Traducción</strong><small>Te acompañamos en reuniones y compras</small></a></div><div class="nav-services-group"><span class="nav-services-group-label">Asesoría y guía</span><a href="viajes-china.html"><strong>Viajes a China</strong><small>Viaja con nosotros a conocer fábricas</small></a><a href="asesoria.html"><strong>Asesoría</strong><small>Te orientamos antes de decidir</small></a><a href="como-funciona.html"><strong>Importar paso a paso</strong><small>El proceso completo, de la compra a tu bodega</small></a></div></div></details>
       <details class="nav-services nav-travel-dd"><summary>Viajes a China</summary><div class="nav-services-menu"><div class="nav-services-group"><a href="viajes-china.html#ruta-proveedores"><strong>Ruta de Proveedores</strong><small>5 días · mercados y fábricas</small></a><a href="viajes-china.html#mision-comercial"><strong>Misión Comercial China</strong><small>7–10 días · varias ciudades</small></a><a href="viajes-china.html#viaje-insignia"><strong>Viaje Insignia a Yiwu</strong><small>12 días · el más completo</small></a><a href="viajes-china.html"><strong>Ver todos los viajes</strong><small>Paquetes y agenda</small></a></div></div></details>
       <a href="#alan">Sobre nosotros</a>
-      <details class="nav-services"><summary>Mi cuenta</summary><div class="nav-services-menu"><div class="nav-services-group"><a href="login.html"><strong>Iniciar sesión</strong><small>Ya tengo cuenta</small></a><a href="login.html?tab=signup"><strong>Crear cuenta</strong><small>Registrarme</small></a><a href="mi-cuenta.html"><strong>Ver mis pedidos</strong><small>Seguimiento de importación</small></a></div></div></details>
+      <a class="rd-account" id="navAccount" href="login.html"><svg class="rd-account-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.6 4.5-5.5 8-5.5s6.5 1.9 8 5.5"/></svg><span>Ingresar</span></a>
       <a class="btn btn-gold rd-nav-cta" href="#cotizar">Cotizar importación <svg><use href="#i-arrow"></use></svg></a>
     </nav>
   </div>
@@ -229,17 +228,62 @@
     </div>
   </section>
 
-  <!-- 4. PROCESO EN 4 PASOS -->
-  <section class="rd-section rd-section-soft">
+  <!-- 4. RUTA INTERACTIVA: DE CHINA A TU BODEGA -->
+  <section class="rd-section rd-section-soft rd-route-section" id="ruta">
     <div class="container">
       <header class="rd-section-head">
-        <h2>Así funciona tu operación</h2>
+        <h2>El viaje de tu carga, de China a Santiago</h2>
+        <p>Toca cada parada para ver qué pasa con tu carga y cuánto suele tardar.</p>
       </header>
-      <div class="rd-process">
-        <div class="rd-process-step"><span>1</span><h3>Cuéntanos qué necesitas</h3><p>Producto, cantidad, presupuesto y destino.</p></div>
-        <div class="rd-process-step"><span>2</span><h3>Buscamos y negociamos</h3><p>Comparamos proveedores y condiciones en tu nombre.</p></div>
-        <div class="rd-process-step"><span>3</span><h3>Revisamos y consolidamos</h3><p>Control de calidad y preparación de la carga.</p></div>
-        <div class="rd-process-step"><span>4</span><h3>Coordinamos el embarque</h3><p>Documentación, envío y seguimiento hasta destino.</p></div>
+      <div class="rd-route" id="rdRoute">
+        <svg class="rd-route-map" viewBox="0 0 1000 300" role="img" aria-label="Ruta de la carga desde el proveedor en China hasta Santiago de Chile">
+          <defs>
+            <linearGradient id="rdSea" x1="0" x2="1"><stop offset="0" stop-color="#dcebee"/><stop offset="1" stop-color="#cfe3e7"/></linearGradient>
+          </defs>
+          <rect x="0" y="0" width="1000" height="300" rx="22" fill="url(#rdSea)"/>
+          <g class="rd-waves" fill="none" stroke="#b8d4d9" stroke-width="2" stroke-linecap="round">
+            <path d="M360 60 q14 -8 28 0 t28 0"/><path d="M520 110 q14 -8 28 0 t28 0"/><path d="M700 70 q14 -8 28 0 t28 0"/>
+            <path d="M430 285 q14 -8 28 0 t28 0"/><path d="M640 170 q14 -8 28 0 t28 0"/><path d="M780 265 q14 -8 28 0 t28 0"/>
+          </g>
+          <path class="rd-land" d="M0 22 Q0 0 22 0 H250 C300 40 330 90 305 140 C285 185 320 230 290 300 H22 Q0 300 0 278 Z"/>
+          <path class="rd-land" d="M905 0 H978 Q1000 0 1000 22 V278 Q1000 300 978 300 H925 C912 240 935 190 915 140 C900 90 925 45 905 0 Z"/>
+          <text class="rd-land-label" x="36" y="40">CHINA</text>
+          <text class="rd-land-label" x="930" y="40">CHILE</text>
+          <path class="rd-route-base" id="rdRoutePath" d="M120 160 C150 120 180 110 205 115 S260 165 285 170 C450 260 700 260 875 195 C900 185 922 165 935 140"/>
+          <path class="rd-route-progress" id="rdRouteProgress" d="M120 160 C150 120 180 110 205 115 S260 165 285 170 C450 260 700 260 875 195 C900 185 922 165 935 140"/>
+          <g class="rd-stops">
+            <g class="rd-stop" data-stop="0" transform="translate(120 160)"><circle r="11"/><text y="-38">Proveedor</text></g>
+            <g class="rd-stop" data-stop="1" transform="translate(205 115)"><circle r="11"/><text y="-38">Yiwu</text></g>
+            <g class="rd-stop" data-stop="2" transform="translate(285 170)"><circle r="11"/><text y="32">Ningbo</text></g>
+            <g class="rd-stop" data-stop="3" transform="translate(576 241)"><circle r="11"/><text y="-38">Pacífico</text></g>
+            <g class="rd-stop" data-stop="4" transform="translate(875 195)"><circle r="11"/><text x="-20" y="34">San Antonio</text></g>
+            <g class="rd-stop" data-stop="5" transform="translate(935 140)"><circle r="11"/><text x="-8" y="36">Santiago</text></g>
+          </g>
+          <g class="rd-ship" id="rdShip" transform="translate(935 140)">
+            <g transform="translate(-16 -26)">
+              <path d="M2 18 H30 L25 27 H7 Z" fill="#123f49"/>
+              <rect x="8" y="9" width="7" height="8" rx="1" fill="#f2b91f"/><rect x="16" y="9" width="7" height="8" rx="1" fill="#e07b39"/>
+              <rect x="12" y="2" width="7" height="7" rx="1" fill="#1d5b66"/>
+            </g>
+          </g>
+        </svg>
+        <div class="rd-route-stops" role="tablist" aria-label="Paradas de la ruta">
+          <button type="button" role="tab" data-stop="0">Proveedor</button>
+          <button type="button" role="tab" data-stop="1">Bodega Yiwu</button>
+          <button type="button" role="tab" data-stop="2">Puerto Ningbo</button>
+          <button type="button" role="tab" data-stop="3">En el mar</button>
+          <button type="button" role="tab" data-stop="4">Aduana</button>
+          <button type="button" role="tab" data-stop="5">Santiago</button>
+        </div>
+        <div class="rd-route-card" id="rdRouteCard" aria-live="polite">
+          <span class="rd-route-when" id="rdRouteWhen">7 a 25 días según producto</span>
+          <h3 id="rdRouteTitle">Tu proveedor prepara el pedido</h3>
+          <p id="rdRouteText">Tu proveedor fabrica o prepara tu compra. Si todavía no tienes proveedor, lo buscamos y negociamos por ti.</p>
+        </div>
+        <div class="rd-route-actions">
+          <a class="btn btn-gold" href="#cotizar">Calcular mi carga</a>
+          <a class="btn rd-btn-outline" href="como-funciona.html">Ver el proceso completo</a>
+        </div>
       </div>
     </div>
   </section>
@@ -312,6 +356,11 @@
             <strong id="miniBadge">Estimación aproximada</strong>
           </div>
           <div id="miniFields" class="form-grid"></div>
+          <div class="rd-fill" id="miniFill" aria-live="polite">
+            <div class="rd-fill-head"><span id="miniFillLabel">Espacio en un contenedor de 40 pies</span><b id="miniFillPct">0%</b></div>
+            <div class="rd-fill-box" aria-hidden="true"><div class="rd-fill-bar" id="miniFillBar"></div><i class="rd-fill-door"></i></div>
+            <p class="rd-fill-note" id="miniFillNote">Escribe el volumen y te mostramos cuánto espacio ocupa tu carga.</p>
+          </div>
           <div class="estimate-box">
             <div><span>Estimado aproximado</span><strong id="miniEstimate">Desde US$250/m³</strong></div>
             <p id="miniEstimateNote">Ingresa el volumen para ver un estimado de flete.</p>
@@ -413,5 +462,7 @@
 <div class="sticky-cta-bar"><a class="sticky-cta-btn sticky-cta-quote" href="#cotizar">Cotizar ahora</a><a class="sticky-cta-btn sticky-cta-whatsapp" data-whatsapp-message="Hola, quiero información sobre Chelme Global Trade." target="_blank" rel="noopener"><svg><use href="#i-whatsapp"></use></svg> WhatsApp</a></div>
 
 <script src="script.js"></script>
+<script src="home-interactive.js"></script>
+<script src="account-nav.js"></script>
 </body>
 </html>
