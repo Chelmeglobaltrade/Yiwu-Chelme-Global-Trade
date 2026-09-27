@@ -42,6 +42,7 @@
     <span class="staff-badge" id="staffBadge">Panel del equipo</span>
     <div class="portal-tabbar staff-tabbar">
       <button class="portal-tab" data-tab="cash" id="cashTabBtn" hidden>Cobros</button>
+      <button class="portal-tab" data-tab="ships" id="shipsTabBtn" hidden>Contenedores</button>
       <button class="portal-tab" data-tab="rates" id="ratesTabBtn" hidden>Tarifas LCL</button>
       <button class="portal-tab" data-tab="team" id="teamTabBtn" hidden>Equipo y permisos</button>
     </div>
@@ -283,6 +284,8 @@
 
 <section class="section section-soft" id="panel-cash" hidden><div class="container" style="max-width:920px"><h2>Cobros y caja</h2><p class="orders-sub">Lo que falta por cobrar, comprobantes por revisar y pedidos que hoy no dejan ganancia.</p><div id="cashContent" style="margin-top:18px"></div></div></section>
 
+<section class="section section-soft" id="panel-ships" hidden><div class="container" style="max-width:1100px"><div class="account-section-heading"><div><h2>Contenedores</h2><p class="orders-sub">Cuántos m³ lleva cada cliente, qué tan lleno va cada contenedor y si deja ganancia. Los clientes solo ven el código, el estado y las fechas.</p></div><button type="button" class="btn btn-gold btn-sm" id="shipNewBtn">+ Nuevo contenedor</button></div><div id="shipForm" hidden></div><div id="shipsContent" style="margin-top:18px">Cargando…</div></div></section>
+
 <section class="section section-soft" id="panel-rates" hidden><div class="container" style="max-width:1000px"><h2>Tarifas del consolidado LCL</h2><p class="orders-sub">Precio por m³ según el flete del contenedor y el volumen del cliente. Cambia el flete actual cuando cambie el mercado y las calculadoras de la página se actualizan solas.</p><div id="ratesContent" style="margin-top:18px">Cargando…</div></div></section>
 
 <section class="section" id="panel-team" hidden><div class="container">
@@ -370,7 +373,7 @@
     document.getElementById('profileAvatar').textContent = initials(shown);
   }
 
-  var TAB_PANELS = { orders: 'panel-orders', quotes: 'panel-quotes', quote: 'panel-quote', profile: 'panel-profile', cash: 'panel-cash', rates: 'panel-rates', team: 'panel-team' };
+  var TAB_PANELS = { orders: 'panel-orders', quotes: 'panel-quotes', quote: 'panel-quote', profile: 'panel-profile', cash: 'panel-cash', ships: 'panel-ships', rates: 'panel-rates', team: 'panel-team' };
   document.querySelectorAll('.portal-tab').forEach(function(btn){
     btn.addEventListener('click', function(){
       document.querySelectorAll('.portal-tab').forEach(function(b){ b.classList.toggle('active', b === btn); });
@@ -816,6 +819,171 @@
     renderRatesAdmin();
   }
 
+  /* ---------- Contenedores: llenado por cliente, fechas y ganancia (equipo) ---------- */
+  var shipsCache = [], myShipsByOrder = {};
+  var SHIP_STATUS = { abierto: 'Abierto · recibiendo carga', cerrado: 'Cerrado para carga', zarpo: 'Zarpó', llego: 'Llegó a Chile', finalizado: 'Finalizado' };
+  // Al cambiar el contenedor de estado, se ofrece mover sus pedidos a este estado.
+  var SHIP_TO_ORDER = { zarpo: 'transito_maritimo', llego: 'en_aduana', finalizado: 'entregado' };
+  var SHIP_COLORS = ['#274F5B', '#DAAD2B', '#1F9D6B', '#C8643B', '#6C5B9E', '#3B8EA5', '#A3814A', '#8A3B55'];
+  var CAPS = (CHELME_CONFIG.fcl && CHELME_CONFIG.fcl.capacityCbm) || { '20GP': 28, '40GP': 58, '40HQ': 68 };
+  var MAX_KG_CBM = (CHELME_CONFIG.lclScope && CHELME_CONFIG.lclScope.weightReviewKgPerCbm) || 500;
+  function fmtDay(d){ return d ? new Date(d + 'T12:00:00').toLocaleDateString('es-CL', { day: 'numeric', month: 'short' }) : ''; }
+  function num(v, d){ return new Intl.NumberFormat('es-CL', { maximumFractionDigits: d == null ? 2 : d }).format(Number(v) || 0); }
+  function shipInfoFor(order, isStaff){
+    if (isStaff) return order.shipment_id ? shipsCache.filter(function(s){ return s.id === order.shipment_id; })[0] : null;
+    return myShipsByOrder[order.id] || null;
+  }
+  function clientName(o){
+    var cu = customersCache && customersCache[o.user_id];
+    return cu ? (cu.full_name || cu.email) : 'Cliente';
+  }
+  function shipStats(s){
+    var orders = ordersCache.filter(function(o){ return o.shipment_id === s.id; });
+    var cbm = orders.reduce(function(t, o){ return t + (Number(o.cbm) || 0); }, 0);
+    var kg = orders.reduce(function(t, o){ return t + (Number(o.weight_kg) || 0); }, 0);
+    var rev = 0, orderCosts = 0;
+    orders.forEach(function(o){ var m = marginOf(o.id); rev += m.rev; orderCosts += m.cost; });
+    var cost = (Number(s.freight_cost_usd) || 0) + (Number(s.other_costs_usd) || 0) + orderCosts;
+    var cap = Number(s.capacity_cbm) || 1;
+    // Punto de equilibrio: m³ que hay que vender, al ingreso promedio actual por m³, para cubrir los costos.
+    var perCbm = cbm > 0 ? rev / cbm : 0;
+    var breakeven = perCbm > 0 ? cost / perCbm : null;
+    return { orders: orders, cbm: cbm, kg: kg, rev: rev, cost: cost, margin: rev - cost, cap: cap, fill: cbm / cap, perCbm: perCbm, breakeven: breakeven };
+  }
+  function shipFormHtml(s){
+    s = s || {};
+    var sel = function(name, opts, val){ return '<select id="sf-' + name + '">' + opts.map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === val ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>'; };
+    var inp = function(name, type, val, extra){ return '<input id="sf-' + name + '" type="' + type + '" value="' + escapeHtml(val == null ? '' : val) + '"' + (extra || '') + '>'; };
+    var d = new Date(), suggested = 'CGT-' + d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(shipsCache.length + 1).padStart(2, '0');
+    return '<div class="ship-form">' +
+      '<h3>' + (s.id ? 'Editar contenedor ' + escapeHtml(s.code) : 'Nuevo contenedor') + '</h3>' +
+      '<div class="ship-form-grid">' +
+        '<label class="charge-lbl">Código' + inp('code', 'text', s.code || suggested) + '</label>' +
+        '<label class="charge-lbl">Tipo de operación' + sel('mode', [['lcl', 'Consolidado LCL'], ['fcl', 'Contenedor completo FCL']], s.mode || 'lcl') + '</label>' +
+        '<label class="charge-lbl">Contenedor' + sel('type', [['40HQ', "40' HQ"], ['40GP', "40'"], ['20GP', "20'"]], s.container_type || '40HQ') + '</label>' +
+        '<label class="charge-lbl">Capacidad útil (m³)' + inp('cap', 'number', s.capacity_cbm || CAPS['40HQ'], ' min="1" step="0.5"') + '</label>' +
+        '<label class="charge-lbl">Cierre de carga' + inp('cutoff', 'date', s.cutoff_date) + '</label>' +
+        '<label class="charge-lbl">Zarpe estimado (ETD)' + inp('etd', 'date', s.etd) + '</label>' +
+        '<label class="charge-lbl">Llegada estimada (ETA)' + inp('eta', 'date', s.eta) + '</label>' +
+        '<label class="charge-lbl">Flete del contenedor (USD)' + inp('freight', 'number', s.freight_cost_usd, ' min="0" step="50"') + '</label>' +
+        '<label class="charge-lbl">Otros costos del contenedor (USD)' + inp('other', 'number', s.other_costs_usd, ' min="0" step="10"') + '</label>' +
+        '<label class="charge-lbl">Nave' + inp('vessel', 'text', s.vessel) + '</label>' +
+        '<label class="charge-lbl">N.º de BL' + inp('bl', 'text', s.bl_number) + '</label>' +
+        '<label class="charge-lbl ship-form-wide">Notas internas<textarea id="sf-notes" rows="2">' + escapeHtml(s.notes || '') + '</textarea></label>' +
+      '</div>' +
+      '<p class="charge-hint">Otros costos: traslados en China, gastos de puerto y agente en Chile, bodega. Los costos de cada pedido se suman aparte desde el pedido.</p>' +
+      '<div class="rates-actions"><button type="button" class="btn btn-gold btn-sm" id="sf-save">' + (s.id ? 'Guardar cambios' : 'Crear contenedor') + '</button><button type="button" class="btn btn-light btn-sm" id="sf-cancel">Cancelar</button><span class="charge-hint" id="sf-msg"></span></div>' +
+    '</div>';
+  }
+  function openShipForm(s){
+    var box = document.getElementById('shipForm');
+    box.innerHTML = shipFormHtml(s); box.hidden = false;
+    var typeSel = document.getElementById('sf-type');
+    typeSel.addEventListener('change', function(){ document.getElementById('sf-cap').value = CAPS[typeSel.value] || ''; });
+    document.getElementById('sf-cancel').addEventListener('click', function(){ box.hidden = true; box.innerHTML = ''; });
+    document.getElementById('sf-save').addEventListener('click', async function(){
+      var v = function(id){ return document.getElementById('sf-' + id).value.trim(); };
+      var n = function(id){ var x = v(id); return x === '' ? null : Number(x); };
+      var row = { code: v('code'), mode: v('mode'), container_type: v('type'), capacity_cbm: n('cap'), cutoff_date: v('cutoff') || null, etd: v('etd') || null, eta: v('eta') || null, freight_cost_usd: n('freight'), other_costs_usd: n('other'), vessel: v('vessel') || null, bl_number: v('bl') || null, notes: v('notes') || null };
+      if (!row.code) { document.getElementById('sf-msg').textContent = 'Ponle un código al contenedor.'; return; }
+      if (!(row.capacity_cbm > 0)) { document.getElementById('sf-msg').textContent = 'La capacidad debe ser mayor a 0 m³.'; return; }
+      this.disabled = true;
+      var r = s && s.id ? await supabaseClient.from('shipments').update(row).eq('id', s.id).select().single() : await supabaseClient.from('shipments').insert(row).select().single();
+      this.disabled = false;
+      if (r.error) { document.getElementById('sf-msg').textContent = /duplicate|unique/i.test(r.error.message) ? 'Ya existe un contenedor con ese código.' : 'No se pudo guardar: ' + r.error.message; return; }
+      if (s && s.id) shipsCache = shipsCache.map(function(x){ return x.id === s.id ? r.data : x; }); else shipsCache.unshift(r.data);
+      box.hidden = true; box.innerHTML = '';
+      renderShipments();
+    });
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  async function assignOrder(orderId, shipId){
+    var r = await supabaseClient.from('orders').update({ shipment_id: shipId }).eq('id', orderId);
+    if (r.error) { alert('No se pudo asignar: ' + r.error.message); return; }
+    ordersCache = ordersCache.map(function(o){ return o.id === orderId ? Object.assign({}, o, { shipment_id: shipId }) : o; });
+    renderShipments();
+  }
+  async function changeShipStatus(s, status){
+    var r = await supabaseClient.from('shipments').update({ status: status }).eq('id', s.id).select().single();
+    if (r.error) { alert('No se pudo cambiar el estado: ' + r.error.message); renderShipments(); return; }
+    shipsCache = shipsCache.map(function(x){ return x.id === s.id ? r.data : x; });
+    var target = SHIP_TO_ORDER[status], orders = shipStats(r.data).orders.filter(function(o){ return target && o.status !== target; });
+    if (orders.length && confirm('¿Pasar también los ' + orders.length + ' pedidos de este contenedor a "' + ORDER_STATUS_LABELS[target] + '"? Los clientes lo verán en su cuenta.')) {
+      if (target === 'entregado') {
+        var owing = orders.filter(function(o){ return unpaidOf(o.id).length; });
+        if (owing.length && !confirm(owing.length + ' de esos pedidos tienen cobros pendientes. ¿Marcarlos como entregados igual?')) { renderShipments(); return; }
+      }
+      var ids = orders.map(function(o){ return o.id; });
+      var u = await supabaseClient.from('orders').update({ status: target }).in('id', ids);
+      if (u.error) alert('El contenedor cambió, pero no se pudieron actualizar los pedidos: ' + u.error.message);
+      else ordersCache = ordersCache.map(function(o){ return ids.indexOf(o.id) >= 0 ? Object.assign({}, o, { status: target }) : o; });
+      renderOrders(ordersCache, customersCache, true);
+    }
+    renderShipments();
+  }
+  async function copyEtaToOrders(s){
+    var orders = shipStats(s).orders;
+    if (!s.eta || !orders.length) return;
+    var ids = orders.map(function(o){ return o.id; });
+    var u = await supabaseClient.from('orders').update({ eta: s.eta }).in('id', ids);
+    if (u.error) { alert('No se pudo copiar la fecha: ' + u.error.message); return; }
+    ordersCache = ordersCache.map(function(o){ return ids.indexOf(o.id) >= 0 ? Object.assign({}, o, { eta: s.eta }) : o; });
+    renderShipments(); renderCash();
+  }
+  function renderShipments(){
+    var box = document.getElementById('shipsContent');
+    if (!box) return;
+    var unassigned = ordersCache.filter(function(o){ return !o.shipment_id && (o.service === 'lcl' || o.service === 'fcl' || !o.service) && o.status !== 'entregado'; });
+    var open = shipsCache.filter(function(s){ return s.status !== 'finalizado'; }), done = shipsCache.filter(function(s){ return s.status === 'finalizado'; });
+    var pendingCbm = unassigned.reduce(function(t, o){ return t + (Number(o.cbm) || 0); }, 0);
+    var tiles = '<div class="cash-tiles">' +
+      '<div><span>Contenedores activos</span><b>' + open.length + '</b></div>' +
+      '<div class="' + (unassigned.length ? 'is-alert' : '') + '"><span>Pedidos sin contenedor</span><b>' + unassigned.length + '</b><small>' + num(pendingCbm) + ' m³ por ubicar</small></div>' +
+      '<div><span>m³ cargados en activos</span><b>' + num(open.reduce(function(t, s){ return t + shipStats(s).cbm; }, 0)) + ' m³</b></div></div>';
+    if (!shipsCache.length) { box.innerHTML = tiles + '<div class="orders-empty" style="margin-top:16px"><p>Aún no hay contenedores. Crea el primero con <strong>+ Nuevo contenedor</strong> y asígnale los pedidos confirmados.</p></div>'; return; }
+    var card = function(s){
+      var st = shipStats(s), pct = Math.min(1, st.fill);
+      var over = st.fill > 1, heavy = st.cbm > 0 && st.kg / st.cbm > MAX_KG_CBM;
+      var segs = st.orders.map(function(o, i){
+        var w = Math.min(100, (Number(o.cbm) || 0) / st.cap * 100);
+        return '<span style="width:' + w + '%;background:' + SHIP_COLORS[i % SHIP_COLORS.length] + '" title="' + escapeHtml(clientName(o) + ' · ' + num(o.cbm) + ' m³') + '"></span>';
+      }).join('');
+      var be = st.breakeven != null && st.breakeven <= st.cap * 1.5 ? '<i class="ship-be" style="left:' + Math.min(100, st.breakeven / st.cap * 100) + '%" title="Punto de equilibrio"></i>' : '';
+      var beText = st.breakeven == null ? (st.cost > 0 ? 'Registra cobros en los pedidos para calcular el punto de equilibrio.' : 'Ingresa el flete del contenedor para calcular el punto de equilibrio.')
+        : (st.cbm >= st.breakeven ? 'Ya cubre sus costos: el equilibrio está en ' + num(st.breakeven, 1) + ' m³.' : 'Faltan ' + num(st.breakeven - st.cbm, 1) + ' m³ (a ' + moneyFmt(st.perCbm) + '/m³ promedio) para cubrir los costos.');
+      var rows = st.orders.map(function(o, i){
+        var dens = o.cbm > 0 && o.weight_kg ? o.weight_kg / o.cbm : 0;
+        var owes = unpaidOf(o.id).length;
+        return '<tr><td><span class="ship-dot" style="background:' + SHIP_COLORS[i % SHIP_COLORS.length] + '"></span>' + escapeHtml(clientName(o)) + '<small>' + escapeHtml(o.reference || '') + '</small></td>' +
+          '<td>' + num(o.cbm) + ' m³</td><td>' + (o.weight_kg ? num(o.weight_kg, 0) + ' kg' + (dens > MAX_KG_CBM ? ' <em class="ship-warn">' + num(dens, 0) + ' kg/m³</em>' : '') : '—') + '</td>' +
+          '<td>' + escapeHtml(ORDER_STATUS_LABELS[o.status] || o.status) + '</td>' +
+          '<td>' + (owes ? '<span class="charge-pill st-pendiente">' + sumByCurrency(unpaidOf(o.id)) + ' pendiente</span>' : '<span class="charge-pill st-pagado">Al día</span>') + '</td>' +
+          '<td><button type="button" class="cost-del" data-unassign="' + o.id + '" aria-label="Quitar del contenedor">×</button></td></tr>';
+      }).join('');
+      var addSel = unassigned.length && s.status === 'abierto'
+        ? '<div class="ship-add"><select data-addto="' + s.id + '"><option value="">+ Agregar pedido a este contenedor…</option>' + unassigned.map(function(o){ return '<option value="' + o.id + '">' + escapeHtml(clientName(o) + ' · ' + (o.reference || 'Pedido') + ' · ' + (o.cbm ? num(o.cbm) + ' m³' : 'sin m³')) + '</option>'; }).join('') + '</select></div>' : '';
+      return '<article class="ship-card' + (s.status === 'finalizado' ? ' is-done' : '') + '">' +
+        '<header class="ship-head"><div><strong class="ship-code">' + escapeHtml(s.code) + '</strong><span class="ship-type">' + (s.mode === 'fcl' ? 'FCL' : 'LCL') + ' · ' + escapeHtml(s.container_type) + (s.vessel ? ' · ' + escapeHtml(s.vessel) : '') + '</span></div>' +
+          '<div class="ship-head-actions"><select data-shipstatus="' + s.id + '">' + Object.keys(SHIP_STATUS).map(function(k){ return '<option value="' + k + '"' + (k === s.status ? ' selected' : '') + '>' + SHIP_STATUS[k] + '</option>'; }).join('') + '</select><button type="button" class="btn btn-light btn-sm" data-shipedit="' + s.id + '">Editar</button></div></header>' +
+        '<div class="ship-dates"><span>Cierre de carga<b>' + (fmtDay(s.cutoff_date) || '—') + '</b></span><span>Zarpe<b>' + (fmtDay(s.etd) || '—') + '</b></span><span>Llegada<b>' + (fmtDay(s.eta) || '—') + '</b></span>' + (s.eta && st.orders.some(function(o){ return o.eta !== s.eta; }) ? '<button type="button" class="ship-link" data-copyeta="' + s.id + '">Copiar llegada a los pedidos</button>' : '') + '</div>' +
+        '<div class="ship-fill"><div class="ship-fill-top"><strong>' + num(st.cbm) + ' de ' + num(st.cap) + ' m³</strong><span class="' + (over ? 'ship-warn' : '') + '">' + (over ? 'Excede la capacidad en ' + num(st.cbm - st.cap) + ' m³' : num(pct * 100, 0) + '% lleno · quedan ' + num(st.cap - st.cbm) + ' m³') + '</span></div>' +
+          '<div class="ship-bar" role="img" aria-label="' + num(pct * 100, 0) + '% lleno">' + segs + be + '</div>' +
+          '<p class="charge-hint">' + beText + (heavy ? ' <span class="ship-warn">Peso promedio ' + num(st.kg / st.cbm, 0) + ' kg/m³: revisa el límite de peso del contenedor.</span>' : '') + '</p></div>' +
+        '<div class="ship-money"><div><span>Ingresos Chelme</span><b>' + moneyFmt(st.rev) + '</b></div><div><span>Costos</span><b>' + moneyFmt(st.cost) + '</b></div><div class="' + (st.margin < 0 ? 'is-late' : 'is-ok') + '"><span>Margen</span><b>' + moneyFmt(st.margin) + (st.rev > 0 ? ' <small>' + num(st.margin / st.rev * 100, 0) + '%</small>' : '') + '</b></div></div>' +
+        (rows ? '<div class="rates-scroll"><table class="ship-table"><thead><tr><th>Cliente</th><th>Volumen</th><th>Peso</th><th>Estado</th><th>Cobros</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p class="charge-hint">Sin pedidos asignados todavía.</p>') +
+        addSel + '</article>';
+    };
+    box.innerHTML = tiles + open.map(card).join('') + (done.length ? '<details class="ship-done"><summary>Finalizados (' + done.length + ')</summary>' + done.map(card).join('') + '</details>' : '') +
+      '<p class="charge-hint" style="margin-top:14px">Ingresos Chelme = cobros en USD de los pedidos sin IVA ni arancel (incluye flete y servicio). Costos = flete y otros costos del contenedor + costos registrados en cada pedido.</p>';
+    box.querySelectorAll('[data-addto]').forEach(function(sel){ sel.addEventListener('change', function(){ if (sel.value) assignOrder(sel.value, sel.dataset.addto); }); });
+    box.querySelectorAll('[data-unassign]').forEach(function(b){ b.addEventListener('click', function(){ if (confirm('¿Quitar este pedido del contenedor?')) assignOrder(b.dataset.unassign, null); }); });
+    box.querySelectorAll('[data-shipstatus]').forEach(function(sel){ sel.addEventListener('change', function(){ changeShipStatus(shipsCache.filter(function(x){ return x.id === sel.dataset.shipstatus; })[0], sel.value); }); });
+    box.querySelectorAll('[data-shipedit]').forEach(function(b){ b.addEventListener('click', function(){ openShipForm(shipsCache.filter(function(x){ return x.id === b.dataset.shipedit; })[0]); }); });
+    box.querySelectorAll('[data-copyeta]').forEach(function(b){ b.addEventListener('click', function(){ copyEtaToOrders(shipsCache.filter(function(x){ return x.id === b.dataset.copyeta; })[0]); }); });
+  }
+  var shipNewBtn = document.getElementById('shipNewBtn');
+  if (shipNewBtn) shipNewBtn.addEventListener('click', function(){ openShipForm(null); });
+
   /* ---------- Requiere tu atención + saldos por moneda (cliente y equipo) ---------- */
   function renderAttention(isStaff){
     var box = document.getElementById('attentionBox');
@@ -989,6 +1157,8 @@
       var structFields = [];
       if (order.service) structFields.push(['Servicio', SERVICE_LABELS[order.service] || order.service]);
       if (order.tracking_number) structFields.push(['Seguimiento', order.tracking_number]);
+      var ship = shipInfoFor(order, isStaff);
+      if (ship) structFields.push(['Contenedor', ship.code + ' · ' + (SHIP_STATUS[ship.status] || ship.status) + (ship.cutoff_date ? ' · cierre de carga ' + fmtDay(ship.cutoff_date) : '') + (ship.etd ? ' · zarpe ' + fmtDay(ship.etd) : '') + (ship.eta ? ' · llegada ' + fmtDay(ship.eta) : '')]);
       if (order.cbm) structFields.push(['CBM', order.cbm + ' m³']);
       if (order.weight_kg) structFields.push(['Peso', order.weight_kg + ' kg']);
       if (order.goods_value) structFields.push(['Valor mercancía', moneyFmt(order.goods_value) + ' ' + (order.goods_currency || '')]);
@@ -1085,8 +1255,15 @@
     if (isStaff) {
       var costsRes = await supabaseClient.from('order_costs').select('*');
       costsCache = costsRes.data || [];
+      var shipsRes = await supabaseClient.from('shipments').select('*').order('created_at', { ascending: false });
+      shipsCache = shipsRes.data || [];
+    } else {
+      var myShips = await supabaseClient.rpc('my_shipments');
+      myShipsByOrder = {};
+      (myShips.data || []).forEach(function(s){ myShipsByOrder[s.order_id] = s; });
     }
     renderOrders(ordersCache, customersById, isStaff);
+    if (isStaff) renderShipments();
     renderAttention(isStaff);
     if (isStaff) renderCash();
   }
@@ -1361,6 +1538,7 @@
       document.getElementById('staffBadge').textContent = profile.role === 'owner' ? 'Panel del equipo · Dueño' : 'Panel del equipo · Administrador';
       document.getElementById('cashTabBtn').hidden = false;
       document.getElementById('ratesTabBtn').hidden = false;
+      document.getElementById('shipsTabBtn').hidden = false;
       loadRatesAdmin();
       setupNewOrderForm(customersById);
       var toggleBtn = document.getElementById('toggleNewOrderBtn');
