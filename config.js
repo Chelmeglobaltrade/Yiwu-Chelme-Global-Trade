@@ -13,6 +13,18 @@ window.CHELME_CONFIG = {
     address: "Room 718, Building A, Liandu Building, No. 3 Jinrong 3rd Street, Yiwu, China"
   },
 
+  // Versión vigente de Términos y Política de privacidad. Cambiarla cuando se modifiquen esos textos:
+  // queda guardada en el perfil de cada cliente nuevo como prueba de lo que aceptó.
+  legal: {
+    termsVersion: "2026-09-28",
+    // Datos de la empresa en Chile. Cuando estén completos, se muestran en Términos, Privacidad y el pie de página.
+    company: {
+      legalName: "",   // Razón social, ej.: "Chelme Global Trade SpA"
+      rut: "",         // RUT de la empresa, ej.: "77.123.456-7"
+      address: ""      // Domicilio legal en Chile
+    }
+  },
+
   exchange: {
     referenceRmbPerUsd: 6.7767,
     previousReferenceRmbPerUsd: 6.7733,

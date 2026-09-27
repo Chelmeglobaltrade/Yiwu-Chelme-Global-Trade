@@ -47,3 +47,18 @@
     });
   });
 })();
+
+/* Identificación legal de la empresa (Términos, Privacidad y pie de página), solo si está completa en config.js. */
+(function () {
+  var co = window.CHELME_CONFIG && CHELME_CONFIG.legal && CHELME_CONFIG.legal.company;
+  var ok = co && co.legalName && co.rut;
+  var text = ok ? co.legalName + " · RUT " + co.rut + (co.address ? " · " + co.address : "") : "";
+  document.querySelectorAll("[data-legal-identity]").forEach(function (el) {
+    if (ok) el.textContent = "Responsable: " + text; else el.hidden = true;
+  });
+  if (ok) {
+    var foot = document.querySelector("footer .footer-grid > div");
+    if (foot) { var p = document.createElement("p"); p.className = "footer-legal"; p.textContent = text; p.style.cssText = "font-size:.74rem;opacity:.75;margin-top:6px"; foot.appendChild(p); }
+  }
+})();
+
