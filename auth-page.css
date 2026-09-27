@@ -238,3 +238,6 @@
 .ship-dot{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
 .ship-done{ margin-top:18px; } .ship-done summary{ cursor:pointer; font-weight:800; color:var(--petrol); }
 @media (max-width:560px){ .ship-money{ grid-template-columns:1fr; } }
+.order-ship{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px; margin-top:12px; padding:10px 12px; border-radius:12px; background:#f3f7f7; font-size:.8rem; color:var(--muted); font-weight:600; }
+.order-ship b{ color:var(--petrol); }
+.order-ship-code{ font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-weight:600; color:var(--petrol); padding:2px 8px; border-radius:6px; background:#fff; border:1px solid var(--line); }
