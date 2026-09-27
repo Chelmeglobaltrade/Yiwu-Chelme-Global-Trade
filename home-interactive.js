@@ -112,6 +112,10 @@
     var fmt = function (n, d) { return new Intl.NumberFormat("es-CL", { maximumFractionDigits: d }).format(n); };
     var advice = { lcl: "Te conviene el consolidado LCL: pagas solo tu espacio.", compare: "Estás en la zona gris: comparemos consolidado LCL y un contenedor de 20 pies.", fcl_review: "Con este volumen conviene evaluar un contenedor completo para ti." };
 
+    // Avisa al contenedor 3D (container3d.js) qué mostrar.
+    function emit(detail) {
+      try { window.dispatchEvent(new CustomEvent("chelme:fill", { detail: detail })); } catch (e) {}
+    }
     function update() {
       var active = document.querySelector("[data-mini-service].active");
       var svc = active ? active.dataset.miniService : "lcl";
@@ -124,6 +128,7 @@
         label.textContent = "Contenedor " + c + " completo, solo para ti";
         bar.style.width = "100%"; pct.textContent = "~" + fmt(caps[c] || 0, 0) + " m³";
         note.textContent = "Un " + c + " lleva hasta unos " + fmt(caps[c] || 0, 0) + " m³ de carga. Lo cotizamos según la ruta y la semana.";
+        emit({ service: "fcl", container: c, share: 1, cbm: caps[c] || 0 });
         return;
       }
       var cbm = parseFloat((document.getElementById("miniCbm") || {}).value) || 0;
@@ -132,6 +137,7 @@
       label.textContent = "Espacio en un contenedor de 40 pies";
       bar.style.width = (cbm > 0 ? Math.max(2, share * 100) : 0) + "%";
       pct.textContent = cbm > 0 ? (share * 100 < 1 ? "<1%" : fmt(share * 100, 0) + "%") : "0%";
+      emit({ service: "lcl", container: "40HQ", share: cbm > 0 ? share : 0, cbm: cbm });
       if (cbm <= 0) { note.textContent = "Escribe el volumen y te mostramos cuánto espacio ocupa tu carga."; return; }
       var rec = window.CHELME_PRICING ? window.CHELME_PRICING.recommendMode(cbm, CONFIG) : { code: "lcl" };
       note.textContent = "Tus " + fmt(cbm, 2) + " m³ ocupan cerca del " + fmt(share * 100, 0) + "% de un contenedor de 40 pies. " + (advice[rec.code] || "");
@@ -140,5 +146,6 @@
     if (fields) { fields.addEventListener("input", update); fields.addEventListener("change", update); }
     document.querySelectorAll("[data-mini-service]").forEach(function (b) { b.addEventListener("click", function () { setTimeout(update, 0); }); });
     update();
+    window.chelmeFillRefresh = update;
   }
 })();
