@@ -152,3 +152,16 @@
 .charge-lbl input{ padding:9px 10px; border:1px solid var(--line); border-radius:9px; font:inherit; font-size:.86rem; }
 .check-inline{ flex-direction:row; align-items:center; gap:8px; align-self:end; padding-bottom:8px; }
 .check-inline input{ width:auto; }
+
+/* Tarifas LCL (equipo) */
+.rates-top{ display:flex; flex-wrap:wrap; gap:18px; align-items:end; }
+.rates-toggle{ font-size:.9rem; color:var(--petrol); }
+.rates-status{ margin:14px 0; padding:12px 14px; border-radius:12px; background:var(--soft); color:var(--muted); font-size:.88rem; }
+.rates-status.is-on{ background:#e6f7ec; color:#1f7a43; font-weight:700; }
+.rates-scroll{ overflow-x:auto; border:1px solid var(--line); border-radius:14px; background:#fff; }
+.rates-table{ width:100%; border-collapse:collapse; font-size:.86rem; font-variant-numeric:tabular-nums; }
+.rates-table th{ padding:10px; text-align:left; background:var(--petrol); color:#fff; font-size:.76rem; white-space:nowrap; }
+.rates-table td{ padding:6px 8px; border-top:1px solid var(--line); }
+.rates-table input{ width:90px; padding:7px 8px; border:1px solid var(--line); border-radius:8px; font:inherit; }
+.rates-table tr.is-used td{ background:#fff8e1; }
+.rates-actions{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:14px 0 8px; }

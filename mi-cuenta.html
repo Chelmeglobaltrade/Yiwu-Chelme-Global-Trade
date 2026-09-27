@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#123f49"><meta name="robots" content="noindex,follow"><title>Mi cuenta | Chelme Global Trade</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="polish.css"><link rel="stylesheet" href="site-header.css"><link rel="stylesheet" href="auth-page.css"><link rel="stylesheet" href="quote-redesign.css"><script src="config.js"></script><script src="pricing-core.js"></script></head><body class="standalone-page">
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#123f49"><meta name="robots" content="noindex,follow"><title>Mi cuenta | Chelme Global Trade</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="polish.css"><link rel="stylesheet" href="site-header.css"><link rel="stylesheet" href="auth-page.css"><link rel="stylesheet" href="quote-redesign.css"><script src="config.js"></script><script src="pricing-core.js"></script><script src="lcl-rates.js"></script></head><body class="standalone-page">
 <svg class="svg-sprite" aria-hidden="true">
   <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.7" r="1"/></symbol>
   <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M14 4v10.2a4.7 4.7 0 1 1-4-4.6"/><path d="M14 4c1 3 3.1 4.5 6 4.7"/></symbol>
@@ -37,6 +37,7 @@
     <button class="portal-tab" data-tab="quote">Nueva cotización</button>
     <button class="portal-tab" data-tab="profile">Mi perfil</button>
     <button class="portal-tab" data-tab="cash" id="cashTabBtn" hidden>Cobros</button>
+    <button class="portal-tab" data-tab="rates" id="ratesTabBtn" hidden>Tarifas LCL</button>
     <button class="portal-tab" data-tab="team" id="teamTabBtn" hidden>Equipo</button>
   </div>
 </div></nav>
@@ -271,6 +272,8 @@
 
 <section class="section section-soft" id="panel-cash" hidden><div class="container" style="max-width:920px"><h2>Cobros y caja</h2><p class="orders-sub">Lo que falta por cobrar, comprobantes por revisar y pedidos que hoy no dejan ganancia.</p><div id="cashContent" style="margin-top:18px"></div></div></section>
 
+<section class="section section-soft" id="panel-rates" hidden><div class="container" style="max-width:1000px"><h2>Tarifas del consolidado LCL</h2><p class="orders-sub">Precio por m³ según el flete del contenedor y el volumen del cliente. Cambia el flete actual cuando cambie el mercado y las calculadoras de la página se actualizan solas.</p><div id="ratesContent" style="margin-top:18px">Cargando…</div></div></section>
+
 <section class="section" id="panel-team" hidden><div class="container">
 
   <h2>Gestionar equipo</h2>
@@ -356,7 +359,7 @@
     document.getElementById('profileAvatar').textContent = initials(shown);
   }
 
-  var TAB_PANELS = { orders: 'panel-orders', quotes: 'panel-quotes', quote: 'panel-quote', profile: 'panel-profile', cash: 'panel-cash', team: 'panel-team' };
+  var TAB_PANELS = { orders: 'panel-orders', quotes: 'panel-quotes', quote: 'panel-quote', profile: 'panel-profile', cash: 'panel-cash', rates: 'panel-rates', team: 'panel-team' };
   document.querySelectorAll('.portal-tab').forEach(function(btn){
     btn.addEventListener('click', function(){
       document.querySelectorAll('.portal-tab').forEach(function(b){ b.classList.toggle('active', b === btn); });
@@ -706,6 +709,90 @@
     document.getElementById('chg-cur-' + orderId).value = 'USD';
     if (o.eta) { var d = new Date(o.eta + 'T12:00:00'); d.setDate(d.getDate() - 3); document.getElementById('chg-due-' + orderId).value = d.toISOString().slice(0, 10); }
     return true;
+  }
+
+  /* ---------- Tarifas LCL por flete (equipo) ---------- */
+  var ratesState = null;
+  function ratesRowKeys(){ return Object.keys(ratesState.rates).map(Number).sort(function(a, b){ return a - b; }); }
+  function ratesUsedRow(){
+    var keys = ratesRowKeys(), f = Number(ratesState.current_freight_usd), chosen = keys[0];
+    keys.forEach(function(k){ if (k <= f) chosen = k; });
+    return chosen;
+  }
+  function renderRatesAdmin(){
+    var box = document.getElementById('ratesContent');
+    if (!box || !ratesState) return;
+    var tiers = ratesState.tiers, used = ratesUsedRow();
+    var head = '<tr><th>Flete 40HQ desde (USD)</th>' + tiers.map(function(t){ return '<th>' + escapeHtml(t.label) + '</th>'; }).join('') + '<th></th></tr>';
+    var body = ratesRowKeys().map(function(k){
+      var prices = ratesState.rates[String(k)];
+      return '<tr class="' + (k === used ? 'is-used' : '') + '"><td><input type="number" min="0" step="100" class="rate-freight" data-old="' + k + '" value="' + k + '"></td>' +
+        tiers.map(function(_, i){ return '<td><input type="number" min="0" step="5" class="rate-price" data-row="' + k + '" data-i="' + i + '" value="' + (prices[i] != null ? prices[i] : '') + '"></td>'; }).join('') +
+        '<td><button type="button" class="cost-del" data-delrow="' + k + '" aria-label="Eliminar fila">×</button></td></tr>';
+    }).join('');
+    var usedPrices = ratesState.rates[String(used)] || [];
+    box.innerHTML =
+      '<div class="rates-top">' +
+        '<label class="check-inline rates-toggle"><input type="checkbox" id="ratesActive"' + (ratesState.active ? ' checked' : '') + '> Usar esta tabla en las calculadoras de la página</label>' +
+        '<label class="charge-lbl">Flete actual del contenedor 40HQ (USD)<input type="number" min="0" step="100" id="ratesFreight" value="' + ratesState.current_freight_usd + '"></label>' +
+      '</div>' +
+      '<p class="rates-status ' + (ratesState.active ? 'is-on' : '') + '">' + (ratesState.active
+        ? 'Activa: los clientes ven los precios de la fila resaltada (flete desde US$' + used.toLocaleString('es-CL') + '): ' + usedPrices.map(function(p, i){ return tiers[i].label + ' US$' + p; }).join(' · ') + '.'
+        : 'Apagada: las calculadoras usan la tarifa fija de US$' + CHELME_CONFIG.lcl.ratePerCbmUsd + '/m³ para todos los volúmenes.') + '</p>' +
+      '<div class="rates-scroll"><table class="rates-table">' + head + body + '</table></div>' +
+      '<div class="rates-actions"><button type="button" class="btn btn-light btn-sm" id="ratesAddRow">+ Agregar fila de flete</button>' +
+      '<button type="button" class="btn btn-gold btn-sm" id="ratesSave">Guardar tarifas</button><span id="ratesMsg" class="charge-hint"></span></div>' +
+      '<p class="charge-hint">Precio por m³ en USD, sin IVA. Se usa la fila con el flete más alto que no supere el flete actual. El cargo fijo bajo ' + CHELME_CONFIG.lcl.smallCargoThresholdCbm + ' m³ (US$' + CHELME_CONFIG.lcl.smallCargoExtraFlatUsd + ') y el mínimo de ' + CHELME_CONFIG.lcl.minimumBillableCbm + ' m³ se siguen aplicando.' + (ratesState.updated_at ? ' Última actualización: ' + new Date(ratesState.updated_at).toLocaleString('es-CL') + '.' : '') + '</p>';
+
+    function readInputs(){
+      var rates = {};
+      box.querySelectorAll('.rate-freight').forEach(function(inp){
+        var oldK = inp.dataset.old, newK = String(Math.round(Number(inp.value) || 0));
+        rates[newK] = Array.prototype.map.call(box.querySelectorAll('.rate-price[data-row="' + oldK + '"]'), function(p){ return Number(p.value) || 0; });
+      });
+      ratesState.rates = rates;
+      ratesState.current_freight_usd = Number(document.getElementById('ratesFreight').value) || 0;
+      ratesState.active = document.getElementById('ratesActive').checked;
+    }
+    box.querySelectorAll('[data-delrow]').forEach(function(b){
+      b.addEventListener('click', function(){
+        readInputs();
+        if (ratesRowKeys().length <= 1) { alert('La tabla necesita al menos una fila.'); return; }
+        delete ratesState.rates[b.dataset.delrow];
+        renderRatesAdmin();
+      });
+    });
+    document.getElementById('ratesAddRow').addEventListener('click', function(){
+      readInputs();
+      var keys = ratesRowKeys(), last = keys[keys.length - 1];
+      ratesState.rates[String(last + 1000)] = ratesState.rates[String(last)].slice();
+      renderRatesAdmin();
+    });
+    ['ratesFreight', 'ratesActive'].forEach(function(id){
+      document.getElementById(id).addEventListener('change', function(){ readInputs(); renderRatesAdmin(); });
+    });
+    document.getElementById('ratesSave').addEventListener('click', async function(){
+      readInputs();
+      var bad = ratesRowKeys().some(function(k){ return ratesState.rates[String(k)].some(function(p){ return !(p > 0); }); });
+      if (bad) { alert('Todos los precios deben ser mayores a 0.'); return; }
+      var btn = this; btn.disabled = true;
+      var session = (await supabaseClient.auth.getSession()).data.session;
+      var r = await supabaseClient.from('lcl_pricing').update({
+        active: ratesState.active, current_freight_usd: ratesState.current_freight_usd,
+        rates: ratesState.rates, updated_at: new Date().toISOString(), updated_by: session.user.id
+      }).eq('id', 1).select().single();
+      btn.disabled = false;
+      if (r.error) { document.getElementById('ratesMsg').textContent = 'No se pudo guardar: ' + r.error.message; return; }
+      ratesState = r.data;
+      renderRatesAdmin();
+      document.getElementById('ratesMsg').textContent = 'Guardado. Las calculadoras usan estos precios desde ahora.';
+    });
+  }
+  async function loadRatesAdmin(){
+    var r = await supabaseClient.from('lcl_pricing').select('*').eq('id', 1).single();
+    if (r.error || !r.data) { document.getElementById('ratesContent').textContent = 'No se pudo cargar la tabla de tarifas.'; return; }
+    ratesState = r.data;
+    renderRatesAdmin();
   }
 
   function renderCash(){
@@ -1197,6 +1284,8 @@
       customersById = {};
       (customersRes.data || []).forEach(function(c){ customersById[c.id] = c; });
       document.getElementById('cashTabBtn').hidden = false;
+      document.getElementById('ratesTabBtn').hidden = false;
+      loadRatesAdmin();
       setupNewOrderForm(customersById);
       var toggleBtn = document.getElementById('toggleNewOrderBtn');
       toggleBtn.hidden = false;

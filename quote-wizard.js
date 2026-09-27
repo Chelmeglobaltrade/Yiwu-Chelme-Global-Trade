@@ -398,7 +398,7 @@ function updateEstimate(){
       goodsCurrency,
       cbm,
       includeSourcing
-    },CONFIG);
+    },window.ChelmeLclRates?window.ChelmeLclRates.configFor(cbm,CONFIG):CONFIG);
 
     if(cbm>0){
       rows.push({label:`Mercancía ingresada (${goodsCurrency})`,value:originalGoodsText(goodsAmount,goodsCurrency),pending:goodsAmount<=0});
@@ -410,7 +410,8 @@ function updateEstimate(){
       if(result.minimumApplied){
         rows.push({label:"Mínimo de facturación aplicado",value:`${fmt(result.minimumBillableCbm,2)} m³`,pending:true});
       }
-      rows.push({label:`Flete consolidado (${fmt(result.billableCbm,2)} m³ × ${money(result.baseRate)})`,value:money(result.baseFreight)});
+      const tierLbl=window.ChelmeLclRates?window.ChelmeLclRates.tierLabel(cbm,CONFIG):"";
+      rows.push({label:`Flete consolidado (${fmt(result.billableCbm,2)} m³ × ${money(result.baseRate)}${tierLbl?`, tramo ${tierLbl}`:""})`,value:money(result.baseFreight)});
       if(result.smallCargo){
         rows.push({label:`Cargo operativo por carga bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ (fijo)`,value:money(result.smallCargoExtra)});
       }
@@ -433,7 +434,7 @@ function updateEstimate(){
 
       note=`Esta cotización no tiene costo. El valor de mercancía es el que tú informaste: lo confirmamos junto a tu proveedor antes del precio final. Envíala por WhatsApp o descarga el PDF. Los impuestos y gastos de destino se pagan al llegar.`;
     }else{
-      totalText=`Desde ${money(CONFIG.lcl.ratePerCbmUsd)}/m³`;
+      totalText=`Desde ${money(window.ChelmeLclRates?window.ChelmeLclRates.fromRate(CONFIG):CONFIG.lcl.ratePerCbmUsd)}/m³`;
       note=`Mínimo facturable: ${CONFIG.lcl.minimumBillableCbm} m³. Bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ se agrega el cargo operativo.`;
     }
   }else if(service==="fcl"){
@@ -777,6 +778,7 @@ function initQuoteWizard(prefill){
   setService(hasRequested?requestedService:"lcl");
   if(prefill)applyPrefill(prefill);
   renderWizardStep();
+  if(window.ChelmeLclRates)window.ChelmeLclRates.ready.then(()=>updateEstimate());
 }
 
 function applyPrefill(prefill){
