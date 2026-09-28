@@ -131,9 +131,25 @@ const services = {
 /* Servicios que no parten de un producto: se omite el paso "Producto". */
 const NO_PRODUCT_SERVICES=["trip","translation"];
 
+function syncBrandBlock(){
+  const block=$("qzBrandBlock");if(!block)return;
+  const needs=!NO_PRODUCT_SERVICES.includes(state.quoteService);
+  block.hidden=!needs;$("brandDeclaration").required=needs;
+}
+function brandChoice(){return document.querySelector('input[name="quoteBrand"]:checked')?.value||"";}
+// Devuelve el mensaje que impide enviar, o "" si la declaración de marcas está bien.
+function brandProblem(){
+  if(NO_PRODUCT_SERVICES.includes(state.quoteService))return "";
+  const c=brandChoice();
+  if(!c)return "Indica si tu carga tiene productos de marca.";
+  if(c==="terceros_sin_autorizacion")return "No trabajamos con productos de marcas de otras empresas sin autorización.";
+  if(!$("brandDeclaration").checked)return "Marca la declaración de que tu carga no incluye falsificaciones ni productos prohibidos.";
+  return "";
+}
 function setService(service){
   state.quoteService = service;
   const shell=$("quoteShell"); if(shell) shell.dataset.service=service;
+  syncBrandBlock();
   document.querySelectorAll("[data-quote-service]").forEach(b=>{
     const on=b.dataset.quoteService===service;
     b.classList.toggle("active",on);
@@ -617,7 +633,8 @@ async function saveQuoteAsQuote(){
       reference:state.preparedQuoteReference,
       client_notes:$("quoteNotes")?.value.trim()||null,
       staff_notes:state.preparedQuoteText,
-      ...fields
+      ...fields,
+      ...(NO_PRODUCT_SERVICES.includes(state.quoteService)?{}:{brand_declaration:brandChoice(),declaration_terms_version:CONFIG.legal&&CONFIG.legal.termsVersion||null})
     }).select().single();
     if(res.error){console.warn("No se pudo guardar la cotización:",res.error);notifyQuoteSaveFailed();return null;}
     return res.data;
@@ -676,6 +693,8 @@ async function submitQuote(event){
   if(!isLastScreen()){goWizardStep(1);return;}
   $("quoteAlert").classList.add("hidden");
   const skipSource=NO_PRODUCT_SERVICES.includes(state.quoteService);
+  const brandMsg=brandProblem();
+  if(brandMsg){$("quoteAlert").textContent=brandMsg;$("quoteAlert").classList.remove("hidden");focusField($("qzBrandBlock"));return;}
   const missing=firstMissingRequired($("quoteForm"));
   if(missing){const label=missing.closest(".field")?.querySelector("span")?.textContent||"un campo obligatorio";$("quoteAlert").textContent=missing.type==="checkbox"?"Marca la casilla \"Entiendo cómo funciona la cotización\" para continuar.":`Completa: ${label.replace("*","").trim()}.`;$("quoteAlert").classList.remove("hidden");focusField(missing);return;}
   if(!skipSource&&state.sourceMode==="photos"&&state.quoteFiles.length===0){$("quoteAlert").textContent="Selecciona al menos una fotografía.";$("quoteAlert").classList.remove("hidden");focusField($("sourceFields"));return;}
@@ -688,8 +707,8 @@ async function submitQuote(event){
   state.preparedQuoteReference=createQuoteReference();state.preparedQuoteFiles=[...state.quoteFiles];
   const concise=[...sourceLines.slice(0,4),...serviceLines.slice(0,5)];
   const requiresAdvisory=["sourcing","advisory"].includes(state.quoteService);
-  state.preparedQuoteText=["SOLICITUD CHELME GLOBAL TRADE",`Referencia: ${state.preparedQuoteReference}`,`Servicio: ${serviceTitle}`,`Cliente: ${name}`,`Destino: ${destination}`,`WhatsApp cliente: ${phone}`,`Información disponible: ${infoLabel}`,`Proveedor / búsqueda: ${sourcingStatus}`,...concise,`${state.quoteService==="lcl"?"Servicio Chelme estimado":"Resultado mostrado"}: ${result}`,state.quoteFiles.length?`Archivos para adjuntar: ${state.quoteFiles.length}`:"",$("quoteNotes").value.trim()?`Comentarios: ${$("quoteNotes").value.trim()}`:"","",requiresAdvisory?`Asesoría inicial: ${money(CONFIG.advisory.startingPriceUsd)}`:"Esta cotización no tiene costo.",requiresAdvisory?"La revisión comienza después de confirmar la asesoría.":"Quedamos atentos para confirmar por WhatsApp.",(state.quoteService==="lcl"&&lclWeightNotice())?`Aviso: ${lclWeightNotice()}`:"",state.quoteService==="lcl"?"Servicio Chelme hasta nuestra bodega en Santiago. IVA y arancel se pagan aparte, antes de la llegada. Envío a regiones se cotiza aparte.":(state.quoteService==="fcl"?"IVA, arancel y gastos de destino se cotizan por separado.":"")].filter(Boolean).join("\n");
-  renderQuotePreview([["Referencia",state.preparedQuoteReference],["Servicio",serviceTitle],["Cliente",name],["Destino",destination],["Información",infoLabel],["Búsqueda",sourcingStatus],["Resultado mostrado",result],[requiresAdvisory?"Asesoría inicial":"Costo de esta cotización",requiresAdvisory?money(CONFIG.advisory.startingPriceUsd):"Sin costo"]]);
+  state.preparedQuoteText=["SOLICITUD CHELME GLOBAL TRADE",`Referencia: ${state.preparedQuoteReference}`,`Servicio: ${serviceTitle}`,`Cliente: ${name}`,`Destino: ${destination}`,`WhatsApp cliente: ${phone}`,`Información disponible: ${infoLabel}`,`Proveedor / búsqueda: ${sourcingStatus}`,skipSource?"":`Marcas: ${({sin_marca:"Sin marca o genéricos",propia:"Marca propia",terceros_autorizada:"Marca de otra empresa, con autorización"})[brandChoice()]} · declaró que no envía falsificaciones ni productos prohibidos`,...concise,`${state.quoteService==="lcl"?"Servicio Chelme estimado":"Resultado mostrado"}: ${result}`,state.quoteFiles.length?`Archivos para adjuntar: ${state.quoteFiles.length}`:"",$("quoteNotes").value.trim()?`Comentarios: ${$("quoteNotes").value.trim()}`:"","",requiresAdvisory?`Asesoría inicial: ${money(CONFIG.advisory.startingPriceUsd)}`:"Esta cotización no tiene costo.",requiresAdvisory?"La revisión comienza después de confirmar la asesoría.":"Quedamos atentos para confirmar por WhatsApp.",(state.quoteService==="lcl"&&lclWeightNotice())?`Aviso: ${lclWeightNotice()}`:"",state.quoteService==="lcl"?"Servicio Chelme hasta nuestra bodega en Santiago. IVA y arancel se pagan aparte, antes de la llegada. Envío a regiones se cotiza aparte.":(state.quoteService==="fcl"?"IVA, arancel y gastos de destino se cotizan por separado.":"")].filter(Boolean).join("\n");
+  renderQuotePreview([["Referencia",state.preparedQuoteReference],["Servicio",serviceTitle],["Cliente",name],["Destino",destination],["Información",infoLabel],["Búsqueda",sourcingStatus],...(skipSource?[]:[["Marcas",({sin_marca:"Sin marca o genéricos",propia:"Marca propia",terceros_autorizada:"Marca de otra empresa, con autorización"})[brandChoice()]]]),["Resultado mostrado",result],[requiresAdvisory?"Asesoría inicial":"Costo de esta cotización",requiresAdvisory?money(CONFIG.advisory.startingPriceUsd):"Sin costo"]]);
 }
 
 /* ---------- Asistente: una pantalla a la vez ---------- */
@@ -730,7 +749,9 @@ function validateScreen(el){
   box.classList.add("hidden");
   const bad=[...el.querySelectorAll("[required]")].find(f=>f.type==="checkbox"?!f.checked:!String(f.value||"").trim());
   let message="";
-  if(bad){
+  if(el.querySelector("#qzBrandBlock")&&brandProblem()){
+    message=brandProblem();
+  }else if(bad){
     const label=bad.closest(".field")?.querySelector("span")?.textContent||"un campo obligatorio";
     message=`Completa: ${label.replace("*","").trim()}.`;
   }else if(el.id==="qzSourceScreen"){
@@ -792,6 +813,8 @@ function initQuoteWizard(prefill){
   });
   $("wizardBack")?.addEventListener("click",()=>goWizardStep(-1));
   $("wizardNext")?.addEventListener("click",()=>goWizardStep(1));
+  document.querySelectorAll('input[name="quoteBrand"]').forEach(r=>r.addEventListener("change",()=>{const stop=$("qzBrandStop");if(stop)stop.hidden=brandChoice()!=="terceros_sin_autorizacion";}));
+  syncBrandBlock();
   $("clearQuote").addEventListener("click",()=>{
     $("quoteForm").reset();
     $("quotePreview").classList.add("hidden");
