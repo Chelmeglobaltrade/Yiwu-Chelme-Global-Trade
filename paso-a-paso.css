@@ -43,7 +43,7 @@
 .ppx-marker.is-sea{ animation:ppxBob 1.8s ease-in-out infinite; }
 @keyframes ppxBob{ 0%,100%{ transform:translate(-50%,-50%); } 50%{ transform:translate(-50%,-62%) rotate(-2deg); } }
 .ppx-nodes{ display:grid; grid-template-columns:repeat(4,1fr); text-align:center; }
-.ppx-node{ font-size:.74rem; font-weight:700; color:#9aabaf; transition:color .3s ease; }
+.ppx-node{ font-size:.74rem; font-weight:700; color:#5b6c70; transition:color .3s ease; }
 .ppx-node.is-past{ color:var(--petrol); }
 .ppx-node.is-on{ color:var(--petrol); font-weight:800; }
 .ppx-node.is-on::before{ content:""; display:block; width:8px; height:8px; margin:0 auto 4px; border-radius:50%; background:#f2b91f; }
