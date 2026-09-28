@@ -72,6 +72,44 @@
     </div>
     <div id="ordersList" style="margin-top:20px;display:flex;flex-direction:column;gap:16px"></div>
 
+    <div id="declModal" class="modal-back" hidden role="dialog" aria-modal="true" aria-labelledby="declTitle">
+      <div class="modal-card decl-card">
+        <button type="button" class="modal-close" id="declClose" aria-label="Cerrar">×</button>
+        <h3 id="declTitle">Declaración de mercancía</h3>
+        <p class="modal-sub" id="declSub">Tu carga entra a Chile a través de nuestra empresa. Esta declaración nos dice qué traes y nos protege a los dos ante Aduana.</p>
+        <form id="declForm" class="decl-form" novalidate>
+          <label class="decl-wide">¿Qué es la mercancía?<textarea id="declDesc" rows="3" required placeholder="Ej.: 500 mochilas escolares de poliéster, sin marca, para venta en tienda"></textarea></label>
+          <label>Cantidad de unidades<input id="declQty" type="text" required placeholder="Ej.: 500 unidades"></label>
+          <label>Número de bultos o cajas<input id="declPkgs" type="number" min="1" step="1" required placeholder="Ej.: 20"></label>
+          <label>Valor real pagado al proveedor<input id="declValue" type="number" min="0" step="0.01" required placeholder="Ej.: 3200"></label>
+          <label>Moneda<select id="declCur"><option>USD</option><option>CNY</option><option>CLP</option></select></label>
+          <label class="decl-wide">Proveedor (nombre de la fábrica o tienda)<input id="declSupplier" type="text" placeholder="Opcional"></label>
+          <fieldset class="decl-wide decl-radio"><legend>¿Los productos tienen marca?</legend>
+            <label><input type="radio" name="declBrand" value="sin_marca" checked> <span>Sin marca o genéricos</span></label>
+            <label><input type="radio" name="declBrand" value="propia"> <span>Mi propia marca</span></label>
+            <label><input type="radio" name="declBrand" value="terceros_autorizada"> <span>Marca de otra empresa, con autorización por escrito</span></label>
+            <label><input type="radio" name="declBrand" value="terceros_sin_autorizacion"> <span>Marca de otra empresa, sin autorización</span></label>
+          </fieldset>
+          <p class="decl-block" id="declBrandBlock" hidden>No podemos traer productos de marcas de otras empresas sin su autorización: Aduana los retiene como falsificación y la responsabilidad recae en el importador. Escríbenos y buscamos una alternativa.</p>
+          <label class="decl-wide">¿Necesita permiso o certificación en Chile?<select id="declPermit">
+            <option value="no">No, es mercancía general</option>
+            <option value="sec">Sí: eléctrico o a gas (SEC)</option>
+            <option value="isp">Sí: cosmético, médico o de salud (ISP)</option>
+            <option value="sag">Sí: alimentos, plantas, madera o animales (SAG)</option>
+            <option value="no_se">No lo sé, necesito que lo revisen</option>
+          </select></label>
+          <div class="decl-wide decl-checks">
+            <label><input type="checkbox" class="decl-ok" required> <span>La información es verdadera y completa.</span></label>
+            <label><input type="checkbox" class="decl-ok" required> <span>El valor informado es el que realmente pagué al proveedor.</span></label>
+            <label><input type="checkbox" class="decl-ok" required> <span>No son falsificaciones ni productos prohibidos (ver <a href="mercancias-restringidas.html" target="_blank" rel="noopener">mercancías restringidas</a>).</span></label>
+            <label><input type="checkbox" class="decl-ok" required> <span>Autorizo a Chelme a abrir, revisar y fotografiar mis bultos.</span></label>
+            <label><input type="checkbox" class="decl-ok" required> <span>Si la información es incorrecta, asumo las multas y costos que se generen, según los <a href="terminos-y-condiciones.html" target="_blank" rel="noopener">Términos</a>.</span></label>
+          </div>
+          <p class="decl-msg" id="declMsg" role="status"></p>
+          <div class="decl-actions"><button type="submit" class="btn btn-gold" id="declSubmit">Enviar declaración</button><button type="button" class="btn btn-light" id="declCancel">Cancelar</button></div>
+        </form>
+      </div>
+    </div>
     <div id="newOrderSection" class="modal-back" hidden role="dialog" aria-modal="true" aria-labelledby="newOrderTitle">
       <div class="modal-card">
         <button type="button" class="modal-close" id="newOrderClose" aria-label="Cerrar">×</button>
@@ -995,6 +1033,203 @@
   var shipNewBtn = document.getElementById('shipNewBtn');
   if (shipNewBtn) shipNewBtn.addEventListener('click', function(){ openShipForm(null); });
 
+  /* ---------- Documentos del pedido y declaración de mercancía ---------- */
+  var docsCache = [], isStaffView = false;
+  var DOC_TYPES = {
+    declaracion: { label: 'Declaración de mercancía', by: 'cliente', help: 'Qué traes, cuánto pagaste y si necesita permisos. Nos protege a los dos ante Aduana.' },
+    factura_comercial: { label: 'Factura comercial', by: 'cliente', help: 'La emite tu proveedor (commercial invoice) y debe mostrar el valor real.' },
+    packing_list: { label: 'Packing list', by: 'cliente', help: 'Lista de bultos con medidas y pesos. También la emite tu proveedor.' },
+    certificado_origen: { label: 'Certificado de origen', by: 'cliente', help: 'Pídelo a tu proveedor: permite acceder a la rebaja de arancel del TLC Chile–China.' },
+    pago_proveedor: { label: 'Comprobante de pago al proveedor', by: 'cliente', help: 'Obligatorio en compras desde US$5.000 FOB.' },
+    permiso: { label: 'Permiso o certificación', by: 'cliente', help: 'SEC, ISP o SAG, según lo que declaraste.' },
+    fotos_carga: { label: 'Fotos de la carga', by: 'equipo', help: 'Las sube Chelme al recibir o cargar tu mercancía.' },
+    bl: { label: 'Conocimiento de embarque (BL)', by: 'equipo', help: 'Lo emite la naviera al zarpar; lo sube Chelme.' },
+    din: { label: 'Declaración de ingreso (DIN)', by: 'equipo', help: 'La emite el agente de aduana en Chile; la sube Chelme.' },
+    otro: { label: 'Otro documento', by: 'ambos', help: '' }
+  };
+  var DOC_STATUS = { en_revision: 'En revisión', aprobado: 'Aprobado', rechazado: 'Rechazado' };
+  var PERMIT_LABELS = { no: 'No necesita', sec: 'SEC (eléctrico o gas)', isp: 'ISP (cosmético o salud)', sag: 'SAG (alimentos, plantas, madera)', no_se: 'No sabe, revisar' };
+  var BRAND_LABELS = { sin_marca: 'Sin marca', propia: 'Marca propia', terceros_autorizada: 'Marca de terceros con autorización', terceros_sin_autorizacion: 'Marca de terceros sin autorización' };
+  var DOC_EXT = ['pdf', 'jpg', 'jpeg', 'png', 'webp', 'heic', 'heif', 'xlsx', 'xls', 'docx', 'doc', 'csv', 'zip'];
+  async function reloadDocs(){
+    var r = await supabaseClient.from('order_documents').select('*').order('created_at', { ascending: false });
+    docsCache = r.data || [];
+  }
+  function docsOf(orderId, type){ return docsCache.filter(function(d){ return d.order_id === orderId && (!type || d.doc_type === type); }); }
+  function isCargo(order){ return !order.service || order.service === 'lcl' || order.service === 'fcl'; }
+  // Qué documentos corresponden a este pedido y en qué estado está la última versión de cada uno.
+  function docsState(order){
+    if (!isCargo(order)) return [{ type: 'otro', required: false, latest: docsOf(order.id, 'otro')[0], all: docsOf(order.id, 'otro') }];
+    var decl = docsOf(order.id, 'declaracion')[0];
+    var dd = (decl && decl.data) || {};
+    var value = Number(order.goods_value) || (dd.moneda === 'USD' ? Number(dd.valor) : 0) || 0;
+    var list = [
+      { type: 'declaracion', required: true },
+      { type: 'factura_comercial', required: true },
+      { type: 'packing_list', required: true },
+      { type: 'certificado_origen', required: false },
+      { type: 'pago_proveedor', required: value >= 5000, hideIfOptional: true },
+      { type: 'permiso', required: !!dd.permisos && dd.permisos !== 'no', hideIfOptional: true },
+      { type: 'fotos_carga', required: false },
+      { type: 'bl', required: false },
+      { type: 'din', required: false },
+      { type: 'otro', required: false, hideIfEmpty: true }
+    ];
+    return list.map(function(x){ var all = docsOf(order.id, x.type); return Object.assign(x, { all: all, latest: all[0] }); })
+      .filter(function(x){ return !((x.hideIfOptional && !x.required && !x.latest) || (x.hideIfEmpty && !x.latest)); });
+  }
+  function docsBadge(order){
+    var st = docsState(order).filter(function(d){ return d.required; });
+    if (!st.length) return '';
+    var ok = st.filter(function(d){ return d.latest && d.latest.status === 'aprobado'; }).length;
+    var bad = st.some(function(d){ return d.latest && d.latest.status === 'rechazado'; });
+    var cls = ok === st.length ? 'is-ok' : (bad ? 'is-late' : 'is-due');
+    return '<div class="charge-badge doc-badge ' + cls + '">Documentos: ' + ok + ' de ' + st.length + ' aprobados' + (bad ? ' · hay uno rechazado' : '') + '</div>';
+  }
+  function fmtWhen(ts){ return new Date(ts).toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric' }); }
+  function declSummary(d){
+    var x = d.data || {};
+    var rows = [['Mercancía', x.descripcion], ['Cantidad', x.cantidad], ['Bultos', x.bultos], ['Valor declarado', x.valor != null ? x.moneda + ' ' + Number(x.valor).toLocaleString('es-CL') : ''], ['Proveedor', x.proveedor], ['Marca', BRAND_LABELS[x.marca]], ['Permisos', PERMIT_LABELS[x.permisos]]];
+    return '<div class="decl-summary">' + rows.filter(function(r){ return r[1]; }).map(function(r){ return '<div><span>' + r[0] + '</span>' + escapeHtml(String(r[1])) + '</div>'; }).join('') +
+      '<small>Firmada en el sitio el ' + fmtWhen(d.created_at) + (d.terms_version ? ' · Términos versión ' + escapeHtml(d.terms_version) : '') + '</small></div>';
+  }
+  function renderOrderDocs(orderId, isStaff){
+    var box = document.getElementById('odocs-' + orderId);
+    if (!box) return;
+    var order = orderById(orderId);
+    var st = docsState(order);
+    var rows = st.map(function(d){
+      var meta = DOC_TYPES[d.type], L = d.latest;
+      var pill = L ? '<span class="doc-pill st-' + L.status + '">' + DOC_STATUS[L.status] + '</span>'
+        : (meta.by === 'equipo' ? '<span class="doc-pill st-wait">Aún no</span>' : (d.required ? '<span class="doc-pill st-missing">Falta</span>' : '<span class="doc-pill st-wait">Opcional</span>'));
+      var canClient = !isStaff && meta.by !== 'equipo';
+      var acts = [];
+      if (L && L.path) acts.push('<button type="button" class="doc-link" data-docview="' + L.id + '">Ver</button>');
+      if (L && d.type === 'declaracion') acts.push('<button type="button" class="doc-link" data-declshow="' + L.id + '">Ver respuestas</button>');
+      if (isStaff && L && L.status === 'en_revision') {
+        acts.push('<button type="button" class="btn btn-gold btn-sm" data-docok="' + L.id + '">Aprobar</button>');
+        acts.push('<button type="button" class="btn btn-light btn-sm" data-docno="' + L.id + '">Rechazar</button>');
+      }
+      if (d.type === 'declaracion') {
+        if (canClient && (!L || L.status === 'rechazado')) acts.push('<button type="button" class="btn btn-gold btn-sm" data-declopen="' + orderId + '">Completar declaración</button>');
+        else if (canClient && L) acts.push('<button type="button" class="doc-link" data-declopen="' + orderId + '">Corregir</button>');
+      } else if (canClient || isStaff) {
+        var urgent = canClient && ((!L && d.required) || (L && L.status === 'rechazado'));
+        acts.push('<label class="' + (urgent ? 'btn btn-gold btn-sm' : 'doc-link') + ' doc-upload">' + (L ? 'Subir nueva versión' : 'Subir') + '<input type="file" hidden accept=".' + DOC_EXT.join(',.') + '" data-docup="' + d.type + '"></label>');
+      }
+      var older = d.all.length > 1 ? '<details class="doc-history"><summary>Versiones anteriores (' + (d.all.length - 1) + ')</summary>' + d.all.slice(1).map(function(v){
+        return '<div>' + fmtWhen(v.created_at) + ' · ' + DOC_STATUS[v.status] + (v.path ? ' · <button type="button" class="doc-link" data-docview="' + v.id + '">Ver</button>' : '') + (v.staff_comment ? ' · ' + escapeHtml(v.staff_comment) : '') + '</div>';
+      }).join('') + '</details>' : '';
+      return '<div class="doc-row' + (L && L.status === 'rechazado' ? ' is-rejected' : '') + '">' +
+        '<div class="doc-main"><strong>' + meta.label + (d.required ? '' : ' <em class="opt">' + (meta.by === 'equipo' ? 'lo sube Chelme' : 'opcional') + '</em>') + '</strong>' +
+        '<small>' + (L ? (L.file_name ? escapeHtml(L.file_name) + ' · ' : '') + fmtWhen(L.created_at) : meta.help) + '</small>' +
+        (L && L.status === 'rechazado' && L.staff_comment ? '<p class="doc-reason">Motivo: ' + escapeHtml(L.staff_comment) + '</p>' : '') +
+        '<div class="doc-decl" id="docdecl-' + (L ? L.id : '') + '" hidden></div>' + older + '</div>' +
+        pill + '<div class="doc-acts">' + acts.join('') + '</div></div>';
+    }).join('');
+    box.innerHTML = rows + (isCargo(order) ? '<p class="charge-hint">Formatos: PDF, fotos, Excel, Word o ZIP, hasta 20 MB.' + (isStaff ? ' Lo que sube el equipo queda aprobado.' : ' Revisamos cada documento y te avisamos aquí si falta algo.') + '</p>' : '');
+    if (box.dataset.wired) return;
+    box.dataset.wired = '1';
+    box.addEventListener('click', async function(e){
+      var t = e.target.closest('[data-docview],[data-declshow],[data-docok],[data-docno],[data-declopen]');
+      if (!t) return;
+      if (t.dataset.declopen) { openDeclaration(t.dataset.declopen); return; }
+      var doc = docsCache.filter(function(x){ return x.id === (t.dataset.docview || t.dataset.declshow || t.dataset.docok || t.dataset.docno); })[0];
+      if (!doc) return;
+      if (t.dataset.docview) {
+        var s = await supabaseClient.storage.from('order-files').createSignedUrl(doc.path, 600);
+        if (s.data) window.open(s.data.signedUrl, '_blank', 'noopener'); else alert('No se pudo abrir el documento.');
+        return;
+      }
+      if (t.dataset.declshow) { var slot = document.getElementById('docdecl-' + doc.id); slot.hidden = !slot.hidden; slot.innerHTML = declSummary(doc); return; }
+      var upd;
+      if (t.dataset.docok) upd = { status: 'aprobado', staff_comment: null };
+      else {
+        var why = prompt('¿Por qué se rechaza? El cliente verá este motivo.');
+        if (why === null) return;
+        if (!why.trim()) { alert('Escribe el motivo para que el cliente sepa qué corregir.'); return; }
+        upd = { status: 'rechazado', staff_comment: why.trim() };
+      }
+      var session = (await supabaseClient.auth.getSession()).data.session;
+      upd.reviewed_at = new Date().toISOString(); upd.reviewed_by = session.user.id;
+      t.disabled = true;
+      var r = await supabaseClient.from('order_documents').update(upd).eq('id', doc.id);
+      if (r.error) { t.disabled = false; alert('No se pudo guardar: ' + r.error.message); return; }
+      await refreshDocViews(orderId, isStaff);
+    });
+    box.addEventListener('change', async function(e){
+      var inp = e.target; if (!inp.dataset.docup || !inp.files.length) return;
+      var f = inp.files[0], ext = (f.name.split('.').pop() || '').toLowerCase();
+      if (DOC_EXT.indexOf(ext) < 0) { alert('Formato no permitido. Sube PDF, fotos, Excel, Word, CSV o ZIP.'); inp.value = ''; return; }
+      if (f.size > 20 * 1024 * 1024) { alert('El archivo pesa más de 20 MB. Comprímelo o divídelo.'); inp.value = ''; return; }
+      var path = 'orders/' + orderId + '/documentos/' + Date.now() + '-' + inp.dataset.docup + '-' + f.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      var lbl = inp.closest('label'); if (lbl) lbl.classList.add('is-busy');
+      var up = await supabaseClient.storage.from('order-files').upload(path, f);
+      if (up.error) { if (lbl) lbl.classList.remove('is-busy'); alert('No se pudo subir el archivo: ' + up.error.message); return; }
+      var row = { order_id: orderId, doc_type: inp.dataset.docup, path: path, file_name: f.name };
+      if (isStaff) { row.status = 'aprobado'; row.reviewed_at = new Date().toISOString(); }
+      var r = await supabaseClient.from('order_documents').insert(row);
+      if (r.error) { if (lbl) lbl.classList.remove('is-busy'); alert('Se subió el archivo, pero no se pudo registrar: ' + r.error.message); return; }
+      await refreshDocViews(orderId, isStaff);
+    });
+  }
+  async function refreshDocViews(orderId, isStaff){
+    await reloadDocs();
+    renderOrderDocs(orderId, isStaff);
+    var o = orderById(orderId), slot = document.getElementById('dbadge-' + orderId);
+    if (slot) slot.innerHTML = docsBadge(o);
+    renderAttention(isStaff);
+  }
+  var declOrderId = null;
+  function openDeclaration(orderId){
+    declOrderId = orderId;
+    var o = orderById(orderId), prev = (docsOf(orderId, 'declaracion')[0] || {}).data || {};
+    var form = document.getElementById('declForm'); form.reset();
+    document.getElementById('declSub').textContent = (o.reference ? 'Pedido ' + o.reference + '. ' : '') + 'Tu carga entra a Chile a través de nuestra empresa. Esta declaración nos dice qué traes y nos protege a los dos ante Aduana.';
+    if (prev.descripcion) {
+      document.getElementById('declDesc').value = prev.descripcion || '';
+      document.getElementById('declQty').value = prev.cantidad || '';
+      document.getElementById('declPkgs').value = prev.bultos || '';
+      document.getElementById('declValue').value = prev.valor != null ? prev.valor : '';
+      document.getElementById('declCur').value = prev.moneda || 'USD';
+      document.getElementById('declSupplier').value = prev.proveedor || '';
+      document.getElementById('declPermit').value = prev.permisos || 'no';
+      var rb = form.querySelector('input[name="declBrand"][value="' + (prev.marca || 'sin_marca') + '"]'); if (rb) rb.checked = true;
+    } else if (o.goods_value) { document.getElementById('declValue').value = o.goods_value; if (o.goods_currency) document.getElementById('declCur').value = o.goods_currency; }
+    document.getElementById('declBrandBlock').hidden = true;
+    document.getElementById('declMsg').textContent = '';
+    document.getElementById('declModal').hidden = false;
+    document.getElementById('declDesc').focus();
+  }
+  function closeDeclaration(){ document.getElementById('declModal').hidden = true; declOrderId = null; }
+  (function wireDeclaration(){
+    var modal = document.getElementById('declModal'); if (!modal) return;
+    document.getElementById('declClose').addEventListener('click', closeDeclaration);
+    document.getElementById('declCancel').addEventListener('click', closeDeclaration);
+    modal.addEventListener('click', function(e){ if (e.target === modal) closeDeclaration(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !modal.hidden) closeDeclaration(); });
+    modal.querySelectorAll('input[name="declBrand"]').forEach(function(r){
+      r.addEventListener('change', function(){ document.getElementById('declBrandBlock').hidden = r.value !== 'terceros_sin_autorizacion' || !r.checked; });
+    });
+    document.getElementById('declForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      var msg = document.getElementById('declMsg');
+      var v = function(id){ return document.getElementById(id).value.trim(); };
+      var brand = (this.querySelector('input[name="declBrand"]:checked') || {}).value;
+      if (!v('declDesc') || !v('declQty') || !v('declPkgs') || v('declValue') === '') { msg.textContent = 'Completa qué es la mercancía, la cantidad, los bultos y el valor.'; return; }
+      if (brand === 'terceros_sin_autorizacion') { msg.textContent = 'No podemos recibir productos de marcas de otras empresas sin autorización.'; return; }
+      if ([].some.call(this.querySelectorAll('.decl-ok'), function(c){ return !c.checked; })) { msg.textContent = 'Marca las cinco confirmaciones para enviar la declaración.'; return; }
+      var btn = document.getElementById('declSubmit'); btn.disabled = true; msg.textContent = 'Enviando…';
+      var data = { descripcion: v('declDesc'), cantidad: v('declQty'), bultos: Number(v('declPkgs')), valor: Number(v('declValue')), moneda: v('declCur'), proveedor: v('declSupplier') || null, marca: brand, permisos: v('declPermit'),
+        confirmaciones: ['veraz', 'valor_real', 'no_falsificado_ni_prohibido', 'autoriza_revision', 'asume_multas'] };
+      var r = await supabaseClient.from('order_documents').insert({ order_id: declOrderId, doc_type: 'declaracion', data: data, terms_version: CHELME_CONFIG.legal.termsVersion });
+      btn.disabled = false;
+      if (r.error) { msg.textContent = 'No se pudo enviar: ' + r.error.message; return; }
+      var oid = declOrderId; closeDeclaration();
+      await refreshDocViews(oid, isStaffView);
+    });
+  })();
+
   /* ---------- Requiere tu atención + saldos por moneda (cliente y equipo) ---------- */
   function renderAttention(isStaff){
     var box = document.getElementById('attentionBox');
@@ -1011,8 +1246,13 @@
         pend.filter(isOverdue).forEach(function(c){
           items.push({ tone: 'red', ref: refOf(o), text: 'Cobro vencido: ' + c.concept + ' (' + fmtCharge(c) + ').', oid: o.id, action: 'Ver pedido' });
         });
+        docsState(o).filter(function(d){ return d.latest && d.latest.status === 'en_revision'; }).forEach(function(d){
+          items.push({ tone: 'gold', ref: refOf(o), text: 'Documento por revisar: ' + DOC_TYPES[d.type].label + '.', oid: o.id, action: 'Revisar' });
+        });
       } else {
         if (o.next_action) items.push({ tone: 'gold', ref: refOf(o), text: o.next_action, oid: o.id, action: 'Ver pedido' });
+        var todo = docsState(o).filter(function(d){ return d.required && (!d.latest || d.latest.status === 'rechazado'); });
+        if (todo.length && o.status !== 'entregado') items.push({ tone: todo.some(function(d){ return d.latest; }) ? 'red' : 'gold', ref: refOf(o), text: 'Documentos pendientes: ' + todo.map(function(d){ return DOC_TYPES[d.type].label; }).join(', ') + '.', oid: o.id, action: 'Subir' });
         pend.filter(function(c){ return c.status === 'pendiente'; }).forEach(function(c){
           items.push({ tone: isOverdue(c) ? 'red' : 'teal', ref: refOf(o), text: (isOverdue(c) ? 'Pago vencido: ' : 'Pago pendiente: ') + c.concept + ' · ' + fmtCharge(c), oid: o.id, action: 'Pagar' });
         });
@@ -1175,12 +1415,14 @@
           shipLineHtml(order, isStaff) +
           nextActionHtml +
           '<div id="cbadge-' + order.id + '">' + chargeBadge(order.id) + '</div>' +
+          '<div id="dbadge-' + order.id + '">' + docsBadge(order) + '</div>' +
           (order.notes ? '<p style="margin-top:12px;font-size:.86rem;color:var(--muted)">' + escapeHtml(order.notes) + '</p>' : '') +
           statusControl +
           '<button type="button" class="order-detail-toggle" data-oid="' + order.id + '">Ver detalle &#9662;</button>' +
           '<div class="order-detail" id="odetail-' + order.id + '" hidden>' +
             structHtml +
-            '<div><div class="order-detail-subhead">Archivos</div><div class="file-chip-list" id="ofiles-' + order.id + '"></div>' + uploadRow + '</div>' +
+            '<div><div class="order-detail-subhead">Documentos</div><div id="odocs-' + order.id + '"></div></div>' +
+            '<div><div class="order-detail-subhead">Otros archivos</div><div class="file-chip-list" id="ofiles-' + order.id + '"></div>' + uploadRow + '</div>' +
             '<div><div class="order-detail-subhead">Cobros</div><div id="ocharges-' + order.id + '"></div></div>' +
             (isStaff ? '<div><div class="order-detail-subhead">IVA, factura y checklist (solo equipo)</div><div id="ofact-' + order.id + '"></div></div>' : '') +
             (isStaff ? '<div><div class="order-detail-subhead">Costos y ganancia (solo equipo)</div><div id="ocosts-' + order.id + '"></div></div>' : '') +
@@ -1229,6 +1471,7 @@
           detail.dataset.loaded = '1';
           var order = ordersById[id];
           loadOrderFiles('orders', id, 'ofiles-' + id, isStaff);
+          renderOrderDocs(id, isStaff);
           renderOrderCharges(id, isStaff);
           if (isStaff) { renderOrderCosts(id); renderOrderInvoice(id); }
           loadOrderPayments(id, 'opayments-' + id);
@@ -1246,6 +1489,8 @@
       .order('created_at', { ascending: false });
     ordersCache = ordersRes.data || [];
     customersCache = customersById;
+    isStaffView = !!isStaff;
+    await reloadDocs();
     await reloadCharges();
     if (isStaff) {
       var costsRes = await supabaseClient.from('order_costs').select('*');
