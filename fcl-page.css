@@ -1,0 +1,37 @@
+/* Página de contenedor completo (FCL) — prefijo fcl- */
+.fcl-hero-actions{ display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; }
+.fcl-btn-ghost{ background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,.6); }
+.fcl-btn-ghost:hover{ background:rgba(255,255,255,.12); color:#fff; }
+
+.fcl-pick{ display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:28px; align-items:start; padding:26px; border-radius:22px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); }
+.fcl-pick-input{ display:flex; flex-direction:column; gap:12px; }
+.fcl-pick-input label{ font-size:.78rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+.fcl-cbm{ display:flex; align-items:baseline; gap:8px; }
+.fcl-cbm input{ width:140px; padding:10px 14px; border:1.5px solid var(--line); border-radius:14px; font:inherit; font-size:2.2rem; font-weight:800; color:var(--petrol); font-variant-numeric:tabular-nums; }
+.fcl-cbm input:focus-visible{ outline:3px solid #f2b91f; outline-offset:2px; }
+.fcl-cbm span{ font-size:1.3rem; font-weight:800; color:var(--petrol); }
+.fcl-pick-input input[type=range]{ width:100%; accent-color:var(--petrol); }
+.fcl-reco{ margin:4px 0 0; padding:14px 16px; border-radius:14px; background:#fff8e1; color:var(--ink); font-size:.95rem; line-height:1.5; }
+.fcl-reco a{ color:var(--petrol); font-weight:800; }
+
+.fcl-boxes{ display:flex; flex-direction:column; gap:16px; }
+.fcl-box{ display:flex; flex-direction:column; gap:6px; padding:12px 14px; border-radius:14px; border:1.5px solid transparent; transition:border-color .2s ease, background .2s ease; }
+.fcl-box.is-best{ border-color:#f2b91f; background:#fffaf0; }
+.fcl-box-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
+.fcl-box-head strong{ color:var(--petrol); font-size:1.05rem; }
+.fcl-box-head span{ color:var(--muted); font-size:.82rem; font-weight:700; font-variant-numeric:tabular-nums; }
+.fcl-shape{ position:relative; height:38px; border-radius:4px; background:#e6eeef; box-shadow:inset 0 0 0 3px var(--petrol); overflow:hidden; }
+.fcl-shape.is-tall{ height:44px; }
+.fcl-fill{ position:absolute; left:3px; top:3px; bottom:3px; width:0; max-width:calc(100% - 6px); background:repeating-linear-gradient(90deg,#c89a5b 0 18px,#b8894c 18px 20px); transition:width .35s cubic-bezier(.2,.8,.2,1); }
+.fcl-ribs{ position:absolute; inset:0; background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(18,63,73,.12) 22px 24px); pointer-events:none; }
+.fcl-box.is-over .fcl-shape{ box-shadow:inset 0 0 0 3px var(--danger); }
+.fcl-box.is-over .fcl-fill{ background:repeating-linear-gradient(90deg,#d98e8e 0 18px,#c97a7a 18px 20px); }
+.fcl-box-text{ margin:0; min-height:1.3em; font-size:.84rem; font-weight:700; color:var(--petrol); }
+.fcl-box.is-over .fcl-box-text{ color:var(--danger); }
+.fcl-pay{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+
+@media (max-width:800px){
+  .fcl-pick{ grid-template-columns:1fr; padding:18px; }
+  .fcl-pay{ grid-template-columns:1fr; }
+}
+@media (prefers-reduced-motion:reduce){ .fcl-fill,.fcl-box{ transition:none; } }
