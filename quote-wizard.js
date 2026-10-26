@@ -636,7 +636,7 @@ async function saveQuoteAsQuote(){
       ...fields,
       ...(NO_PRODUCT_SERVICES.includes(state.quoteService)?{}:{brand_declaration:brandChoice(),declaration_terms_version:CONFIG.legal&&CONFIG.legal.termsVersion||null})
     }).select().single();
-    if(res.error){console.warn("No se pudo guardar la cotización:",res.error);notifyQuoteSaveFailed();return null;}
+    if(res.error){console.warn("No se pudo guardar la cotización:",res.error);notifyQuoteSaveFailed(/limite_cotizaciones/.test(res.error.message||"")?"limite":"");return null;}
     return res.data;
   }catch(error){
     console.warn("No se pudo guardar la cotización:",error);
@@ -645,10 +645,12 @@ async function saveQuoteAsQuote(){
   }
 }
 
-function notifyQuoteSaveFailed(){
+function notifyQuoteSaveFailed(motivo){
   const alertBox=$("quoteAlert");
   if(!alertBox)return;
-  alertBox.textContent="No se guardó tu solicitud en tu cuenta. Puedes reintentar o abrir WhatsApp y enviarnos el mensaje.";
+  alertBox.textContent=motivo==="limite"
+    ?"Enviaste varias solicitudes seguidas, así que esta no se guardó en tu cuenta. Espera un rato o envíanos el mensaje por WhatsApp."
+    :"No se guardó tu solicitud en tu cuenta. Puedes reintentar o abrir WhatsApp y enviarnos el mensaje.";
   alertBox.classList.remove("hidden");
 }
 
