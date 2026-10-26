@@ -151,7 +151,8 @@
     if (m.indexOf('rate limit') > -1 || m.indexOf('too many') > -1 || m.indexOf('seconds') > -1) return 'Hiciste muchos intentos seguidos. Espera un minuto y vuelve a probar.';
     if (m.indexOf('valid email') > -1 || m.indexOf('invalid email') > -1) return 'Escribe un correo válido, por ejemplo nombre@correo.com.';
     if (m.indexOf('failed to fetch') > -1 || m.indexOf('network') > -1) return 'No hay conexión con el servidor. Revisa tu internet y vuelve a intentar.';
-    return 'No pudimos completar la acción (' + (err && err.message || 'error desconocido') + '). Intenta de nuevo o escríbenos por WhatsApp.';
+    if (err) console.error(err);
+    return 'No pudimos completar la acción. Intenta de nuevo o escríbenos por WhatsApp.';
   }
 
   document.querySelectorAll('.pw-toggle').forEach(function(btn){
