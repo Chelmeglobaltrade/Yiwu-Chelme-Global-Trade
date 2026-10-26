@@ -1,7 +1,10 @@
 name: Supabase keepalive
+# El plan gratis de Supabase pausa el proyecto tras 7 días sin uso de la base de datos.
+# Cada día se llama a public.keepalive(), que hace una consulta real en Postgres.
+# Si el proyecto ya está pausado, el job falla y GitHub manda un correo de aviso.
 on:
   schedule:
-    - cron: "17 9 */2 * *"
+    - cron: "17 9 * * *"
   workflow_dispatch:
 jobs:
   ping:
@@ -13,5 +16,8 @@ jobs:
           KEY: sb_publishable_krvbtoyK0RSsBA3g1dspgA_Bkh55PEh
         run: |
           set -e
-          curl -fsS --retry 3 "$URL/auth/v1/health" -H "apikey: $KEY"
-          code=$(curl -sS -o /dev/null -w '%{http_code}' --retry 3 "$URL/rest/v1/quotes?select=id&limit=1" -H "apikey: $KEY"); echo "REST status: $code"; [ "$code" != "000" ] && [ "${code:0:1}" != "5" ]
+          curl -fsS --retry 3 --retry-delay 20 "$URL/auth/v1/health" -H "apikey: $KEY"; echo
+          body=$(curl -fsS --retry 3 --retry-delay 20 -X POST "$URL/rest/v1/rpc/keepalive" \
+            -H "apikey: $KEY" -H "Content-Type: application/json" -d '{}')
+          echo "keepalive: $body"
+          [ -n "$body" ] && [ "$body" != "null" ]
