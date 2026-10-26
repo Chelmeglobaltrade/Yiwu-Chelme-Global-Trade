@@ -609,9 +609,9 @@
       var safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
       var path = 'orders/' + orderId + '/comprobantes/' + Date.now() + '-' + safe;
       var up = await supabaseClient.storage.from('order-files').upload(path, file);
-      if (up.error) { alert('No se pudo subir el comprobante: ' + up.error.message); return; }
+      if (up.error) { console.error(up.error); alert(/mime|type/i.test(up.error.message || '') ? 'Ese tipo de archivo no está permitido. Sube un PDF o una imagen.' : 'No se pudo subir el comprobante. Intenta de nuevo o envíalo por WhatsApp.'); return; }
       var r = await supabaseClient.rpc('submit_charge_proof', { p_charge_id: inp.dataset.id, p_path: path });
-      if (r.error) { alert('No se pudo registrar el comprobante: ' + r.error.message); return; }
+      if (r.error) { console.error(r.error); alert('No se pudo registrar el comprobante. Intenta de nuevo o envíalo por WhatsApp.'); return; }
       await reloadCharges();
       refreshChargeViews(orderId, isStaff);
     });
