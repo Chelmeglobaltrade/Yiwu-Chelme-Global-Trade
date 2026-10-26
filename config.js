@@ -141,6 +141,34 @@ window.CHELME_CONFIG = {
 
   gallery: [
     {
+      src: "feria-canton-entrada.webp",
+      category: "ferias",
+      label: "Ferias",
+      title: "Feria de Cantón 2026",
+      text: "Entrada de la Feria de Importación y Exportación de China, en Guangzhou, edición 140."
+    },
+    {
+      src: "feria-canton-maquinaria-agricola.webp",
+      category: "ferias",
+      label: "Ferias",
+      title: "Maquinaria agrícola en la Feria de Cantón",
+      text: "Visita a stands de tractores e implementos agrícolas para conocer y comparar proveedores."
+    },
+    {
+      src: "feria-canton-maquinaria-construccion.webp",
+      category: "ferias",
+      label: "Ferias",
+      title: "Maquinaria de construcción en la Feria de Cantón",
+      text: "Reunión en un stand de miniexcavadoras y rodillos compactadores."
+    },
+    {
+      src: "visita-empresa-clientes.webp",
+      category: "clientes",
+      label: "Clientes",
+      title: "Visita a empresa con clientes",
+      text: "Reunión con el equipo de una empresa china durante el viaje comercial."
+    },
+    {
       src: "operacion-contenedor-chile.webp",
       category: "cargas",
       label: "Cargas",
@@ -218,11 +246,11 @@ window.CHELME_CONFIG = {
       text: "Apoyo logístico para conectar distintas ciudades, fábricas y reuniones."
     },
     {
-      src: "clientes-shanghai.webp",
+      src: "shanghai-grupo-pudong.webp",
       category: "clientes",
       label: "Clientes",
-      title: "Experiencia comercial en China",
-      text: "Acompañamiento durante viajes que combinan reuniones, visitas y conocimiento del país."
+      title: "Grupo del viaje comercial en Shanghái",
+      text: "Recorrido por Pudong con el grupo, entre reuniones, visitas y conocimiento del país."
     },
     {
       src: "viaje-yuyuan.webp",
@@ -246,13 +274,6 @@ window.CHELME_CONFIG = {
       text: "Coordinación de rutas y acompañamiento según la agenda y los intereses del cliente."
     },
     {
-      src: "china-shanghai-crop.webp",
-      category: "china",
-      label: "China",
-      title: "Conexión con centros comerciales",
-      text: "Presencia en ciudades estratégicas para proveedores, ferias y negocios internacionales."
-    },
-    {
       src: "bodega-ropa-clasificacion.webp",
       category: "fabricas",
       label: "Fábricas",
@@ -267,11 +288,11 @@ window.CHELME_CONFIG = {
       text: "Torre de Cantón, en una de las ciudades comerciales donde coordinamos compras y visitas."
     },
     {
-      src: "shanghai-bund-skyline.webp",
+      src: "shanghai-noche-pudong.webp",
       category: "china",
       label: "China",
-      title: "Shanghái, el Bund y Pudong",
-      text: "Shanghái, uno de los centros de negocios de China que visitamos con nuestros clientes."
+      title: "Shanghái de noche",
+      text: "Pudong visto desde el Bund. Shanghái es uno de los centros de negocios que visitamos con nuestros clientes."
     },
     {
       src: "contenedor-carga-mixta-almacen.webp",
