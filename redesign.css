@@ -506,3 +506,5 @@
   .rd-tt-card{ flex:0 0 58%; scroll-snap-align:start; }
 }
 @media (prefers-reduced-motion:reduce){ .rd-tt-card img{ transition:none; } }
+/* Foto de Alan en la Feria de Cantón: la persona está en la mitad inferior */
+.rd-alan-grid img.rd-alan-photo{ object-position:50% 72%; }
