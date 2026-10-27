@@ -1,0 +1,40 @@
+/* Estilo v2 de las páginas interiores: mismo lenguaje que la portada nueva
+   (títulos en Big Shoulders Display, etiquetas en IBM Plex Mono, esquinas rectas, menos sombras). */
+
+.standalone-page .standalone-hero,.standalone-page .travel-hero{border-bottom:3px solid #E2B33C}
+.standalone-page .standalone-hero h1,.standalone-page .travel-hero h1{font-family:'Big Shoulders Display','Plus Jakarta Sans',system-ui,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.005em;line-height:.92;font-size:clamp(2.8rem,6.2vw,5.2rem);text-wrap:balance}
+.standalone-page .standalone-hero p,.standalone-page .travel-hero p{font-size:1.1rem;line-height:1.6}
+
+/* Etiquetas: texto mono, sin píldora */
+.standalone-page .eyebrow{padding:0;border:0;border-radius:0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-weight:500;font-size:.78rem;letter-spacing:.12em;color:#E2B33C}
+.standalone-page .eyebrow.dark{color:#7A5C0E;background:none;border:0}
+
+/* Títulos de sección: a la izquierda y con la letra de la portada */
+.standalone-page .section-heading{max-width:none;margin:0 0 40px;text-align:left}
+.standalone-page .section-heading h2{margin:10px 0 12px;font-family:'Big Shoulders Display','Plus Jakarta Sans',system-ui,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.005em;line-height:.95;font-size:clamp(2.4rem,4.6vw,3.6rem);color:var(--petrol)}
+.standalone-page .section-heading p{max-width:680px;font-size:1.05rem;line-height:1.6}
+
+/* Botones y tarjetas: esquinas rectas, sin sombras grandes */
+.standalone-page .btn{border-radius:4px}
+.standalone-page .standalone-price-card{border-radius:6px}
+.standalone-page .standalone-price-card strong{font-family:'Big Shoulders Display','Plus Jakarta Sans',sans-serif;font-weight:800;text-transform:uppercase;line-height:1}
+.standalone-page .payment-steps article,
+.standalone-page .advisory-process-grid article,
+.standalone-page .advisory-includes-grid>div,
+.standalone-page .travel-includes-grid>div,
+.standalone-page .travel-package,
+.standalone-page .travel-gallery figure,
+.standalone-page .service-card,
+.standalone-page .lcl-pay article,
+.standalone-page .lcl-steps li,
+.standalone-page .lcl-note,
+.standalone-page .fcl-pick,
+.standalone-page .standalone-form-card{border-radius:6px;box-shadow:none}
+.standalone-page .travel-gallery img{border-radius:0}
+
+/* Números de pasos como en la portada (01 · 02 …) */
+.standalone-page .payment-steps article>span,
+.standalone-page .advisory-process-grid article>span{width:auto;height:auto;display:inline-block;border-radius:0;background:none;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.85rem;font-weight:600;letter-spacing:.06em;color:#7A5C0E}
+.standalone-page .payment-steps article h3,
+.standalone-page .advisory-process-grid h3,
+.standalone-page .travel-package h3{letter-spacing:-.01em}
