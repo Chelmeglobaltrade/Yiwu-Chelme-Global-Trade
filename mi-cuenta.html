@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><script>/* No permitir que otro sitio muestre esta página dentro de un marco (clickjacking). */(function(){try{if(window.top===window.self||window.top.location.origin===location.origin)return;}catch(e){}document.documentElement.style.display="none";})();</script><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#123f49"><meta name="robots" content="noindex,follow"><title>Mi cuenta | Chelme Global Trade</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="preload" href="fonts/PlusJakartaSans.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="fonts.css"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="polish.css"><link rel="stylesheet" href="site-header.css"><link rel="stylesheet" href="theme-v2.css?v=20261028"><link rel="stylesheet" href="auth-page.css?v=20260928"><link rel="stylesheet" href="quote-redesign.css"><script src="config.js"></script><script src="pricing-core.js"></script><script src="lcl-rates.js"></script></head><body class="standalone-page">
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><script>/* No permitir que otro sitio muestre esta página dentro de un marco (clickjacking). */(function(){try{if(window.top===window.self||window.top.location.origin===location.origin)return;}catch(e){}document.documentElement.style.display="none";})();</script><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#123f49"><meta name="robots" content="noindex,follow"><title>Mi cuenta | Chelme Global Trade</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="preload" href="fonts/PlusJakartaSans.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="fonts.css"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="polish.css"><link rel="stylesheet" href="site-header.css"><link rel="stylesheet" href="theme-v2.css?v=20261028"><link rel="stylesheet" href="auth-page.css?v=20261028"><link rel="stylesheet" href="quote-redesign.css"><script src="config.js"></script><script src="pricing-core.js"></script><script src="lcl-rates.js"></script></head><body class="standalone-page">
 <svg class="svg-sprite" aria-hidden="true">
   <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.7" r="1"/></symbol>
   <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M14 4v10.2a4.7 4.7 0 1 1-4-4.6"/><path d="M14 4c1 3 3.1 4.5 6 4.7"/></symbol>
@@ -43,10 +43,10 @@
     <span class="staff-badge" id="staffBadge">Panel del equipo</span>
     <div class="portal-tabbar staff-tabbar">
       <button class="portal-tab" data-tab="cash" id="cashTabBtn" hidden>Cobros</button>
-      <button class="portal-tab" data-tab="ships" id="shipsTabBtn" hidden>Contenedores</button>
       <button class="portal-tab" data-tab="rates" id="ratesTabBtn" hidden>Tarifas LCL</button>
       <button class="portal-tab" data-tab="team" id="teamTabBtn" hidden>Equipo y permisos</button>
     </div>
+    <a class="staff-crm-link" href="https://chelme-control.vercel.app" target="_blank" rel="noopener">Solicitudes, pedidos y contenedores: abrir Chelme Control &rarr;</a>
     <small>Solo tú y los administradores ven esta barra. Los clientes no la ven.</small>
   </div>
 </div></nav>
@@ -294,7 +294,7 @@
 
 <section class="section section-soft" id="panel-cash" hidden><div class="container" style="max-width:920px"><h2>Cobros y caja</h2><p class="orders-sub">Lo que falta por cobrar, comprobantes por revisar y pedidos que hoy no dejan ganancia.</p><div id="cashContent" style="margin-top:18px"></div></div></section>
 
-<section class="section section-soft" id="panel-ships" hidden><div class="container" style="max-width:1100px"><div class="account-section-heading"><div><h2>Contenedores</h2><p class="orders-sub">Cuántos m³ lleva cada cliente, qué tan lleno va cada contenedor y si deja ganancia. Los clientes solo ven el código, el estado y las fechas.</p></div><button type="button" class="btn btn-gold btn-sm" id="shipNewBtn">+ Nuevo contenedor</button></div><div id="shipForm" hidden></div><div id="shipsContent" style="margin-top:18px">Cargando…</div></div></section>
+
 
 <section class="section section-soft" id="panel-rates" hidden><div class="container" style="max-width:1000px"><h2>Tarifas del consolidado LCL</h2><p class="orders-sub">Precio por m³ según el flete del contenedor y el volumen del cliente. Cambia el flete actual cuando cambie el mercado y las calculadoras de la página se actualizan solas.</p><div id="ratesContent" style="margin-top:18px">Cargando…</div></div></section>
 
@@ -1259,8 +1259,14 @@
     if (isStaff) {
       var costsRes = await supabaseClient.from('order_costs').select('*');
       costsCache = costsRes.data || [];
-      var shipsRes = await supabaseClient.from('shipments').select('*').order('created_at', { ascending: false });
-      shipsCache = shipsRes.data || [];
+      // Los contenedores ahora viven en el CRM (tabla contenedores); se adaptan a lo que espera esta vista.
+      var shipsRes = await supabaseClient.from('contenedores').select('*').order('created_at', { ascending: false });
+      var ESTADO_A_SHIP = { 'Listo para embarque': 'cerrado', 'En el barco': 'zarpo', 'En aduana': 'llego', 'Entregado': 'finalizado' };
+      shipsCache = (shipsRes.data || []).map(function(c){
+        return { id: c.id, code: c.codigo, mode: c.modo || 'lcl', container_type: c.tipo || '', status: ESTADO_A_SHIP[c.estado] || 'abierto',
+          cutoff_date: c.cierre_carga, etd: c.etd, eta: c.eta || c.fecha_cierre, capacity_cbm: c.capacidad_cbm, vessel: c.nave, bl_number: c.bl,
+          freight_cost_usd: c.flete_usd, other_costs_usd: c.otros_costos_usd, notes: c.notas };
+      });
     } else {
       var myShips = await supabaseClient.rpc('my_shipments');
       myShipsByOrder = {};
@@ -1543,7 +1549,6 @@
       document.getElementById('staffBadge').textContent = profile.role === 'owner' ? 'Panel del equipo · Dueño' : 'Panel del equipo · Administrador';
       document.getElementById('cashTabBtn').hidden = false;
       document.getElementById('ratesTabBtn').hidden = false;
-      document.getElementById('shipsTabBtn').hidden = false;
       loadRatesAdmin();
       setupNewOrderForm(customersById);
       var toggleBtn = document.getElementById('toggleNewOrderBtn');
