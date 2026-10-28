@@ -254,3 +254,5 @@
 .qz-brand-ok a{ color:var(--petrol); font-weight:700; }
 .qz-brand-stop{ margin:4px 0 0; padding:10px 12px; border-radius:10px; background:#fcebea; color:var(--danger); font-size:.84rem; font-weight:700; }
 
+.staff-crm-link{ padding:6px 12px; border-radius:999px; background:rgba(255,255,255,.12); color:#fff; font-size:.8rem; font-weight:700; text-decoration:none; }
+.staff-crm-link:hover{ background:rgba(255,255,255,.2); color:#fff; }
