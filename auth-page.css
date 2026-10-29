@@ -256,3 +256,53 @@
 
 .staff-crm-link{ padding:6px 12px; border-radius:999px; background:rgba(255,255,255,.12); color:#fff; font-size:.8rem; font-weight:700; text-decoration:none; }
 .staff-crm-link:hover{ background:rgba(255,255,255,.2); color:#fff; }
+
+/* Cotizaciones de Chelme en la cuenta del cliente */
+.cc-wrap{ display:flex; flex-direction:column; gap:16px; margin-top:16px; }
+.cc-wrap[hidden], .cc-aviso[hidden]{ display:none; }
+.cc-titulo{ margin:0; font-size:1.2rem; color:#123f49; }
+.cc-card{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:14px; }
+.cc-card.is-ok{ border-color:#bfe0d1; }
+.cc-head{ display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; }
+.cc-head h3{ margin:2px 0 0; font-size:1.15rem; color:#123f49; }
+.cc-head p{ margin:2px 0 0; color:var(--muted); font-size:.88rem; }
+.cc-num{ font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-size:.8rem; font-weight:600; color:#7a5b00; }
+.cc-estado{ padding:5px 12px; border-radius:999px; background:#fbf2da; color:#7a5b00; font-size:.8rem; font-weight:700; white-space:nowrap; }
+.is-ok .cc-estado{ background:#e2f0eb; color:#1e6b5a; }
+.cc-msg{ margin:0; padding:10px 12px; border-radius:10px; background:#f2f6f7; font-size:.92rem; }
+.cc-scroll{ overflow-x:auto; }
+.cc-tabla{ width:100%; border-collapse:collapse; font-size:.9rem; min-width:520px; }
+.cc-tabla th{ text-align:left; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); padding:6px 8px; border-bottom:2px solid #123f49; }
+.cc-tabla td{ padding:8px; border-bottom:1px solid var(--line); vertical-align:middle; font-variant-numeric:tabular-nums; }
+.cc-tabla td small{ display:block; color:var(--muted); font-size:.78rem; }
+.cc-foto{ width:56px; }
+.cc-foto img{ width:48px; height:48px; border-radius:8px; object-fit:cover; display:block; }
+.cc-tot{ margin:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.cc-tot div{ padding:10px 12px; border-radius:10px; background:#f7f9f9; }
+.cc-tot dt{ font-size:.78rem; color:var(--muted); }
+.cc-tot dd{ margin:2px 0 0; font-weight:700; font-variant-numeric:tabular-nums; }
+.cc-tot dd small{ display:block; font-weight:500; font-size:.78rem; color:var(--muted); }
+.cc-tot .cc-big{ background:#123f49; color:#fff; }
+.cc-tot .cc-big dt, .cc-tot .cc-big dd small{ color:rgba(255,255,255,.75); }
+.cc-tot .cc-big dd{ font-size:1.25rem; color:#e2b33c; }
+.cc-pago{ display:flex; flex-direction:column; gap:10px; align-items:flex-start; }
+.cc-pago p{ margin:0; font-size:.92rem; }
+.cc-nota{ color:var(--muted); font-size:.82rem !important; }
+.cc-ok{ margin:0; color:#1e6b5a; font-weight:600; }
+.cc-aviso{ margin-top:14px; }
+@media (max-width:560px){ .cc-tot{ grid-template-columns:1fr; } }
+.cc-aviso{ flex-wrap:wrap; }
+.cc-aviso .attn-text{ flex:1 1 200px; order:0; }
+.cc-aviso .btn{ order:4; }
+@media (max-width:560px){
+  .cc-tabla{ min-width:0; }
+  .cc-tabla thead{ display:none; }
+  .cc-tabla tr{ display:grid; grid-template-columns:52px minmax(0,1fr) auto; gap:2px 10px; padding:10px 0; border-bottom:1px solid var(--line); align-items:center; }
+  .cc-tabla td{ padding:0; border:0; }
+  .cc-tabla td:nth-child(1){ grid-row:span 2; }
+  .cc-tabla td:nth-child(2){ grid-column:2; }
+  .cc-tabla td:nth-child(3){ grid-column:2; grid-row:2; font-size:.82rem; color:var(--muted); }
+  .cc-tabla td:nth-child(3) small{ display:inline; margin-left:4px; }
+  .cc-tabla td:nth-child(4){ grid-column:3; grid-row:2; font-size:.82rem; color:var(--muted); text-align:right; }
+  .cc-tabla td:nth-child(5){ grid-column:3; grid-row:1; text-align:right; }
+}
