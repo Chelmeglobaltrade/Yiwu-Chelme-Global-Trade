@@ -322,7 +322,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="pdf-cotizacion.js"></script>
 <script src="quote-wizard.js?v=20261027"></script>
-<script src="cotizaciones-chelme.js?v=20261029"></script>
+<script src="cotizaciones-chelme.js?v=20261029b"></script>
 <script>
 (function(){
   function escapeHtml(str){
@@ -1569,10 +1569,11 @@
     }
     await loadOrders(isStaff, customersById);
     await loadQuotes(isStaff, customersById);
-    // Cotizaciones que Chelme preparó para este cliente (se aceptan desde aquí).
-    if (!isStaff && window.ChelmeCotiz) {
+    // Cotizaciones que Chelme preparó para esta cuenta (se aceptan desde aquí).
+    // Al equipo también se le muestran las publicadas a su propia cuenta, para probar.
+    if (window.ChelmeCotiz) {
       var cotizPendientes = await window.ChelmeCotiz.cargar({
-        alAceptar: async function(){ await loadOrders(false, customersById); document.getElementById('cotizAviso').hidden = true; },
+        alAceptar: async function(){ await loadOrders(isStaff, customersById); document.getElementById('cotizAviso').hidden = true; },
         irPedidos: function(){ showTab('orders'); }
       });
       if (!document.getElementById('cotizChelme').hidden) document.getElementById('quotesEmpty').hidden = true;
