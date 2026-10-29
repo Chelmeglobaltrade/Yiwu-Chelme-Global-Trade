@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><script>/* No permitir que otro sitio muestre esta página dentro de un marco (clickjacking). */(function(){try{if(window.top===window.self||window.top.location.origin===location.origin)return;}catch(e){}document.documentElement.style.display="none";})();</script><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#123f49"><meta name="robots" content="noindex,follow"><title>Mi cuenta | Chelme Global Trade</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="preload" href="fonts/PlusJakartaSans.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="fonts.css"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="polish.css"><link rel="stylesheet" href="site-header.css"><link rel="stylesheet" href="theme-v2.css?v=20261028"><link rel="stylesheet" href="auth-page.css?v=20261028"><link rel="stylesheet" href="quote-redesign.css"><script src="config.js"></script><script src="pricing-core.js"></script><script src="lcl-rates.js"></script></head><body class="standalone-page">
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><script>/* No permitir que otro sitio muestre esta página dentro de un marco (clickjacking). */(function(){try{if(window.top===window.self||window.top.location.origin===location.origin)return;}catch(e){}document.documentElement.style.display="none";})();</script><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#123f49"><meta name="robots" content="noindex,follow"><title>Mi cuenta | Chelme Global Trade</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="preload" href="fonts/PlusJakartaSans.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="fonts.css"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="polish.css"><link rel="stylesheet" href="site-header.css"><link rel="stylesheet" href="theme-v2.css?v=20261028"><link rel="stylesheet" href="auth-page.css?v=20261029"><link rel="stylesheet" href="quote-redesign.css"><script src="config.js"></script><script src="pricing-core.js"></script><script src="lcl-rates.js"></script></head><body class="standalone-page">
 <svg class="svg-sprite" aria-hidden="true">
   <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.7" r="1"/></symbol>
   <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M14 4v10.2a4.7 4.7 0 1 1-4-4.6"/><path d="M14 4c1 3 3.1 4.5 6 4.7"/></symbol>
@@ -57,6 +57,7 @@
       <div><h2 id="ordersTitle">Mis pedidos</h2><p class="orders-sub" id="ordersSub">Aquí sigues cada importación: estado, pagos y archivos.</p></div>
       <button type="button" id="toggleNewOrderBtn" class="btn btn-gold btn-sm" hidden>+ Agregar pedido</button>
     </div>
+    <div class="attn-row attn-gold cc-aviso" id="cotizAviso" hidden><span class="attn-dot"></span><span class="attn-text" id="cotizAvisoTexto"></span><button type="button" class="btn btn-gold btn-sm" id="cotizAvisoBtn">Ver cotización</button></div>
     <section class="attn" id="attentionBox" aria-label="Requiere tu atención" hidden></section>
     <div class="bal-tiles" id="balanceTiles" hidden></div>
     <div id="ordersEmpty" class="orders-empty" hidden>
@@ -107,6 +108,7 @@
     <div class="account-section-heading">
       <h2 id="quotesTitle">Historial de cotizaciones</h2>
     </div>
+    <div id="cotizChelme" class="cc-wrap" hidden></div>
     <div id="quotesEmpty" style="margin-top:16px;color:var(--muted)" hidden>Todavía no has enviado cotizaciones. Usa "Nueva cotización" para pedir la primera.</div>
     <div id="quotesList" style="margin-top:20px;display:flex;flex-direction:column;gap:16px"></div>
   </div>
@@ -320,6 +322,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="pdf-cotizacion.js"></script>
 <script src="quote-wizard.js?v=20261027"></script>
+<script src="cotizaciones-chelme.js?v=20261029"></script>
 <script>
 (function(){
   function escapeHtml(str){
@@ -1566,6 +1569,19 @@
     }
     await loadOrders(isStaff, customersById);
     await loadQuotes(isStaff, customersById);
+    // Cotizaciones que Chelme preparó para este cliente (se aceptan desde aquí).
+    if (!isStaff && window.ChelmeCotiz) {
+      var cotizPendientes = await window.ChelmeCotiz.cargar({
+        alAceptar: async function(){ await loadOrders(false, customersById); document.getElementById('cotizAviso').hidden = true; },
+        irPedidos: function(){ showTab('orders'); }
+      });
+      if (!document.getElementById('cotizChelme').hidden) document.getElementById('quotesEmpty').hidden = true;
+      if (cotizPendientes) {
+        document.getElementById('cotizAvisoTexto').textContent = cotizPendientes === 1 ? 'Tienes una cotización de Chelme lista para revisar.' : 'Tienes ' + cotizPendientes + ' cotizaciones de Chelme listas para revisar.';
+        document.getElementById('cotizAviso').hidden = false;
+        document.getElementById('cotizAvisoBtn').addEventListener('click', function(){ showTab('quotes'); });
+      }
+    }
 
     var qs = new URLSearchParams(location.search);
     if (qs.get('bienvenida') === '1') document.getElementById('acctWelcome').hidden = false;
