@@ -46,8 +46,8 @@
       <button class="portal-tab" data-tab="rates" id="ratesTabBtn" hidden>Tarifas LCL</button>
       <button class="portal-tab" data-tab="team" id="teamTabBtn" hidden>Equipo y permisos</button>
     </div>
-    <a class="staff-crm-link" href="https://chelme-control.vercel.app" target="_blank" rel="noopener">Solicitudes, pedidos y contenedores: abrir Chelme Control &rarr;</a>
-    <small>Solo tú y los administradores ven esta barra. Los clientes no la ven.</small>
+    <a class="staff-crm-link" href="https://chelme-control.vercel.app" target="_blank" rel="noopener">Cobros, tarifas LCL, equipo, pedidos y contenedores: abrir Chelme Control &rarr;</a>
+    <small>Todo lo del equipo se maneja ahora en Chelme Control (Más → Página web). Solo tú y los administradores ven esta barra.</small>
   </div>
 </div></nav>
 
@@ -1550,9 +1550,7 @@
       (customersRes.data || []).forEach(function(c){ customersById[c.id] = c; });
       document.getElementById('staffBar').hidden = false;
       document.getElementById('staffBadge').textContent = profile.role === 'owner' ? 'Panel del equipo · Dueño' : 'Panel del equipo · Administrador';
-      document.getElementById('cashTabBtn').hidden = false;
-      document.getElementById('ratesTabBtn').hidden = false;
-      loadRatesAdmin();
+      // Cobros, tarifas LCL y equipo se manejan en Chelme Control (Más → Página web).
       setupNewOrderForm(customersById);
       var toggleBtn = document.getElementById('toggleNewOrderBtn');
       toggleBtn.hidden = false;
@@ -1593,7 +1591,7 @@
     else if (qs.get('bienvenida') === '1') showTab('quote');
 
     if (profile && profile.role === 'owner') {
-      document.getElementById('teamTabBtn').hidden = false;
+      // (Equipo y permisos: en Chelme Control → Más → Página web → Equipo)
       loadTeam(session.user.id);
       setupTeamSearch(session.user.id);
     }
