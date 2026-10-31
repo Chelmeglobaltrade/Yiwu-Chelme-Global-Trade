@@ -21,8 +21,8 @@ window.CHELME_CONFIG = {
     company: {
       legalName: "Yiwu Chelme Trade Co., Ltd. (义乌市写迩每贸易有限公司)",
       registrationLabel: "N° de registro (USCC)",
-      registration: "91330782MAKG0DKM0J",
-      address: ""      // Domicilio registrado (el de la licencia 营业执照)
+      registration: "",  // Alan prefiere no publicarlo (2026-10-31)
+      address: ""        // Por ahora sin dirección (decisión de Alan, 2026-10-31)
     }
   },
 

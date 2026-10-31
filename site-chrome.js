@@ -48,12 +48,12 @@
   });
 })();
 
-/* Identificación legal de la empresa (Términos, Privacidad y pie de página), solo si está completa en config.js. */
+/* Identificación legal de la empresa (Términos, Privacidad y pie de página): nombre y, si están en config.js, registro y dirección. */
 (function () {
   var co = window.CHELME_CONFIG && CHELME_CONFIG.legal && CHELME_CONFIG.legal.company;
   var reg = co && (co.registration || co.rut);
-  var ok = co && co.legalName && reg;
-  var text = ok ? co.legalName + " · " + (co.registrationLabel || "RUT") + " " + reg + (co.address ? " · " + co.address : "") : "";
+  var ok = co && co.legalName;
+  var text = ok ? co.legalName + (reg ? " · " + (co.registrationLabel || "RUT") + " " + reg : "") + (co.address ? " · " + co.address : "") : "";
   document.querySelectorAll("[data-legal-identity]").forEach(function (el) {
     if (ok) el.textContent = "Responsable: " + text; else el.hidden = true;
   });
