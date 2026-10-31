@@ -150,10 +150,12 @@
     if (fromUser) stop();
   }
 
-  function build() {
+  // La dirección (#ya-tengo-proveedor…) solo cambia cuando la persona elige su caso,
+  // para no pisar enlaces a otras partes de la página, como #glosario.
+  function build(elegido) {
     state.steps = flow(state.supplier, state.mode);
     renderList(); renderSummary(); go(0);
-    try { history.replaceState(null, "", "#" + (state.supplier ? "ya-tengo-proveedor" : "necesito-proveedor") + (state.mode === "lcl" ? "-lcl" : "")); } catch (e) {}
+    if (elegido) try { history.replaceState(null, "", "#" + (state.supplier ? "ya-tengo-proveedor" : "necesito-proveedor") + (state.mode === "lcl" ? "-lcl" : "")); } catch (e) {}
   }
 
   function stop() { if (state.timer) { clearInterval(state.timer); state.timer = null; } el.play.textContent = "Ver recorrido completo"; el.play.setAttribute("aria-pressed", "false"); }
@@ -169,7 +171,7 @@
       var q = b.dataset.ppxQ, v = b.dataset.v;
       root.querySelectorAll('[data-ppx-q="' + q + '"]').forEach(function (x) { var on = x === b; x.classList.toggle("is-on", on); x.setAttribute("aria-checked", on ? "true" : "false"); });
       if (q === "supplier") state.supplier = v === "si"; else state.mode = v;
-      stop(); build();
+      stop(); build(true);
     });
   });
   el.list.addEventListener("click", function (e) {
@@ -196,4 +198,7 @@
   });
   root.classList.add("is-ready");
   build();
+  // El simulador cambia de alto al armarse: si se llegó con un enlace a otra sección, se vuelve a ella.
+  var destino = h && !/proveedor/.test(h) && document.getElementById(h.slice(1));
+  if (destino) destino.scrollIntoView();
 })();
