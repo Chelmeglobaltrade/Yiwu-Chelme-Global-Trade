@@ -2,7 +2,7 @@ window.CHELME_CONFIG = {
   business: {
     name: "Chelme Global Trade",
     whatsapp: "8615257960742",
-    email: "alanchelme11@gmail.com",
+    email: "chelmeglobaltrade@gmail.com",
     instagram: "https://www.instagram.com/alanen.china/",
     instagramHandle: "@alanen.china",
     tiktok: "https://www.tiktok.com/@alanenchina",
@@ -69,7 +69,8 @@ window.CHELME_CONFIG = {
   },
 
   lcl: {
-    ratePerCbmUsd: 250,
+    ratePerCbmUsd: 270,          // desde 5 m³
+    smallCargoRatePerCbmUsd: 280, // bajo 5 m³ (más el cargo operativo fijo)
     minimumBillableCbm: 1,
     smallCargoThresholdCbm: 5,
     smallCargoExtraFlatUsd: 100,

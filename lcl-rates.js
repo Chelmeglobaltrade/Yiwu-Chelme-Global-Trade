@@ -47,8 +47,12 @@
     isActive: function () { return state.active; },
     // Tarifa por m³ para un volumen dado (o la fija de config.js si la tabla está apagada).
     rateFor: function (cbm, config) {
-      if (!state.active) return Number(config.lcl.ratePerCbmUsd);
       var billable = Math.max(Number(cbm) || 0, Number(config.lcl.minimumBillableCbm) || 0);
+      if (!state.active) {
+        // Tarifa fija de config.js: una para cargas chicas (bajo el umbral) y otra desde el umbral.
+        var chica = Number(config.lcl.smallCargoRatePerCbmUsd);
+        return chica && billable < Number(config.lcl.smallCargoThresholdCbm) ? chica : Number(config.lcl.ratePerCbmUsd);
+      }
       return state.row[tierIndex(billable)];
     },
     // Tarifa más baja vigente, para textos "Desde US$X/m³".
