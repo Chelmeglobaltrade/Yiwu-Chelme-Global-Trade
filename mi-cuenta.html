@@ -776,7 +776,7 @@
       '</div>' +
       '<p class="rates-status ' + (ratesState.active ? 'is-on' : '') + '">' + (ratesState.active
         ? 'Activa: los clientes ven los precios de la fila resaltada (flete desde US$' + used.toLocaleString('es-CL') + '): ' + usedPrices.map(function(p, i){ return tiers[i].label + ' US$' + p; }).join(' · ') + '.'
-        : 'Apagada: las calculadoras usan la tarifa fija de US$' + CHELME_CONFIG.lcl.ratePerCbmUsd + '/m³ para todos los volúmenes.') + '</p>' +
+        : 'Apagada: las calculadoras usan la tarifa fija de US$' + (CHELME_CONFIG.lcl.smallCargoRatePerCbmUsd || CHELME_CONFIG.lcl.ratePerCbmUsd) + '/m³ bajo ' + CHELME_CONFIG.lcl.smallCargoThresholdCbm + ' m³ y US$' + CHELME_CONFIG.lcl.ratePerCbmUsd + '/m³ desde ' + CHELME_CONFIG.lcl.smallCargoThresholdCbm + ' m³.') + '</p>' +
       '<div class="rates-scroll"><table class="rates-table">' + head + body + '</table></div>' +
       '<div class="rates-actions"><button type="button" class="btn btn-light btn-sm" id="ratesAddRow">+ Agregar fila de flete</button>' +
       '<button type="button" class="btn btn-gold btn-sm" id="ratesSave">Guardar tarifas</button><span id="ratesMsg" class="charge-hint"></span></div>' +
