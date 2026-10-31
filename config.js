@@ -26,10 +26,10 @@ window.CHELME_CONFIG = {
   },
 
   exchange: {
-    referenceRmbPerUsd: 6.7767,
-    previousReferenceRmbPerUsd: 6.7733,
-    commercialRmbPerUsd: 6.64,
-    updatedAt: "2026-07-17",
+    referenceRmbPerUsd: 6.6696,
+    previousReferenceRmbPerUsd: 6.7767,
+    commercialRmbPerUsd: 6.53,
+    updatedAt: "2026-10-31",
     sourceLabel: "Referencia de mercado USD/CNY",
     bufferPercent: 2.02,
     quoteValidityDays: 3,
