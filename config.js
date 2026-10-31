@@ -17,11 +17,12 @@ window.CHELME_CONFIG = {
   // queda guardada en el perfil de cada cliente nuevo como prueba de lo que aceptó.
   legal: {
     termsVersion: "2026-10-31",
-    // Datos de la empresa en Chile. Cuando estén completos, se muestran en Términos, Privacidad y el pie de página.
+    // Empresa que presta el servicio (registrada en China). Sale en Términos, Privacidad y el pie de página.
     company: {
-      legalName: "",   // Razón social, ej.: "Chelme Global Trade SpA"
-      rut: "",         // RUT de la empresa, ej.: "77.123.456-7"
-      address: ""      // Domicilio legal en Chile
+      legalName: "Yiwu Chelme Trade Co., Ltd. (义乌市写迩每贸易有限公司)",
+      registrationLabel: "N° de registro (USCC)",
+      registration: "91330782MAKG0DKM0J",
+      address: ""      // Domicilio registrado (el de la licencia 营业执照)
     }
   },
 

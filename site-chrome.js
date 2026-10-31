@@ -51,8 +51,9 @@
 /* Identificación legal de la empresa (Términos, Privacidad y pie de página), solo si está completa en config.js. */
 (function () {
   var co = window.CHELME_CONFIG && CHELME_CONFIG.legal && CHELME_CONFIG.legal.company;
-  var ok = co && co.legalName && co.rut;
-  var text = ok ? co.legalName + " · RUT " + co.rut + (co.address ? " · " + co.address : "") : "";
+  var reg = co && (co.registration || co.rut);
+  var ok = co && co.legalName && reg;
+  var text = ok ? co.legalName + " · " + (co.registrationLabel || "RUT") + " " + reg + (co.address ? " · " + co.address : "") : "";
   document.querySelectorAll("[data-legal-identity]").forEach(function (el) {
     if (ok) el.textContent = "Responsable: " + text; else el.hidden = true;
   });
