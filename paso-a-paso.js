@@ -25,7 +25,7 @@
     preliminar: { ph: 0, who: "chelme", time: "Días 3 a 5", title: "Te enviamos una cotización preliminar", text: "Costos estimados, recomendación de consolidado o contenedor completo, y próximos pasos.", get: "Cotización preliminar", doc: "quote" },
     decides: { ph: 0, who: "tu", title: "Decides si avanzamos", text: "Con números claros decides si compras, ajustas cantidades o buscas otro producto.", doc: "decision" },
     busqueda: { ph: 1, who: "chelme", time: "3 a 10 días", title: "Buscamos y negociamos", text: "Comparamos fábricas, precios y cantidades mínimas, y negociamos en chino por ti.", scene: S.fabrica },
-    produccion: { ph: 1, who: "juntos", time: "7 a 25 días según producto", title: "Compra y producción", text: "Se confirma la compra y la fábrica produce. Si lo contratas, hacemos control de calidad antes de embarcar.", pay: "Tu mercancía", scene: S.produccion },
+    produccion: { ph: 1, who: "juntos", time: "7 a 25 días según producto", title: "Compra y producción", text: "Pagas el 30% de la mercancía y la comisión (5%), y hacemos los pedidos. Antes de recibir en bodega pagas el saldo. Si lo contratas, hacemos control de calidad antes de embarcar.", pay: "Mercancía: 30% y saldo", scene: S.produccion },
 
     fclCotiza: { ph: 0, who: "tu", time: "Minutos", title: "Pides la cotización de tu contenedor", text: "Nos cuentas qué traes, el volumen aproximado y dónde está tu proveedor. Te respondemos con una cotización a tu medida.", get: "Cotización a tu medida", doc: "quoteFcl" },
     fclPago: { ph: 0, who: "tu", title: "Confirmas y pagas el servicio", text: "Pagas el servicio y el flete antes de avanzar. Con eso coordinamos la reserva del contenedor.", pay: "Servicio y flete", doc: "pay" },

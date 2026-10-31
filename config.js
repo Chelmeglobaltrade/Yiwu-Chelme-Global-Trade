@@ -75,8 +75,8 @@ window.CHELME_CONFIG = {
     minimumBillableCbm: 1,
     smallCargoThresholdCbm: 5,
     smallCargoExtraFlatUsd: 0,    // cargo fijo extra bajo 5 m³ (sacado el 2026-10-31; si vuelve, se muestra solo)
-    sourcingPercent: 8,
-    minimumSourcingFeeUsd: 200,
+    sourcingPercent: 5,
+    minimumSourcingFeeUsd: 0,
     minimumRecommendedGoodsUsd: 5000,
     nextDepartureText: "Consultar próxima salida",
     explanation: "Se cobra por el CBM facturable. Si la carga ocupa menos de 1 m³, el mínimo facturable es 1 m³."
@@ -115,7 +115,7 @@ window.CHELME_CONFIG = {
 
   fcl: {
     sourcingPercent: 5,
-    minimumSourcingFeeUsd: 200,
+    minimumSourcingFeeUsd: 0,
     chinaLocalCostsUsd: 1000,
     oceanFreightUsd: {
       "20GP": 0,

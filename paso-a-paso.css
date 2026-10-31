@@ -153,3 +153,13 @@
   .ppx-marker.is-sea,.ppx-flow li.is-now::before,.ppx-meter span,.ppx-waves::after,.ppx-ship{ animation:none; }
   .ppx-scene.is-in > *{ animation:none; }
 }
+
+/* Glosario: las palabras que se escuchan al importar, explicadas con un ejemplo. */
+.gl-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.gl-grid article{ padding:18px 20px; border:1px solid var(--line); border-radius:6px; background:#fff; }
+.gl-grid h3{ margin:0 0 6px; color:var(--petrol); font-size:1.02rem; }
+.gl-grid h3 small{ font-weight:600; color:var(--muted); font-size:.8rem; margin-left:6px; }
+.gl-grid p{ margin:0; color:var(--muted); font-size:.92rem; line-height:1.55; }
+.gl-grid p + p{ margin-top:6px; }
+.gl-grid .gl-ej{ color:var(--petrol); font-size:.86rem; }
+@media (max-width:700px){ .gl-grid{ grid-template-columns:1fr; } }
