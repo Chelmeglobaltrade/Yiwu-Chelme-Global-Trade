@@ -780,7 +780,7 @@
       '<div class="rates-scroll"><table class="rates-table">' + head + body + '</table></div>' +
       '<div class="rates-actions"><button type="button" class="btn btn-light btn-sm" id="ratesAddRow">+ Agregar fila de flete</button>' +
       '<button type="button" class="btn btn-gold btn-sm" id="ratesSave">Guardar tarifas</button><span id="ratesMsg" class="charge-hint"></span></div>' +
-      '<p class="charge-hint">Precio por m³ en USD, sin IVA. Se usa la fila con el flete más alto que no supere el flete actual. El cargo fijo bajo ' + CHELME_CONFIG.lcl.smallCargoThresholdCbm + ' m³ (US$' + CHELME_CONFIG.lcl.smallCargoExtraFlatUsd + ') y el mínimo de ' + CHELME_CONFIG.lcl.minimumBillableCbm + ' m³ se siguen aplicando.' + (ratesState.updated_at ? ' Última actualización: ' + new Date(ratesState.updated_at).toLocaleString('es-CL') + '.' : '') + '</p>';
+      '<p class="charge-hint">Precio por m³ en USD, sin IVA. Se usa la fila con el flete más alto que no supere el flete actual. ' + (CHELME_CONFIG.lcl.smallCargoExtraFlatUsd > 0 ? 'El cargo fijo bajo ' + CHELME_CONFIG.lcl.smallCargoThresholdCbm + ' m³ (US$' + CHELME_CONFIG.lcl.smallCargoExtraFlatUsd + ') y el' : 'El') + ' mínimo de ' + CHELME_CONFIG.lcl.minimumBillableCbm + ' m³ se siguen aplicando.' + (ratesState.updated_at ? ' Última actualización: ' + new Date(ratesState.updated_at).toLocaleString('es-CL') + '.' : '') + '</p>';
 
     function readInputs(){
       var rates = {};

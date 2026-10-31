@@ -471,7 +471,7 @@ function updateEstimate(){
       }
       rows.push({op:"×",label:`Tarifa por m³${tierLbl?` (tramo ${tierLbl})`:""}`,value:money(result.baseRate)});
       rows.push({op:"=",label:"Flete consolidado",value:money(result.baseFreight)});
-      if(result.smallCargo){
+      if(result.smallCargoExtra>0){
         rows.push({op:"+",label:`Cargo operativo por carga bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ (fijo)`,value:money(result.smallCargoExtra)});
       }
       rows.push({
@@ -503,7 +503,7 @@ function updateEstimate(){
       note=`Estimación automática, sin costo. El servicio Chelme incluye todo hasta ${(CONFIG.lclScope&&CONFIG.lclScope.deliveryPlace)||"Santiago"}; el IVA y el arancel se pagan aparte, antes de la llegada. ${window.ChelmeLclRates?window.ChelmeLclRates.validityText():""}`;
     }else{
       totalText=`Desde ${money(window.ChelmeLclRates?window.ChelmeLclRates.fromRate(CONFIG):CONFIG.lcl.ratePerCbmUsd)}/m³`;
-      note=`Mínimo facturable: ${CONFIG.lcl.minimumBillableCbm} m³. Bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ se agrega el cargo operativo.`;
+      note=`Mínimo facturable: ${CONFIG.lcl.minimumBillableCbm} m³.`+(Number(CONFIG.lcl.smallCargoExtraFlatUsd)>0?` Bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ se agrega el cargo operativo.`:"");
     }
   }else if(service==="fcl"){
     const container=$("qContainer")?.value||"40HQ";

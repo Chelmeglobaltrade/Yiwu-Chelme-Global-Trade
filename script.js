@@ -63,7 +63,7 @@ function updateMiniEstimate(){
     if(cbm>0){
       const result=CHELME_PRICING.calculateLcl({goodsAmount:0,goodsCurrency:"USD",cbm,includeSourcing:false},lclRates?lclRates.configFor(cbm,CONFIG):CONFIG);
       text=money(result.logistics);
-      const extraLine=result.smallCargo?` + cargo operativo por carga bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ ${money(result.smallCargoExtra)}`:"";
+      const extraLine=result.smallCargoExtra>0?` + cargo operativo por carga bajo ${CONFIG.lcl.smallCargoThresholdCbm} m³ ${money(result.smallCargoExtra)}`:"";
       note=`${fmt(result.billableCbm,2)} m³ facturables × ${money(result.baseRate)} = ${money(result.baseFreight)}${extraLine}. Servicio Chelme hasta ${(CONFIG.lclScope&&CONFIG.lclScope.deliveryPlace)||"Santiago"}; IVA, arancel y tu mercancía se pagan aparte. ${lclRates?lclRates.validityText():""}`;
     }else{
       text=`Desde ${money(fromRate)}/m³`;

@@ -16,7 +16,7 @@ window.CHELME_CONFIG = {
   // Versión vigente de Términos y Política de privacidad. Cambiarla cuando se modifiquen esos textos:
   // queda guardada en el perfil de cada cliente nuevo como prueba de lo que aceptó.
   legal: {
-    termsVersion: "2026-09-28",
+    termsVersion: "2026-10-31",
     // Datos de la empresa en Chile. Cuando estén completos, se muestran en Términos, Privacidad y el pie de página.
     company: {
       legalName: "",   // Razón social, ej.: "Chelme Global Trade SpA"
@@ -70,10 +70,10 @@ window.CHELME_CONFIG = {
 
   lcl: {
     ratePerCbmUsd: 270,          // desde 5 m³
-    smallCargoRatePerCbmUsd: 280, // bajo 5 m³ (más el cargo operativo fijo)
+    smallCargoRatePerCbmUsd: 280, // bajo 5 m³
     minimumBillableCbm: 1,
     smallCargoThresholdCbm: 5,
-    smallCargoExtraFlatUsd: 100,
+    smallCargoExtraFlatUsd: 0,    // cargo fijo extra bajo 5 m³ (sacado el 2026-10-31; si vuelve, se muestra solo)
     sourcingPercent: 8,
     minimumSourcingFeeUsd: 200,
     minimumRecommendedGoodsUsd: 5000,

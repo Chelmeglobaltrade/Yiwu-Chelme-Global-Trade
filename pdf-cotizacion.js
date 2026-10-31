@@ -163,7 +163,7 @@
         "Incluye hasta " + (sc.deliveryPlace || "Santiago") + ": " + (sc.includes || []).join("; ") + ".",
         "Pagas aparte: " + (sc.payAside || []).join("; ") + ".",
         "No incluye: " + (sc.excludes || []).join("; ") + ".",
-        "Se factura por m³: mínimo 1 m³; bajo 5 m³ aplica un cargo operativo fijo. Sobre " + (sc.weightReviewKgPerCbm || 500) + " kg por m³ la carga se revisa antes de dar un total.",
+        "Se factura por m³: mínimo 1 m³" + (Number(CONFIG.lcl && CONFIG.lcl.smallCargoExtraFlatUsd) > 0 ? "; bajo 5 m³ aplica un cargo operativo fijo" : "") + ". Sobre " + (sc.weightReviewKgPerCbm || 500) + " kg por m³ la carga se revisa antes de dar un total.",
         close
       ];
     }
